@@ -253,11 +253,29 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
 .b-res-body.open{display:block}
 .batch-summary{display:flex;gap:16px;padding:12px 16px;background:linear-gradient(135deg,#f5f3ff,#eff6ff);border-radius:10px;margin-bottom:12px;flex-wrap:wrap;border:1px solid #e9d5ff}
 .bsum-item{display:flex;align-items:center;gap:6px;font-size:.9rem;font-weight:700}
+/* ── No-API-Key Guide ─────────── */
+.nokey-guide{display:none;margin-top:16px;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px dashed #f59e0b;border-radius:13px;padding:18px 20px;animation:nkFadeIn .35s ease}
+.nokey-guide.show{display:block}
+@keyframes nkFadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.nokey-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.nokey-header-icon{font-size:2rem;line-height:1;flex-shrink:0;margin-top:-2px}
+.nokey-steps{display:flex;flex-direction:column;gap:10px}
+.nokey-step{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:11px;padding:13px 15px;border-left:4px solid #f59e0b;box-shadow:0 1px 5px rgba(0,0,0,.07);transition:border-color .35s,background .35s}
+.nokey-step.nk-done{border-left-color:var(--success)!important;background:#f0fdf4}
+.nokey-step-num{width:26px;height:26px;border-radius:50%;background:#f59e0b;color:#fff;font-size:.8rem;font-weight:900;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:background .35s;box-shadow:0 2px 6px rgba(245,158,11,.35)}
+.nokey-step.nk-done .nokey-step-num{background:var(--success);box-shadow:0 2px 6px rgba(16,185,129,.35)}
+.nokey-step-body{flex:1}
+.nokey-step-body strong{display:block;font-size:.93rem;margin-bottom:3px;color:var(--text)}
+.nokey-step-body p{font-size:.8rem;color:var(--text-light);margin-bottom:8px;line-height:1.55}
+.nokey-step-body kbd{display:inline-block;padding:1px 6px;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;font-size:.74rem;font-family:monospace;color:var(--text)}
+.nokey-paste{width:100%;min-height:90px;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:.83rem;font-family:inherit;resize:vertical;transition:border-color .2s;margin-top:2px;color:var(--text)}
+.nokey-paste:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,138,122,.12)}
+.nokey-footer{margin-top:13px;padding:10px 14px;background:rgba(255,255,255,.65);border-radius:9px;font-size:.8rem;color:#92400e;line-height:1.5}
 /* ── B: Print Styles ──────────── */
 @media print{
   .font-size-ctrl,#pwaInstallBanner,.header-chips,footer,details,
   .card-step1,.card-step2,#lastReviewBar,.mode-toggle,.batch-panel,.loading,
-  #pdfLengthWarning,.btn-group{display:none!important}
+  #pdfLengthWarning,.btn-group,.nokey-guide,#noKeyHint{display:none!important}
   body{background:#fff!important}
   header{background:#fff!important;color:#000!important;padding:10pt 0!important;
     text-align:left!important;border-bottom:2pt solid #1a8a7a;overflow:visible!important}
@@ -464,10 +482,60 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
   <!-- Step 3: Execute -->
   <div class="card card-step3">
     <div class="card-title"><span class="step">3</span>執行審查</div>
-    <div class="btn-group">
+    <div class="btn-group" style="flex-wrap:wrap;gap:8px;align-items:center">
       <button class="btn btn-primary" id="btnReview" onclick="executeReview()" disabled>送出 AI 審查</button>
       <button class="btn btn-secondary" id="btnCopy" onclick="copyPrompt()" disabled>複製提示詞</button>
+      <span id="noKeyHint" style="display:none;align-items:center;gap:6px;padding:7px 14px;background:#1f2937;color:#fff;border-radius:9px;font-size:.8rem;font-weight:700;cursor:pointer;line-height:1.4" onclick="noKeyScrollGuide()" title="點擊查看免 API 金鑰使用方式">🔑 請先設定 API 金鑰</span>
     </div>
+
+    <!-- ── 免 API 金鑰三步驟引導 ── -->
+    <div class="nokey-guide" id="noKeyGuide">
+      <div class="nokey-header">
+        <span class="nokey-header-icon">🚀</span>
+        <div>
+          <strong style="font-size:1rem;color:#92400e;display:block;margin-bottom:3px">免 API 金鑰，也能進行 AI 審查！</strong>
+          <span style="font-size:.82rem;color:#78350f;line-height:1.5">只需 3 步驟，將提示詞貼到 Google Gemini 即可取得審查結果，完全免費</span>
+        </div>
+      </div>
+      <div class="nokey-steps">
+        <!-- Step 1 -->
+        <div class="nokey-step" id="nkStep1">
+          <span class="nokey-step-num">1</span>
+          <div class="nokey-step-body">
+            <strong>複製審查提示詞</strong>
+            <p>按下按鈕，完整提示詞（含課程計畫內容）自動複製到剪貼簿</p>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-sm" id="nkCopyBtn" style="background:#f59e0b;color:#fff;font-weight:700;border:none;padding:8px 16px" onclick="noKeyCopyPrompt()">📋 一鍵複製提示詞</button>
+              <span id="nkCopied" style="display:none;color:var(--success);font-weight:700;font-size:.83rem">✅ 已複製！</span>
+            </div>
+          </div>
+        </div>
+        <!-- Step 2 -->
+        <div class="nokey-step" id="nkStep2">
+          <span class="nokey-step-num">2</span>
+          <div class="nokey-step-body">
+            <strong>前往 Google Gemini 貼上並送出</strong>
+            <p>在 Gemini 對話框中按 <kbd>Ctrl+V</kbd>（Mac：<kbd>⌘V</kbd>）貼上，再按送出，等待 AI 回覆完成</p>
+            <button class="btn btn-sm" id="nkGeminiBtn" style="background:#4285f4;color:#fff;font-weight:700;border:none;padding:8px 16px" onclick="noKeyOpenGemini()">🌐 開啟 Google Gemini ↗</button>
+          </div>
+        </div>
+        <!-- Step 3 -->
+        <div class="nokey-step" id="nkStep3">
+          <span class="nokey-step-num">3</span>
+          <div class="nokey-step-body">
+            <strong>將 Gemini 的回覆貼回這裡</strong>
+            <p>複製 Gemini 的完整回覆，貼入下方文字框，按「套用結果」即可在工具內顯示、列印與下載報告</p>
+            <textarea class="nokey-paste" id="nkPasteArea" placeholder="將 Gemini 的完整回覆貼到這裡...&#10;&#10;（支援 Markdown 格式，貼上後會自動美化顯示）"></textarea>
+            <button class="btn btn-sm" style="background:var(--success);color:#fff;font-weight:700;border:none;padding:8px 16px;margin-top:8px" onclick="noKeyApplyResult()">✅ 套用結果並顯示</button>
+          </div>
+        </div>
+      </div>
+      <div class="nokey-footer">
+        💡 <strong>想要全自動審查，不用手動貼上？</strong>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" onclick="event.preventDefault();document.getElementById('settingsPanel').open=true;document.getElementById('settingsPanel').scrollIntoView({behavior:'smooth'})" style="color:var(--primary);font-weight:700;text-decoration:underline">免費申請 Gemini API 金鑰</a>，設定完成後即可一鍵自動審查
+      </div>
+    </div>
+
     <div class="loading" id="loading">
       <div class="spinner"></div>
       <div style="margin-top:10px;color:var(--text-light)">AI 審查中，請稍候（約需 30-60 秒）...</div>
@@ -495,7 +563,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v1.8</div>
+      <div class="footer-ver">v1.9</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -1013,6 +1081,9 @@ const MODELS={
     showLastReview();
     loadFontSize();   // E: font size
     buildBatchPanel(); // H: batch review
+    // Real-time API key detection: update guide as user types key
+    const keyEl=document.getElementById('apiKey');
+    if(keyEl)keyEl.addEventListener('input',updateButtons);
   }
 })();
 
@@ -1168,6 +1239,7 @@ function saveSettings(){
   localStorage.setItem('tyc_apikey',document.getElementById('apiKey').value);
   localStorage.setItem('tyc_model',document.getElementById('apiModel').value);
   showToast('設定已儲存');
+  updateButtons(); // Refresh guide visibility after key is saved
 }
 
 async function testApiKey(){
@@ -1438,8 +1510,36 @@ function resetFile(){
 // ===== Buttons State =====
 function updateButtons(){
   const ready=extractedText.length>0&&selectedItem!==null;
-  document.getElementById('btnReview').disabled=!ready;
+  // Check API key (DOM input takes priority over localStorage)
+  const inputKey=(document.getElementById('apiKey')||{}).value||'';
+  const savedKey=localStorage.getItem('tyc_apikey')||'';
+  const hasKey=(inputKey||savedKey).trim().length>0;
+
+  document.getElementById('btnReview').disabled=!ready||!hasKey;
   document.getElementById('btnCopy').disabled=!ready;
+
+  // Show/hide no-key badge & guide
+  const hint=document.getElementById('noKeyHint');
+  const guide=document.getElementById('noKeyGuide');
+  const showGuide=ready&&!hasKey;
+  if(hint)hint.style.display=showGuide?'inline-flex':'none';
+  if(guide){
+    const wasHidden=!guide.classList.contains('show');
+    guide.classList.toggle('show',showGuide);
+    // Auto-scroll guide into view the first time it appears
+    if(showGuide&&wasHidden){
+      setTimeout(()=>guide.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+    }
+    // Reset steps when guide hides (user set API key)
+    if(!showGuide){
+      document.getElementById('nkStep1').classList.remove('nk-done');
+      document.getElementById('nkStep2').classList.remove('nk-done');
+      document.getElementById('nkStep3').classList.remove('nk-done');
+      document.getElementById('nkCopied').style.display='none';
+      document.getElementById('nkPasteArea').value='';
+    }
+  }
+
   if(typeof updateBatchStartBtn==='function')updateBatchStartBtn();
 }
 
@@ -1574,6 +1674,63 @@ function setFontSize(s){
   if(btn)btn.classList.add('fs-active');
 }
 function loadFontSize(){setFontSize(localStorage.getItem('tyc_fontsize')||'md');}
+
+// ===== No-API-Key Guide Functions =====
+function noKeyScrollGuide(){
+  const guide=document.getElementById('noKeyGuide');
+  if(guide){guide.classList.add('show');guide.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+
+function noKeyCopyPrompt(){
+  const prompt=assemblePrompt();
+  if(!prompt){showToast('請先上傳 PDF 並選擇審查項次');return;}
+  const full=prompt.system+'\n\n'+prompt.user;
+  const markDone=()=>{
+    document.getElementById('nkStep1').classList.add('nk-done');
+    const copied=document.getElementById('nkCopied');
+    copied.style.display='inline-flex';
+    // Auto-highlight step 2
+    setTimeout(()=>{
+      document.getElementById('nkStep2').style.borderLeftColor='var(--primary)';
+      document.getElementById('nkGeminiBtn').focus();
+    },400);
+    showToast('✅ 提示詞已複製！請前往 Gemini 貼上');
+  };
+  navigator.clipboard.writeText(full).then(markDone).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=full;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    try{document.execCommand('copy');}catch(e){}
+    document.body.removeChild(ta);markDone();
+  });
+}
+
+function noKeyOpenGemini(){
+  // If not yet copied, copy first then open
+  const isCopied=document.getElementById('nkStep1').classList.contains('nk-done');
+  if(!isCopied){
+    noKeyCopyPrompt();
+    setTimeout(()=>{
+      window.open('https://gemini.google.com','_blank');
+      document.getElementById('nkStep2').classList.add('nk-done');
+    },650);
+  }else{
+    window.open('https://gemini.google.com','_blank');
+    document.getElementById('nkStep2').classList.add('nk-done');
+  }
+}
+
+function noKeyApplyResult(){
+  const text=(document.getElementById('nkPasteArea').value||'').trim();
+  if(!text){showToast('請先將 Gemini 的回覆貼入文字框');document.getElementById('nkPasteArea').focus();return;}
+  document.getElementById('nkStep3').classList.add('nk-done');
+  // Display in the result area (same pipeline as API result)
+  showResult(text);
+  // Scroll to result
+  setTimeout(()=>{
+    document.getElementById('resultContent').scrollIntoView({behavior:'smooth',block:'start'});
+  },200);
+  showToast('✅ 結果已套用！可列印、複製或下載報告');
+}
 
 // ===== F: Copy Plain Text =====
 function copyPlainText(){
