@@ -253,6 +253,23 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
 .b-res-body.open{display:block}
 .batch-summary{display:flex;gap:16px;padding:12px 16px;background:linear-gradient(135deg,#f5f3ff,#eff6ff);border-radius:10px;margin-bottom:12px;flex-wrap:wrap;border:1px solid #e9d5ff}
 .bsum-item{display:flex;align-items:center;gap:6px;font-size:.9rem;font-weight:700}
+/* ── G: Batch Filter Tabs ──────── */
+.batch-filter-tabs{display:flex;gap:6px;margin:10px 0 8px;flex-wrap:wrap}
+.b-ftab{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;color:var(--text-light);line-height:1.4}
+.b-ftab:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.b-ftab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.b-ftab.ft-pass.active{background:var(--success);border-color:var(--success)}
+.b-ftab.ft-fail.active{background:var(--danger);border-color:var(--danger)}
+.b-ftab.ft-err.active{background:var(--warn);border-color:var(--warn)}
+/* ── H: Collapsible No-Key Guide ─ */
+.nokey-body{transition:none}
+.nokey-guide.nk-collapsed .nokey-body{display:none}
+.nokey-guide.nk-collapsed{padding:12px 20px}
+.nokey-guide.nk-collapsed .nokey-header{margin-bottom:0}
+.nokey-quick-bar{display:none;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid rgba(245,158,11,.25)}
+.nokey-guide.nk-collapsed .nokey-quick-bar{display:flex}
+.nokey-collapse-btn{margin-left:auto;flex-shrink:0;background:none;border:1px solid rgba(146,64,14,.25);color:#92400e;font-size:.78rem;font-weight:700;cursor:pointer;padding:3px 10px;border-radius:6px;white-space:nowrap;transition:all .15s}
+.nokey-collapse-btn:hover{background:rgba(146,64,14,.08)}
 /* ── No-API-Key Guide ─────────── */
 .nokey-guide{display:none;margin-top:16px;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px dashed #f59e0b;border-radius:13px;padding:18px 20px;animation:nkFadeIn .35s ease}
 .nokey-guide.show{display:block}
@@ -492,47 +509,59 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
     <div class="nokey-guide" id="noKeyGuide">
       <div class="nokey-header">
         <span class="nokey-header-icon">🚀</span>
-        <div>
+        <div style="flex:1">
           <strong style="font-size:1rem;color:#92400e;display:block;margin-bottom:3px">免 API 金鑰，也能進行 AI 審查！</strong>
           <span style="font-size:.82rem;color:#78350f;line-height:1.5">只需 3 步驟，將提示詞貼到 Google Gemini 即可取得審查結果，完全免費</span>
         </div>
+        <button class="nokey-collapse-btn" id="nkCollapseBtn" onclick="toggleNoKeyGuide()" title="收起引導面板">▾ 收起</button>
       </div>
-      <div class="nokey-steps">
-        <!-- Step 1 -->
-        <div class="nokey-step" id="nkStep1">
-          <span class="nokey-step-num">1</span>
-          <div class="nokey-step-body">
-            <strong>複製審查提示詞</strong>
-            <p>按下按鈕，完整提示詞（含課程計畫內容）自動複製到剪貼簿</p>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-              <button class="btn btn-sm" id="nkCopyBtn" style="background:#f59e0b;color:#fff;font-weight:700;border:none;padding:8px 16px" onclick="noKeyCopyPrompt()">📋 一鍵複製提示詞</button>
-              <span id="nkCopied" style="display:none;color:var(--success);font-weight:700;font-size:.83rem">✅ 已複製！</span>
+      <!-- 收合後顯示的快速操作列（H: collapsible） -->
+      <div class="nokey-quick-bar">
+        <span style="font-size:.8rem;color:#78350f;font-weight:600">快速操作：</span>
+        <button class="btn btn-sm" style="background:#f59e0b;color:#fff;font-weight:700;border:none;font-size:.78rem;padding:5px 12px" onclick="noKeyCopyPrompt()">📋 複製提示詞</button>
+        <button class="btn btn-sm" style="background:#4285f4;color:#fff;font-weight:700;border:none;font-size:.78rem;padding:5px 12px" onclick="noKeyOpenGemini()">🌐 開啟 Gemini</button>
+        <button class="btn btn-sm" style="background:var(--success);color:#fff;font-weight:700;border:none;font-size:.78rem;padding:5px 12px" onclick="expandNoKeyForPaste()">✅ 貼回結果</button>
+        <span id="nkQuickCopied" style="display:none;color:var(--success);font-size:.78rem;font-weight:700">✅ 已複製！</span>
+      </div>
+      <!-- 可收合的主體（H） -->
+      <div class="nokey-body" id="noKeyBody">
+        <div class="nokey-steps">
+          <!-- Step 1 -->
+          <div class="nokey-step" id="nkStep1">
+            <span class="nokey-step-num">1</span>
+            <div class="nokey-step-body">
+              <strong>複製審查提示詞</strong>
+              <p>按下按鈕，完整提示詞（含課程計畫內容）自動複製到剪貼簿</p>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <button class="btn btn-sm" id="nkCopyBtn" style="background:#f59e0b;color:#fff;font-weight:700;border:none;padding:8px 16px" onclick="noKeyCopyPrompt()">📋 一鍵複製提示詞</button>
+                <span id="nkCopied" style="display:none;color:var(--success);font-weight:700;font-size:.83rem">✅ 已複製！</span>
+              </div>
+            </div>
+          </div>
+          <!-- Step 2 -->
+          <div class="nokey-step" id="nkStep2">
+            <span class="nokey-step-num">2</span>
+            <div class="nokey-step-body">
+              <strong>前往 Google Gemini 貼上並送出</strong>
+              <p>在 Gemini 對話框中按 <kbd>Ctrl+V</kbd>（Mac：<kbd>⌘V</kbd>）貼上，再按送出，等待 AI 回覆完成</p>
+              <button class="btn btn-sm" id="nkGeminiBtn" style="background:#4285f4;color:#fff;font-weight:700;border:none;padding:8px 16px" onclick="noKeyOpenGemini()">🌐 開啟 Google Gemini ↗</button>
+            </div>
+          </div>
+          <!-- Step 3 -->
+          <div class="nokey-step" id="nkStep3">
+            <span class="nokey-step-num">3</span>
+            <div class="nokey-step-body">
+              <strong>將 Gemini 的回覆貼回這裡</strong>
+              <p>複製 Gemini 的完整回覆，貼入下方文字框，按「套用結果」即可在工具內顯示、列印與下載報告</p>
+              <textarea class="nokey-paste" id="nkPasteArea" placeholder="將 Gemini 的完整回覆貼到這裡...&#10;&#10;（支援 Markdown 格式，貼上後會自動美化顯示）"></textarea>
+              <button class="btn btn-sm" style="background:var(--success);color:#fff;font-weight:700;border:none;padding:8px 16px;margin-top:8px" onclick="noKeyApplyResult()">✅ 套用結果並顯示</button>
             </div>
           </div>
         </div>
-        <!-- Step 2 -->
-        <div class="nokey-step" id="nkStep2">
-          <span class="nokey-step-num">2</span>
-          <div class="nokey-step-body">
-            <strong>前往 Google Gemini 貼上並送出</strong>
-            <p>在 Gemini 對話框中按 <kbd>Ctrl+V</kbd>（Mac：<kbd>⌘V</kbd>）貼上，再按送出，等待 AI 回覆完成</p>
-            <button class="btn btn-sm" id="nkGeminiBtn" style="background:#4285f4;color:#fff;font-weight:700;border:none;padding:8px 16px" onclick="noKeyOpenGemini()">🌐 開啟 Google Gemini ↗</button>
-          </div>
+        <div class="nokey-footer">
+          💡 <strong>想要全自動審查，不用手動貼上？</strong>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" onclick="event.preventDefault();document.getElementById('settingsPanel').open=true;document.getElementById('settingsPanel').scrollIntoView({behavior:'smooth'})" style="color:var(--primary);font-weight:700;text-decoration:underline">免費申請 Gemini API 金鑰</a>，設定完成後即可一鍵自動審查
         </div>
-        <!-- Step 3 -->
-        <div class="nokey-step" id="nkStep3">
-          <span class="nokey-step-num">3</span>
-          <div class="nokey-step-body">
-            <strong>將 Gemini 的回覆貼回這裡</strong>
-            <p>複製 Gemini 的完整回覆，貼入下方文字框，按「套用結果」即可在工具內顯示、列印與下載報告</p>
-            <textarea class="nokey-paste" id="nkPasteArea" placeholder="將 Gemini 的完整回覆貼到這裡...&#10;&#10;（支援 Markdown 格式，貼上後會自動美化顯示）"></textarea>
-            <button class="btn btn-sm" style="background:var(--success);color:#fff;font-weight:700;border:none;padding:8px 16px;margin-top:8px" onclick="noKeyApplyResult()">✅ 套用結果並顯示</button>
-          </div>
-        </div>
-      </div>
-      <div class="nokey-footer">
-        💡 <strong>想要全自動審查，不用手動貼上？</strong>
-        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" onclick="event.preventDefault();document.getElementById('settingsPanel').open=true;document.getElementById('settingsPanel').scrollIntoView({behavior:'smooth'})" style="color:var(--primary);font-weight:700;text-decoration:underline">免費申請 Gemini API 金鑰</a>，設定完成後即可一鍵自動審查
       </div>
     </div>
 
@@ -563,7 +592,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v1.9</div>
+      <div class="footer-ver">v2.0</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -1526,17 +1555,19 @@ function updateButtons(){
   if(guide){
     const wasHidden=!guide.classList.contains('show');
     guide.classList.toggle('show',showGuide);
-    // Auto-scroll guide into view the first time it appears
     if(showGuide&&wasHidden){
+      // H: Apply saved collapse state when guide first appears
+      const collapsed=localStorage.getItem('tyc_nokey_collapsed')==='1';
+      const btn=document.getElementById('nkCollapseBtn');
+      if(collapsed){guide.classList.add('nk-collapsed');if(btn)btn.textContent='▸ 展開';}
+      else{guide.classList.remove('nk-collapsed');if(btn)btn.textContent='▾ 收起';}
       setTimeout(()=>guide.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
     }
     // Reset steps when guide hides (user set API key)
     if(!showGuide){
-      document.getElementById('nkStep1').classList.remove('nk-done');
-      document.getElementById('nkStep2').classList.remove('nk-done');
-      document.getElementById('nkStep3').classList.remove('nk-done');
-      document.getElementById('nkCopied').style.display='none';
-      document.getElementById('nkPasteArea').value='';
+      ['nkStep1','nkStep2','nkStep3'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('nk-done');});
+      const copied=document.getElementById('nkCopied');if(copied)copied.style.display='none';
+      const area=document.getElementById('nkPasteArea');if(area)area.value='';
     }
   }
 
@@ -1675,6 +1706,87 @@ function setFontSize(s){
 }
 function loadFontSize(){setFontSize(localStorage.getItem('tyc_fontsize')||'md');}
 
+// ===== F: Completion Sound + Desktop Notification =====
+function playCompletionSound(){
+  if(localStorage.getItem('tyc_notify')==='0')return;
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const note=(freq,start,dur,vol=0.32)=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.type='sine';osc.frequency.value=freq;
+      gain.gain.setValueAtTime(0,ctx.currentTime+start);
+      gain.gain.linearRampToValueAtTime(vol,ctx.currentTime+start+0.025);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+start+dur);
+      osc.start(ctx.currentTime+start);
+      osc.stop(ctx.currentTime+start+dur+0.05);
+    };
+    // 三音上行音階：C5 → E5 → G5（大三和弦，令人愉快）
+    note(523.25, 0,   0.40);  // C5
+    note(659.25, 0.15,0.50);  // E5
+    note(783.99, 0.30,0.70);  // G5
+    setTimeout(()=>ctx.close(),1800);
+  }catch(e){}
+}
+
+async function sendBatchNotification(pass,fail,err,total){
+  if(localStorage.getItem('tyc_notify')==='0')return;
+  if(!('Notification' in window))return;
+  if(Notification.permission==='default'){
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted')return;
+  }
+  if(Notification.permission!=='granted')return;
+  try{
+    new Notification('課程計畫審查完成 ✅',{
+      body:`共 ${total} 項　✅ 通過 ${pass}　❌ 待修正 ${fail}${err?`　⚠️ 錯誤 ${err}`:''}`,
+      icon:(location.pathname.includes('curriculum')?'/curriculum/':'')+'favicon.png',
+      tag:'curriculum-batch-done',
+      requireInteraction:false
+    });
+  }catch(e){}
+}
+
+// ===== G: Batch Result Filter =====
+function filterBatchResults(status){
+  // Update tab active styles
+  document.querySelectorAll('.b-ftab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.filter===status);
+  });
+  // Show / hide result cards
+  document.querySelectorAll('#batchResultsWrap .b-res-item').forEach(card=>{
+    const s=card.dataset.bstatus||'pending';
+    card.style.display=(status==='all'||s===status)?'':'none';
+  });
+}
+
+// ===== H: Collapsible No-Key Guide =====
+function toggleNoKeyGuide(){
+  const guide=document.getElementById('noKeyGuide');
+  const btn=document.getElementById('nkCollapseBtn');
+  if(!guide)return;
+  const isCollapsed=guide.classList.toggle('nk-collapsed');
+  if(btn)btn.textContent=isCollapsed?'▸ 展開':'▾ 收起';
+  localStorage.setItem('tyc_nokey_collapsed',isCollapsed?'1':'0');
+}
+
+function expandNoKeyForPaste(){
+  // Expand guide then scroll to step 3 paste area
+  const guide=document.getElementById('noKeyGuide');
+  const btn=document.getElementById('nkCollapseBtn');
+  if(!guide)return;
+  guide.classList.remove('nk-collapsed');
+  if(btn)btn.textContent='▾ 收起';
+  localStorage.setItem('tyc_nokey_collapsed','0');
+  setTimeout(()=>{
+    const s3=document.getElementById('nkStep3');
+    if(s3)s3.scrollIntoView({behavior:'smooth',block:'nearest'});
+    const area=document.getElementById('nkPasteArea');
+    if(area)area.focus();
+  },150);
+}
+
 // ===== No-API-Key Guide Functions =====
 function noKeyScrollGuide(){
   const guide=document.getElementById('noKeyGuide');
@@ -1688,11 +1800,14 @@ function noKeyCopyPrompt(){
   const markDone=()=>{
     document.getElementById('nkStep1').classList.add('nk-done');
     const copied=document.getElementById('nkCopied');
-    copied.style.display='inline-flex';
+    if(copied)copied.style.display='inline-flex';
+    // H: Also show in collapsed quick bar
+    const qc=document.getElementById('nkQuickCopied');
+    if(qc){qc.style.display='inline-flex';setTimeout(()=>qc.style.display='none',2500);}
     // Auto-highlight step 2
     setTimeout(()=>{
-      document.getElementById('nkStep2').style.borderLeftColor='var(--primary)';
-      document.getElementById('nkGeminiBtn').focus();
+      const s2=document.getElementById('nkStep2');if(s2)s2.style.borderLeftColor='var(--primary)';
+      const gb=document.getElementById('nkGeminiBtn');if(gb)gb.focus();
     },400);
     showToast('✅ 提示詞已複製！請前往 Gemini 貼上');
   };
@@ -1723,9 +1838,14 @@ function noKeyApplyResult(){
   const text=(document.getElementById('nkPasteArea').value||'').trim();
   if(!text){showToast('請先將 Gemini 的回覆貼入文字框');document.getElementById('nkPasteArea').focus();return;}
   document.getElementById('nkStep3').classList.add('nk-done');
-  // Display in the result area (same pipeline as API result)
   showResult(text);
-  // Scroll to result
+  // H: Mark as used → auto-collapse guide next time
+  localStorage.setItem('tyc_nokey_used','1');
+  localStorage.setItem('tyc_nokey_collapsed','1');
+  // Auto-collapse the guide after applying
+  const guide=document.getElementById('noKeyGuide');
+  const btn=document.getElementById('nkCollapseBtn');
+  if(guide){guide.classList.add('nk-collapsed');if(btn)btn.textContent='▸ 展開';}
   setTimeout(()=>{
     document.getElementById('resultContent').scrollIntoView({behavior:'smooth',block:'start'});
   },200);
@@ -1796,12 +1916,21 @@ function buildBatchPanel(){
     <button class="btn btn-secondary hidden" id="btnPauseBatch" onclick="togglePauseBatch()">&#9208;&#65039; 暫停</button>
     <button class="btn btn-sm hidden" style="background:linear-gradient(135deg,#d1fae5,#ecfdf5);color:#065f46;border:1px solid #6ee7b7;font-weight:700" id="btnDownloadRpt" onclick="downloadReport()">&#128229; 下載審查報告</button>
   </div>
+  <div style="margin-top:8px;display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-light)">
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none" title="批次審查完成時播放提示音並發送桌面通知">
+      <input type="checkbox" id="notifyToggle" style="width:15px;height:15px;accent-color:var(--primary);cursor:pointer" onchange="localStorage.setItem('tyc_notify',this.checked?'1':'0')">
+      <span>&#128276; 完成時聲音提示 + 桌面通知</span>
+    </label>
+  </div>
   <div class="batch-progress-wrap" id="batchProgressWrap">
     <div class="batch-prog-track"><div class="batch-prog-fill" id="batchProgFill" style="width:0%"></div></div>
     <div class="batch-prog-label"><span id="batchProgText">準備中...</span><span id="batchProgCount">0 / 0</span></div>
   </div>
   <div class="batch-results-wrap" id="batchResultsWrap"></div>`;
   panel.innerHTML=h;
+  // F: Set notification toggle initial state from localStorage
+  const notifyEl=document.getElementById('notifyToggle');
+  if(notifyEl)notifyEl.checked=localStorage.getItem('tyc_notify')!=='0';
 }
 
 function toggleBChip(id){
@@ -1872,6 +2001,7 @@ async function startBatchReview(){
     const idS=item.id.replace(/\./g,'-');
     const div=document.createElement('div');
     div.className='b-res-item';div.id='bri-'+idS;
+    div.dataset.bstatus='pending'; // G: for filter tabs
     div.innerHTML=`<button class="b-res-hdr" onclick="toggleBRes('${idS}')">
       <span class="b-res-status" id="bst-${idS}">&#9203;</span>
       <span class="b-res-title">${item.id} ${item.name}</span>
@@ -1908,6 +2038,9 @@ async function runBatchQueue(apiKey){
       if(chip){chip.classList.remove('sel','special-chip');chip.classList.add(isPass?'st-pass':'st-fail');}
       const body=document.getElementById('brb-'+idS);
       if(body)body.innerHTML=`<div class="result-content">${renderMarkdown(result)}</div>`;
+      // G: update card status for filter
+      const card=document.getElementById('bri-'+idS);
+      if(card)card.dataset.bstatus=isPass?'pass':'fail';
     }catch(err){
       batchResults[item.id]={status:'error',text:err.message};
       if(stEl)stEl.textContent='⚠️';
@@ -1915,6 +2048,9 @@ async function runBatchQueue(apiKey){
       if(chip){chip.classList.remove('sel');chip.classList.add('st-err');}
       const body=document.getElementById('brb-'+idS);
       if(body)body.innerHTML=`<div style="color:var(--danger);font-size:.88rem">&#10060; 審查失敗：${err.message}</div>`;
+      // G: update card status for filter
+      const card=document.getElementById('bri-'+idS);
+      if(card)card.dataset.bstatus='error';
     }
     batchCurrentIdx++;
     if(batchCurrentIdx<total&&batchRunning&&!batchPaused)await new Promise(r=>setTimeout(r,2000));
@@ -1927,7 +2063,13 @@ async function runBatchQueue(apiKey){
   document.getElementById('btnPauseBatch').classList.add('hidden');
   document.getElementById('btnStartBatch').disabled=false;
   document.getElementById('btnStartBatch').innerHTML=done?'&#9654; 重新開始批次審查':'&#9654; 繼續批次審查';
-  if(done){document.getElementById('btnDownloadRpt').classList.remove('hidden');showBatchSummary();showToast('🎉 批次審查完成！共 '+total+' 項');}
+  if(done){
+    document.getElementById('btnDownloadRpt').classList.remove('hidden');
+    const counts=showBatchSummary(); // G: returns {pass,fail,err,total}
+    showToast('🎉 批次審查完成！共 '+total+' 項');
+    playCompletionSound();                                        // F
+    sendBatchNotification(counts.pass,counts.fail,counts.err,total); // F
+  }
 }
 
 function togglePauseBatch(){
@@ -1941,13 +2083,26 @@ function showBatchSummary(){
   const pass=vals.filter(v=>v.status==='pass').length;
   const fail=vals.filter(v=>v.status==='fail').length;
   const err=vals.filter(v=>v.status==='error').length;
-  const html=`<div class="batch-summary">
+  const total=vals.length;
+  // Summary bar
+  const summaryHtml=`<div class="batch-summary">
     <div class="bsum-item"><span>✅</span>通過：<span style="color:var(--success)">${pass} 項</span></div>
     <div class="bsum-item"><span>❌</span>待修正：<span style="color:var(--danger)">${fail} 項</span></div>
     ${err?`<div class="bsum-item"><span>⚠️</span>錯誤：<span style="color:var(--warn)">${err} 項</span></div>`:''}
-    <div class="bsum-item" style="margin-left:auto;font-size:.8rem;color:var(--text-light)">共 ${vals.length} 項</div>
+    <div class="bsum-item" style="margin-left:auto;font-size:.8rem;color:var(--text-light)">共 ${total} 項</div>
   </div>`;
-  document.getElementById('batchResultsWrap').insertAdjacentHTML('afterbegin',html);
+  // G: Filter tabs (all tabs, hide zero-count ones)
+  const tabs=[
+    {f:'all',  label:`全部（${total}）`,cls:''},
+    {f:'pass', label:`✅ 通過（${pass}）`, cls:'ft-pass'},
+    {f:'fail', label:`❌ 待修正（${fail}）`,cls:'ft-fail'},
+    ...(err?[{f:'error',label:`⚠️ 錯誤（${err}）`,cls:'ft-err'}]:[])
+  ];
+  const filterHtml=`<div class="batch-filter-tabs" id="batchFilterTabs">
+    ${tabs.map((t,i)=>`<button class="b-ftab ${t.cls}${i===0?' active':''}" data-filter="${t.f}" onclick="filterBatchResults('${t.f}')">${t.label}</button>`).join('')}
+  </div>`;
+  document.getElementById('batchResultsWrap').insertAdjacentHTML('afterbegin',summaryHtml+filterHtml);
+  return {pass,fail,err,total};
 }
 
 function toggleBRes(idS){
