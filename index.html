@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>桃園市115學年度國民小學課程計畫AI審查工具</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#2e7d6f;--primary-light:#e0f2ef;--primary-dark:#1b5e50;
+  --accent:#3498db;--bg:#f5f7fa;--card:#fff;--text:#333;--text-light:#666;
+  --border:#dde1e6;--danger:#e74c3c;--success:#27ae60;--warn:#f39c12;
+  --radius:10px;--shadow:0 2px 8px rgba(0,0,0,.08);
+}
+body{font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:16px}
+.container{max-width:920px;margin:0 auto}
+header{text-align:center;padding:24px 0 16px;border-bottom:3px solid var(--primary)}
+header h1{font-size:1.5rem;color:var(--primary-dark);margin-bottom:4px}
+header p{color:var(--text-light);font-size:.9rem}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-top:16px}
+.card-title{font-size:1.1rem;font-weight:700;color:var(--primary-dark);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-title .step{background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+details{border:1px solid var(--border);border-radius:var(--radius);margin-top:16px;background:var(--card)}
+details>summary{padding:14px 20px;cursor:pointer;font-weight:600;color:var(--primary-dark);list-style:none;display:flex;align-items:center;gap:8px;user-select:none}
+details>summary::before{content:"";display:inline-block;width:0;height:0;border:5px solid transparent;border-left:7px solid var(--primary);transition:transform .2s}
+details[open]>summary::before{transform:rotate(90deg)}
+details>.details-body{padding:0 20px 16px}
+label{display:block;font-weight:600;margin-bottom:4px;font-size:.9rem;color:var(--text)}
+select,input[type=text],input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:.95rem;font-family:inherit;background:#fff}
+select:focus,input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,125,111,.15)}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>*{flex:1;min-width:200px}
+.drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-light);position:relative}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark)}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop-zone .icon{font-size:2.5rem;margin-bottom:8px;display:block}
+.file-info{margin-top:12px;padding:12px;background:var(--primary-light);border-radius:6px;font-size:.9rem;color:var(--primary-dark);display:none}
+.file-info.show{display:block}
+.preview-box{margin-top:8px;max-height:150px;overflow-y:auto;background:#f8f9fa;border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.82rem;white-space:pre-wrap;word-break:break-all;color:var(--text-light)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;border:none;border-radius:6px;font-size:.95rem;font-family:inherit;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-primary:disabled{background:#aaa;cursor:not-allowed}
+.btn-secondary{background:#fff;color:var(--primary);border:1.5px solid var(--primary)}
+.btn-secondary:hover{background:var(--primary-light)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:7px 14px;font-size:.85rem}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.criteria-preview{margin-top:0;background:#f8f9fa;border:1px solid var(--border);border-radius:6px;padding:12px;font-size:.85rem;white-space:pre-wrap;line-height:1.6;color:var(--text)}
+textarea.criteria-preview{outline:none;transition:border-color .2s}
+textarea.criteria-preview:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,125,111,.15)}
+.result-area{margin-top:16px;min-height:80px}
+.result-content{background:#f8f9fa;border:1px solid var(--border);border-radius:var(--radius);padding:20px;font-size:.92rem;line-height:1.8}
+.result-content h1,.result-content h2,.result-content h3{color:var(--primary-dark);margin:16px 0 8px}
+.result-content h1{font-size:1.3rem}
+.result-content h2{font-size:1.15rem}
+.result-content h3{font-size:1.05rem}
+.result-content ul,.result-content ol{padding-left:24px;margin:8px 0}
+.result-content li{margin:4px 0}
+.result-content strong{color:var(--danger)}
+.result-content p{margin:6px 0}
+.result-content table{border-collapse:collapse;width:100%;margin:10px 0}
+.result-content th,.result-content td{border:1px solid var(--border);padding:8px;text-align:left;font-size:.88rem}
+.result-content th{background:var(--primary-light)}
+.loading{display:none;text-align:center;padding:30px}
+.loading.show{display:block}
+.spinner{display:inline-block;width:36px;height:36px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary-dark);color:#fff;padding:12px 24px;border-radius:8px;font-size:.9rem;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.tag-primary{background:var(--primary-light);color:var(--primary-dark)}
+.tag-warn{background:#fff3cd;color:#856404}
+footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;margin-top:24px}
+.hidden{display:none!important}
+@media(max-width:600px){
+  header h1{font-size:1.2rem}
+  .card{padding:14px}
+  .btn{padding:10px 16px;font-size:.88rem}
+  .row>*{min-width:100%}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>桃園市115學年度國民小學課程計畫 AI 審查工具</h1>
+    <p>依據教育局審查標準，上傳課程計畫 PDF 即可進行 AI 自動審查</p>
+  </header>
+
+  <!-- Settings -->
+  <details id="settingsPanel">
+    <summary>API 設定</summary>
+    <div class="details-body" style="padding-top:12px">
+      <div class="row" style="margin-bottom:10px">
+        <div>
+          <label for="apiProvider">API 供應商</label>
+          <select id="apiProvider" onchange="onProviderChange()">
+            <option value="gemini">Google Gemini</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        </div>
+        <div>
+          <label for="apiModel">模型</label>
+          <select id="apiModel"></select>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <label for="apiKey" style="margin-bottom:0">API 金鑰</label>
+          <a id="apiKeyLink" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener"
+            style="display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:var(--primary);text-decoration:none;font-weight:600;padding:3px 10px;border:1.5px solid var(--primary);border-radius:5px;transition:all .15s"
+            onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background='transparent'">
+            &#128273; 免費申請 API 金鑰
+          </a>
+        </div>
+        <input type="password" id="apiKey" placeholder="請輸入您的 API 金鑰">
+        <div id="apiKeyHint" style="margin-top:5px;font-size:.8rem;color:var(--text-light)">
+          Google Gemini 提供免費額度，適合自行使用。點擊上方按鈕前往 Google AI Studio 申請。
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary btn-sm" onclick="saveSettings()">儲存設定</button>
+        <span style="font-size:.8rem;color:var(--text-light);align-self:center">金鑰僅儲存在您的瀏覽器本機中</span>
+      </div>
+      <div id="openaiWarning" class="hidden" style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:6px;font-size:.85rem;color:#856404">
+        OpenAI API 可能因 CORS 限制無法從本地檔案直接呼叫。建議使用 Google Gemini，或使用「複製提示詞」功能。
+      </div>
+    </div>
+  </details>
+
+  <!-- Step 1: Upload PDF -->
+  <div class="card">
+    <div class="card-title"><span class="step">1</span>上傳課程計畫 PDF</div>
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".pdf" onchange="handleFile(this.files[0])">
+      <span class="icon">&#128196;</span>
+      <div>點擊選擇或拖拉 PDF 檔案至此處</div>
+      <div style="font-size:.8rem;margin-top:4px;color:#999">支援文字型 PDF，掃描圖檔可能無法正確擷取</div>
+    </div>
+    <div class="file-info" id="fileInfo">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div>
+          <strong id="fileName"></strong><br>
+          <span id="fileStats"></span>
+        </div>
+        <button class="btn btn-sm" style="background:#eee;color:var(--text)" onclick="resetFile()">&#128260; 重新上傳</button>
+      </div>
+      <div class="preview-box" id="textPreview"></div>
+    </div>
+  </div>
+
+  <!-- Step 2: Select Review Item -->
+  <div class="card">
+    <div class="card-title"><span class="step">2</span>選擇審查項次</div>
+    <div class="row" style="margin-bottom:10px">
+      <div>
+        <label for="categorySelect">審查分類</label>
+        <select id="categorySelect" onchange="onCategoryChange()">
+          <option value="">-- 請選擇分類 --</option>
+        </select>
+      </div>
+      <div>
+        <label for="itemSelect">審查項次</label>
+        <select id="itemSelect" onchange="onItemChange()">
+          <option value="">-- 請先選擇分類 --</option>
+        </select>
+      </div>
+    </div>
+    <div id="specialWarning" class="hidden" style="margin-top:10px;padding:10px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:.85rem;color:#664d03;display:flex;align-items:center;gap:8px">
+      <span style="font-size:1.1rem">&#9888;&#65039;</span>
+      <span>此項次為<strong>特殊班級</strong>（特教/藝才/體育），目前尚未有完整專屬審查 Prompt，AI 審查結果僅供初步參考，<strong>仍需搭配人工審查</strong>。</span>
+    </div>
+    <div id="criteriaSection" class="hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:.9rem;font-weight:600;color:var(--primary-dark)">審查提示詞（可直接編輯調整條件）：</div>
+        <button class="btn btn-sm" style="background:#eee;color:var(--text);padding:4px 10px;font-size:.78rem" onclick="resetPrompt()">還原預設</button>
+      </div>
+      <textarea id="criteriaPreview" class="criteria-preview" style="width:100%;min-height:160px;resize:vertical;font-family:inherit;cursor:text"></textarea>
+      <div style="margin-top:6px;font-size:.8rem;color:var(--warn);display:flex;align-items:center;gap:4px">
+        <span>&#9888;&#65039;</span> 若貴校實際狀況與預設條件不同（如課程門數合併），可直接修改上方文字再送出審查
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Notice -->
+  <div style="margin-top:16px;padding:14px 18px;background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);font-size:.88rem;color:#664d03;display:flex;align-items:flex-start;gap:10px">
+    <span style="font-size:1.3rem;flex-shrink:0">&#9888;&#65039;</span>
+    <div>
+      <strong>AI 審查僅供輔助參考</strong><br>
+      AI 偶爾會有疏漏或誤判，若您確定內容正確，可以人工判斷為主。特殊教育班、藝術才能班、體育班等特殊班級之審查 Prompt 較為基礎，仍建議搭配人工審查。修正後可重新上傳檔案再次審查，直到通過為止。
+    </div>
+  </div>
+
+  <!-- Step 3: Execute -->
+  <div class="card">
+    <div class="card-title"><span class="step">3</span>執行審查</div>
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btnReview" onclick="executeReview()" disabled>送出 AI 審查</button>
+      <button class="btn btn-secondary" id="btnCopy" onclick="copyPrompt()" disabled>複製提示詞</button>
+    </div>
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div style="margin-top:10px;color:var(--text-light)">AI 審查中，請稍候（約需 30-60 秒）...</div>
+    </div>
+    <div class="result-area" id="resultArea" class="hidden">
+      <div id="resultContent" class="result-content hidden"></div>
+      <div class="btn-group hidden" id="resultActions">
+        <button class="btn btn-secondary btn-sm" onclick="copyResult()">複製審查結果</button>
+        <button class="btn btn-sm" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="resetFile();clearResult()">&#128260; 修正後重新上傳審查</button>
+        <button class="btn btn-sm" style="background:#eee;color:var(--text)" onclick="clearResult()">清除結果</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    課程計畫 AI 審查工具 v1.2 | 審查標準依據桃園市教育局115學年度審查用語 | 阿凱老師製作<br>
+    本工具僅供參考，正式審查結果以教育局委員審定為準
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== PDF.js Lazy Load =====
+let pdfjsLoaded=false;
+function loadPdfJs(){
+  if(pdfjsLoaded)return Promise.resolve();
+  return new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';pdfjsLoaded=true;resolve()};
+    s.onerror=()=>reject(new Error('PDF.js 載入失敗，請確認網路連線'));
+    document.head.appendChild(s);
+  });
+}
+
+// ===== Review Criteria Data =====
+const SYSTEM_PROMPT=`你是一位國中小課程計畫審查專家，請詳讀12年國教總綱、領綱、課程規劃及評鑑等內容，並依據審查用語仔細審查附件內容是否合乎審查用語規準。
+請以表列方式呈現審查結果，分為「符合項目」與「待修正項目」，待修正項目請提供具體修改建議。若所有項目皆正確無誤，僅出現「表件通過」即可。`;
+
+const REVIEW_DATA=[
+{category:'0. 依據與目的',items:[
+{id:'0-1',name:'學校課程計畫依據與目的',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+0-1 學校課程計畫依據與目的審查標準
+1.須含依據與目的
+2.依據部分必加註
+(1) 107 年 9 月 6 日臺教授國字 1070106766 號函國民中學及國民小學課程計畫備查作業參考原則
+(2)十二年國民基本教育課程綱要
+(3)115 學年本市課程計畫審閱備查委員會籌備會議決議
+(4)經 年 月 日學校課程發展委員會會議決議(年月日須於 114 年 8 月 1 日至 115 年 7 月 31 日之間)`}
+]},
+{category:'1. 學校現況與背景',items:[
+{id:'1-1',name:'學校現況',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+1-1 學校現況審查標準
+1.含學校基本資料列表、全校教職員工編制數教師、特殊教育及特殊類型教育班級教師人數三大表格，需填寫完成`},
+{id:'1-2',name:'背景分析',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+1-2 背景分析審查標準
+含內部因素（學校區位與規模、學校環境設備、教師團隊、行政團隊、學生與家長等）、外部因素（時代潮流與趨勢、教育政策、外部合作與競爭關係、學校相關系統教育資源）盤點，並提出可行性策略`}
+]},
+{category:'2. 學校願景',items:[
+{id:'2-1',name:'學校願景與課程願景',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+2-1 學校願景與課程願景審查標準
+1.含學校願景、課程願景及學生圖像`}
+]},
+{category:'3. 總體課程架構',items:[
+{id:'3-1-1',name:'總體課程架構',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+3-1-1 總體課程架構審查標準
+1.含學校願景、課程願景、課程目標、學生圖像
+2.含各年級各領域/科目（部定課程）及各彈性學習課程（校訂課程）
+3. 1-6 年級課程中至少有 1 個年級課程規劃性平、安全(含交通安全)、戶外教育三項議題擇一議題融入彈性課程，並含每學年 4 節課`},
+{id:'3-1-2',name:'各年級課程名稱與節數安排',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+3-1-2 各年級各領域/科目及彈性學習課程名稱與節數安排審查標準
+1.須確認領域/科目（部定課程）總節數需符合課綱規定
+  低年級共計 20 節、中年級共計 25 節、高年級共計 26 節
+2.須確認彈性學習課程（校訂課程）總節數需符合課綱規定
+  低年級 2-4 節、中年級 3-6 節、高年級 4-7 節
+3.學習總節數為 23、29、32 節`},
+{id:'3-2',name:'法律規定教育議題實施規劃',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+3-2 法律規定教育議題實施規劃審查標準
+1.表件須為 115 學年
+2.屬法定議題，1-6 年級表件均須分開安排規劃；
+3.其中 1-2 項議題於融入領域(科目)/彈性學習課程對應表格中需安排校訂課程(不能為部定課程，非單一領域課程)；第 1 項性別平等教育議題節數需區分上下學期均須至少 6 節課；第 2 項家庭教育議題節數至少 6 節課；第 3、4 項議題節數至少 6 節課；第 5 項議題節數需區分上下學期均須至少 3 節課`},
+{id:'3-3',name:'畢業考後至畢業前課程活動規劃',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+3-3 畢業考後至畢業前課程活動之規劃安排審查標準
+1.確認時間規劃、領域、課程主題/內容說明與課程有關，能延續學生的學習發展`}
+]},
+{category:'4. 課程實施與評鑑',items:[
+{id:'4-1-1',name:'課程實施說明',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+4-1-1 課程實施說明-各年級各領域/科目及各彈性學習課程實施規劃說明審查標準
+1.確認針對各年級各領域/科目及各彈性學習課程實施設施、設備、時間及教學人力之規劃說明`},
+{id:'4-1-2',name:'課程發展相關組織',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+4-1-2 課程發展相關組織審查標準
+1.需有課程發展相關組織如課程發展委員會說明及規劃
+2.需有領域/科目教學研究會、學年會議說明及規劃
+3.需有教師專業學習社群或專案小組等之運作說明及規劃`},
+{id:'4-1-3',name:'教師專業研習及成長活動規劃',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+4-1-3 教師專業研習及成長活動之規劃審查標準
+1.規劃安排教師專業研習與成長活動，含本市 115 學年度必辦理之班級經營、數位學習、雙閱讀等專業精進研習`},
+{id:'4-2',name:'課程評鑑規畫',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+4-2 課程評鑑規畫審查標準
+1.含課程設計、實施與學習效果之評鑑規劃`}
+]},
+{category:'5. 領域/科目課程計畫',items:[
+{id:'5-1-1',name:'普通班各年級各領域/科目課程計畫',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+5-1-1 普通班各年級各領域/科目課程計畫審查標準
+1.含各年級各領域/科目
+2.含課程目標或核心素養、能力指標
+3.含教學單元/主題名稱
+4.含教學重點、教學進度
+5.含學習節數及評量方式`},
+{id:'5-1-2',name:'特殊教育班課程計畫',special:true,prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+5-1-2 特殊教育班各年級各領域/科目課程計畫審查標準
+1.特殊教育班各學習階段、各領域/科目、各班型依據適用之課程綱要規劃課程節數及教學計畫`},
+{id:'5-1-3',name:'藝術才能班課程計畫',special:true,prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+5-1-3 藝術才能班各年級各領域/科目課程計畫審查標準
+1.藝術才能班各學習階段、各領域/科目、各班型依據適用之課程綱要規劃課程節數及教學計畫`},
+{id:'5-1-4',name:'體育班課程計畫',special:true,prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+5-1-4 體育班各年級各領域/科目課程計畫審查標準
+1.體育班各學習階段、各領域/科目、各班型依據適用之課程綱要規劃課程節數及教學計畫`},
+{id:'5-2',name:'各年級領域/科目課程教學進度表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+5-2 各年級領域/科目課程教學進度表審查標準
+1.表件須為 115 學年度
+2.需區分為 1、2、3、4、5、6 年級各一份表件，不得 1 至 6 年級為同一份表件。
+3.表件需寫出部定課程名稱，低年級含國語、數學、生活、健康與體育；中高年級需含國語、數學、英語文、自然、社會、健康與體育、藝術、綜合活動
+4.週次與日期列於表件左側第一行，請確認 1、2、3、4、5 年級上下學期週次必須符合 20 週，6 年級上學期週次必須符合 20 週，下學期週次必須符合 17 或 18 週，可由計算列數總數決定週次。
+5.每週均需編寫課程內容。`},
+{id:'5-3-1',name:'各年級領域/科目選用之教科書',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+5-3-1 各年級領域/科目選用之教科書審查標準
+1. 需區分為 1、2、3、4、5、6 年級各一份表格，不得 1 至 6 年級為同一份表格。
+2. 1 年級需呈現 114 學年度、2 年級需呈現 113~114 學年度、3 年級需呈現 112~114 學年度、4 年級需呈現 111~114 學年度、5 年級需呈現 110~114 學年度、6 年級需呈現 109~114 學年度選書版本
+3. 因年級修習項目不同，無法對應項目可以◎標示`},
+{id:'5-3-2',name:'各年級領域/科目選用自編教材表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+5-3-2 各年級領域/科目選用自編教材表審查標準
+1. 自編教材依課程綱要規定，須加註學校課程發展委員會審查幾年幾月幾日通過
+2. 若無，可寫本校無，亦可算通過。`},
+{id:'5-4',name:'跨領域或跨科目協同教學課程計畫',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+5-4 跨領域或跨科目協同教學課程計畫審查標準
+1.具課程統整精神，能有效促成相關領域/科目核心素養及精熟學習重點
+2.協同教學之師資、時數規劃及實施過程具可行性、合理性
+3.若無，可寫本校無，亦可算通過。`}
+]},
+{category:'6. 彈性學習課程',items:[
+{id:'6-1',name:'各年級彈性學習課程規劃表',prompt:`請於審查後直接列出本表件不符規定，並說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-1 各年級彈性學習課程規劃表審查標準
+1.表件需含一至六年級彈性學習課程規劃
+2.一二年級學習節數須為 60 或 63 或 66、三四年級學習節數須為 80 或 84 或 88、五六年級學習節數須為 120 或 126 或 132
+3.三至六年級的主題/專題探究課程須有 1 門課程名稱加註(科技)課程，
+4.完成 3-6 年級資訊科技教育課程地圖`},
+{id:'6-2-1-1',name:'統整性探究課程（一年級）',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-2-1-1 彈性學習課程─統整性主題專題議題探究課程審查標準
+1. 共計 3 門課程請逐一審查。需於表件處寫清楚 115 學年度及一年級課程。
+2.計畫內容含以下幾部分，並請依內容審查
+(1)課程名稱:須為跨領域課程，不得僅為部定課程單一領域
+(2) 核心素養:至少選用 2 則核心素養，至少選用 2 則核心素養(●或■或 V 勾選符號)
+(3)學習內容及學習表現:
+需正確引用領綱及學習階段內容，低年級為 I，不得跨階段別(出現Ⅱ、Ⅲ、Ⅳ、Ⅴ均不符規定)
+；至少選用 2 個領域綱要的學習內容及學習表現
+；學習內容及學習表現需列出代碼及內容，不只列代碼
+(4)融入議題:
+列出引用議題代碼及內容，性別平等教育、安全教育(交通安全教育)、戶外教育三大議題至少引用一個議題
+(5)學習目標:
+需含 A(態度)、S(技能)、K(知識)三個項度
+(6)單元名稱:不得為領域單元教學之重複學習
+(7)學習進度/節數:需要進行描述
+(8)課程內容:
+課程設計應含兩個領域/議題以上指標內容，不得為同一領域下科目之間的重複學習；應重視「統整性探究」，在教學活動中呈現學生學習歷程；應避免課程內容過於零碎與拼裝
+(9)表現任務：每一單元呈現一項表現任務，表現任務應是在生活或職場(或學習)等真實情境中的產出或行為表現，能讓學生展現課程所學
+(10)評量方式`},
+{id:'6-2-1-2',name:'統整性探究課程（二年級）',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-2-1-2 彈性學習課程─統整性主題專題議題探究課程審查標準
+1.共計 3 門課程請逐一審查。需於表件處寫清楚 115 學年度及二年級課程。
+2.計畫內容含以下幾部分，並請依內容審查
+(1)課程名稱:須為跨領域課程，不得僅為部定課程單一領域
+(2) 核心素養:至少選用 2 則核心素養，至少選用 2 則核心素養(●或■或 V 勾選符號)
+(3)學習內容及學習表現:
+需正確引用領綱及學習階段內容，低年級為 I，不得跨階段別(出現Ⅱ、Ⅲ、Ⅳ、Ⅴ均不符規定)
+；至少選用 2 個領域綱要的學習內容及學習表現
+；學習內容及學習表現需列出代碼及內容，不只列代碼
+(4)融入議題:
+列出引用議題代碼及內容，性別平等教育、安全教育(交通安全教育)、戶外教育三大議題至少引用一個議題
+(5)學習目標:
+需含 A(態度)、S(技能)、K(知識)三個項度
+(6)單元名稱:不得為領域單元教學之重複學習
+(7)學習進度/節數:需要進行描述
+(8)課程內容:
+課程設計應含兩個領域/議題以上指標內容，不得為同一領域下科目之間的重複學習；應重視「統整性探究」，在教學活動中呈現學生學習歷程；應避免課程內容過於零碎與拼裝
+(9)表現任務：每一單元呈現一項表現任務，表現任務應是在生活或職場(或學習)等真實情境中的產出或行為表現，能讓學生展現課程所學
+(10)評量方式`},
+{id:'6-2-1-3',name:'統整性探究課程（三年級）',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-2-1-3 彈性學習課程─統整性主題專題議題探究課程審查標準
+1.共計 4 門課程請逐一審查。需於表件處寫清楚 115 學年度及三年級課程。
+2.計畫內容含以下幾部分，並請依內容審查
+(1)課程名稱:須為跨領域課程，不得僅為部定課程單一領域
+(2) 核心素養:至少選用 2 則核心素養，至少選用 2 則核心素養(●或■或 V 勾選符號)
+(3)學習內容及學習表現:
+需正確引用領綱及學習階段內容，中年級為Ⅱ，不得跨階段別(出現 I、Ⅲ、Ⅳ、Ⅴ均不符規定)
+；至少選用 2 個領域綱要的學習內容及學習表現
+；學習內容及學習表現需列出代碼及內容，不只列代碼
+(4)融入議題:
+列出引用議題代碼及內容，性別平等教育、安全教育(交通安全教育)、戶外教育三大議題至少引用一個議題
+(5)學習目標:
+需含 A(態度)、S(技能)、K(知識)三個項度
+(6)單元名稱:不得為領域單元教學之重複學習
+(7)學習進度/節數:需要進行描述
+(8)課程內容:
+課程設計應含兩個領域/議題以上指標內容，不得為同一領域下科目之間的重複學習；應重視「統整性探究」，在教學活動中呈現學生學習歷程；應避免課程內容過於零碎與拼裝
+(9)表現任務：每一單元呈現一項表現任務，表現任務應是在生活或職場(或學習)等真實情境中的產出或行為表現，能讓學生展現課程所學
+(10)評量方式`},
+{id:'6-2-1-4',name:'統整性探究課程（四年級）',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-2-1-4 彈性學習課程─統整性主題專題議題探究課程審查標準
+1.共計 4 門課程請逐一審查。需於表件處寫清楚 115 學年度及四年級課程。
+2.計畫內容含以下幾部分，並請依內容審查
+(1)課程名稱:須為跨領域課程，不得僅為部定課程單一領域
+(2) 核心素養:至少選用 2 則核心素養，至少選用 2 則核心素養(●或■或 V 勾選符號)
+(3)學習內容及學習表現:
+需正確引用領綱及學習階段內容，中年級為Ⅱ，不得跨階段別(出現 I、Ⅲ、Ⅳ、Ⅴ均不符規定)
+；至少選用 2 個領域綱要的學習內容及學習表現
+；學習內容及學習表現需列出代碼及內容，不只列代碼
+(4)融入議題:
+列出引用議題代碼及內容，性別平等教育、安全教育(交通安全教育)、戶外教育三大議題至少引用一個議題
+(5)學習目標:
+需含 A(態度)、S(技能)、K(知識)三個項度
+(6)單元名稱:不得為領域單元教學之重複學習
+(7)學習進度/節數:需要進行描述
+(8)課程內容:
+課程設計應含兩個領域/議題以上指標內容，不得為同一領域下科目之間的重複學習；應重視「統整性探究」，在教學活動中呈現學生學習歷程；應避免課程內容過於零碎與拼裝
+(9)表現任務：每一單元呈現一項表現任務，表現任務應是在生活或職場(或學習)等真實情境中的產出或行為表現，能讓學生展現課程所學
+(10)評量方式`},
+{id:'6-2-1-5',name:'統整性探究課程（五年級）',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-2-1-5 彈性學習課程─統整性主題專題議題探究課程審查標準
+1.共計 6 門課程請逐一審查。需於表件處寫清楚 115 學年度及五年級課程。
+2.計畫內容含以下幾部分，並請依內容審查
+(1)課程名稱:須為跨領域課程，不得僅為部定課程單一領域
+(2)核心素養:至少選用 2 則核心素養，至少選用 2 則核心素養(●或■或 V 勾選符號)
+(3)學習內容及學習表現:
+需正確引用領綱及學習階段內容，高年級為Ⅲ，不得跨階段別(出現 I、Ⅱ、Ⅳ、Ⅴ均不符規定)
+；至少選用 2 個領域綱要的學習內容及學習表現
+；學習內容及學習表現需列出代碼及內容
+(4)融入議題:
+列出引用議題代碼及內容，性別平等教育、安全教育(交通安全教育)、戶外教育三大議題至少引用一個議題
+(5)學習目標:
+需含 A(態度)、S(技能)、K(知識)三個項度
+(6)單元名稱:不得為領域單元教學之重複學習
+(7)學習進度/節數:需要進行描述
+(8)課程內容:
+課程設計應含兩個領域/議題以上指標內容，不得為同一領域下科目之間的重複學習；應重視「統整性探究」，在教學活動中呈現學生學習歷程；應避免課程內容過於零碎與拼裝
+(9)表現任務：每一單元呈現一項表現任務，表現任務應是在生活或職場(或學習)等真實情境中的產出或行為表現，能讓學生展現課程所學
+(10)評量方式`},
+{id:'6-2-1-6',name:'統整性探究課程（六年級）',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-2-1-6 彈性學習課程─統整性主題專題議題探究課程審查標準
+1.共計 6 門課程請逐一審查。需於表件處寫清楚 115 學年度及六年級課程。
+2.計畫內容含以下幾部分，並請依內容審查
+(1)課程名稱:須為跨領域課程，不得僅為部定課程單一領域
+(2)核心素養:至少選用 2 則核心素養，至少選用 2 則核心素養(●或■或 V 勾選符號)
+(3)學習內容及學習表現:
+需正確引用領綱及學習階段內容，高年級為Ⅲ，不得跨階段別(出現 I、Ⅱ、Ⅳ、Ⅴ均不符規定)
+；至少選用 2 個領域綱要的學習內容及學習表現
+；學習內容及學習表現需列出代碼及內容
+(4)融入議題:
+列出引用議題代碼及內容，性別平等教育、安全教育(交通安全教育)、戶外教育三大議題至少引用一個議題
+(5)學習目標:
+需含 A(態度)、S(技能)、K(知識)三個項度
+(6)單元名稱:不得為領域單元教學之重複學習
+(7)學習進度/節數:需要進行描述
+(8)課程內容:
+課程設計應含兩個領域/議題以上指標內容，不得為同一領域下科目之間的重複學習；應重視「統整性探究」，在教學活動中呈現學生學習歷程；應避免課程內容過於零碎與拼裝
+(9)表現任務：每一單元呈現一項表現任務，表現任務應是在生活或職場(或學習)等真實情境中的產出或行為表現，能讓學生展現課程所學
+(10)評量方式`},
+{id:'6-2-2',name:'社團活動與技藝課程',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-2-2 彈性學習課程-社團活動與技藝課程審查標準
+1.需於表件處寫清楚 115 學年度及幾年級課程。
+2.計畫內容含以下幾部分，並請依內容審查
+(1)於本計畫前附上學校社團實施辦法
+(2)核心素養:至少選用 2 則核心素養，至少選用 2 則核心素養(●或■或 V 勾選符號)
+(3)學習內容及學習表現:
+需正確引用領綱及學習階段內容，低年級 I、中年級為Ⅱ、高年級為Ⅲ，不得跨階段別，並符應表件中撰寫的年級規劃
+；學習內容及學習表現需列出代碼及內容
+(4)融入議題:
+列出引用議題代碼及內容
+(5)學習目標:
+需含 A(態度)、S(技能)、K(知識)三個項度
+(6)單元名稱:不得為領域單元教學之重複學習
+(7)學習進度/節數:需要進行描述
+(8)課程內容: 課程內容不得僅有單一社團，亦不得僅有學術性社團課程
+(9)表現任務：每一單元呈現一項表現任務，表現任務應是在生活或職場(或學習)等真實情境中的產出或行為表現，能讓學生展現課程所學
+(10)評量方式`},
+{id:'6-2-3',name:'特殊需求領域課程',special:true,prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-2-3 彈性學習課程-特殊需求領域課程審查標準
+1.特殊需求領域課程依據適用之課程綱要規劃`},
+{id:'6-2-4',name:'其他類課程',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-2-4 彈性學習課程-其他類課程審查標準
+1.需於表件處寫清楚 115 學年度及幾年級課程。
+2.計畫內容含以下幾部分，並請依內容審查
+(1)需於下列所示類別勾選一種
+□本土語文/臺灣手語/新住民語文
+□服務學習
+□戶外教育
+□班際或校際交流
+□自治活動
+□班級輔導
+□法定議題融入
+□自主學習
+□自主學習暨補救教學
+(2)核心素養:至少選用 2 則核心素養，至少選用 2 則核心素養(●或■或 V 勾選符號)
+(3)學習內容及學習表現:
+需正確引用領綱及學習階段內容，低年級 I、中年級為Ⅱ、高年級為Ⅲ，不得跨階段別，並符應表件中撰寫的年級規劃
+；學習內容及學習表現需列出代碼及內容
+(4)融入議題:
+列出引用議題代碼及內容
+(5)學習目標:
+需含 A(態度)、S(技能)、K(知識)三個項度
+(6)單元名稱:不得為領域單元教學之重複學習
+(7)學習進度/節數:需要進行描述
+(8)課程內容: 若前述勾選為自主學習暨補救教學課程應依相關規定，不得僅為單一領域(國語或數學科目)之學習，需另外安排學生主動學習任務
+(9)表現任務：每一單元呈現一項表現任務，表現任務應是在生活或職場(或學習)等真實情境中的產出或行為表現，能讓學生展現課程所學
+(10)評量方式`},
+{id:'6-3',name:'融入之議題內容重點',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-3 融入之議題內容重點審查標準
+(1) 需區分為 1、2、3、4、5、6 年級各一份表件，不得 1 至 6 年級為同一份表件。
+(2) 編號 1-5 項:
+屬法定議題，1-6 年級表件均須安排規劃；其中 1-2 項議題於融入領域(科目)/彈性學習課程對應表格中需安排於校訂課程(不能為部定課程，非單一領域課程)，亦可為班週會或早自習；第 1 項性別平等教育議題節數需區分上下學期均須至少 6 節課；第 2 項家庭教育議題節數至少 6 節課；第 3、4 項議題節數至少 6 節課；第 5 項議題節數需區分上下學期均須至少 3 節課
+(3) 編號 6-7 項:
+請審查 1-6 年級表件均須安排規劃
+(4) 編號 8-20 項可分配實施`},
+{id:'6-4',name:'各年級彈性學習課程教學進度表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-4 各年級彈性學習課程教學進度表審查標準
+1.需區分為 1、2、3、4、5、6 年級各一份表件，不得 1 至 6 年級為同一份表件。
+2.表件第一列寫出彈性學習課程節數，低年級每週 3 節(3 節/週)、中年級每週 4 節(4 節/週)、高年級每週 6 節(6 節/週)
+3.1、2、3、4、5 年級上下學期週次必須符合 20 週(21 週亦可)，6 年級上學期週次必須符合 20 週(21 週亦可)，下學期週次必須符合 17 或 18 週。
+4.每週均需編寫課程內容。`},
+{id:'6-5',name:'彈性學習課程選用教科書/自編教材及師資安排表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-5 彈性學習課程選用教科書/自編教材及師資安排表審查標準
+1.需於表件處寫清楚 115 學年度及幾年級課程。
+2.各年級選用教科書/自編教材此行列出內容不得只有教科書一項，除教科書外需含一項以上的多元教材。
+3.於備註欄列出經課發會通過的年月日(須為 115 年)`},
+{id:'6-6',name:'在地化課程',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+6-6 在地化課程審查標準
+1.需於表件內融入品桃園、賞桃園、讀桃園三項課程實施。`}
+]},
+{category:'7. 各項附件',items:[
+{id:'7-1-1',name:'課程發展委員會組織要點',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-1-1 課程發展委員會組織要點審查標準
+1.各校於課程發展委員會組織要點中前列標題加入學校名稱
+2.委員名單須含領域代表、特教代表、家長代表`},
+{id:'7-1-2-1',name:'學校課程發展委員會會議紀錄',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-1-2-1 學校課程發展委員會會議紀錄審查標準
+1.課發會會議記錄至少包含 6 次，須含會議時間、會議記錄、簽到表
+2.需含 114 學年課程計劃審查提案及決議通過
+3.每次會議均需有三分之二以上委員出席，各項議程須有出席委員二分之一以上委員通過`},
+{id:'7-1-2-2',name:'特殊教育班課程計畫會議紀錄',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分
+7-1-2-2 特殊教育班課程計畫經特殊教育推行委員會及學校課程發展委員會審核通過會議紀錄審查標準
+1.經特殊教育推行委員會及學校課程發展委員會審核通過會議紀錄，含簽到表`},
+{id:'7-1-2-3',name:'藝術才能班課程計畫會議紀錄',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分
+7-1-2-3 藝術才能班課程計畫經藝術才能班課程發展小組及學校課程發展委員會審核通過會議紀錄審查標準
+1.經藝術才能班課程發展小組及學校課程發展委員會審核通過會議紀錄，含簽到表`},
+{id:'7-1-2-4',name:'體育班課程計畫會議紀錄',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分
+7-1-2-4 體育班課程計畫經體育班課程規畫小組、體育班發展委員會及學校課程發展委員會審核通過會議紀錄審查標準
+1.經體育班課程規畫小組、體育班發展委員會及學校課程發展委員會審核通過會議紀錄，含簽到表`},
+{id:'7-2',name:'不同版本之銜接計畫',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-2 學生在同一學習階段使用不同版本之銜接計畫審查標準
+1. 前後使用版本差異性分析及銜接計畫
+2. 若無，可寫本校無，亦可算通過。`},
+{id:'7-3',name:'全校教師授課節數一覽表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-3 全校教師授課節數一覽表審查標準
+1. 應授課節數依附件桃園市國民小學教師每週授課節數實施要點進行審查
+2. 表頭學年度需為 115`},
+{id:'7-4-1',name:'課程評鑑計畫',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-4-1 課程評鑑計畫審查標準
+1. 表頭需加入學校名稱`},
+{id:'7-4-2',name:'課程評鑑檢核表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-4-2 課程評鑑檢核表
+1. 需含至少一份學校課程評鑑檢核表，教科書檢核表可規劃於此項
+2. 評鑑表主要為 114 學年度的規劃，無須填寫檢核結果及簽名核章`},
+{id:'7-5',name:'全校學生每日作息時間表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤部分無須說明，僅出現表件通過即可
+7-5 全校學生每日作息時間表審查標準
+1. 請依據「桃園市國民中小學學生在校時間實施原則」進行審查
+2. 表頭學年度需為 115`},
+{id:'7-6',name:'學校年度重大活動行事曆及資源運用',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-6 學校年度重大活動行事曆及資源運用審查標準
+1.需加註家庭教育、在地化課程、交通安全教育、戶外教育、生命教育實施時間
+2.需加註有效運用學校社區資源(人力、物力、環境)`},
+{id:'7-7',name:'前一學年課程計畫實施情形及效果檢討',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-7 前一學年課程計畫實施情形及其效果檢討(課程評鑑實施情形及其效果檢討紀錄)審查標準
+1.附上 114 學年 3 份彈性課程評鑑，呈現方式為量化評鑑 1 份、質性評鑑 2 份或質性評鑑 3 份
+2.每份評鑑均需含審查委員檢核簽名`},
+{id:'7-8',name:'校長及教師公開授課實施計畫',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-8 校長及教師公開授課實施計畫審查標準
+1.附有學校名稱的校長及教師公開授課實施計畫
+2.依據「桃園市國民中小學校長及教師公開授課實施要點」`},
+{id:'7-9',name:'校外人士協助之部定或校訂課程計畫',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-9 校外人士協助之部定或校訂課程計畫審查標準
+1.表件需經學校課程發展委員會審查通過
+2.依據「校外人士協助高級中等以下學校教學或活動注意事項」`},
+{id:'7-10',name:'雙語融入課程計畫自主檢核表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-10 雙語融入課程計畫自主檢核表審查標準
+1.經學校課程發展委員會審查通過`},
+{id:'7-11',name:'第一階段課程計畫重點項目檢核表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-11 第一階段課程計畫重點項目檢核表審查標準
+1.除檢核表表明學校未有此項附件外，每列均需勾選符合或不符合
+2.本表需經審查人員簽名，並經承辦人及校長核章`},
+{id:'7-12',name:'第二階段課程計畫重點項目檢核表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
+7-12 第二階段課程計畫重點項目檢核表審查標準
+1.除檢核表表明學校未有此項附件外，每列均需勾選符合或不符合，若底色標註為藍色請無須再審查
+2.本表需經審查人員簽名，並經承辦人及校長核章`}
+]}
+];
+
+// ===== State =====
+let extractedText='';
+let selectedItem=null;
+
+// ===== Models =====
+const MODELS={
+  gemini:['gemini-2.5-flash','gemini-2.5-pro','gemini-2.0-flash'],
+  openai:['gpt-4o-mini','gpt-4o','gpt-4.1-mini']
+};
+
+// ===== Init =====
+(function init(){
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',run);
+  }else{run()}
+  function run(){
+    loadSettings();
+    populateCategories();
+    setupDragDrop();
+  }
+})();
+
+function populateCategories(){
+  const sel=document.getElementById('categorySelect');
+  REVIEW_DATA.forEach((cat,i)=>{
+    const o=document.createElement('option');
+    o.value=i;o.textContent=cat.category;
+    sel.appendChild(o);
+  });
+}
+
+function onCategoryChange(){
+  const ci=document.getElementById('categorySelect').value;
+  const sel=document.getElementById('itemSelect');
+  sel.innerHTML='<option value="">-- 請選擇項次 --</option>';
+  document.getElementById('criteriaSection').classList.add('hidden');
+  selectedItem=null;
+  updateButtons();
+  if(ci==='')return;
+  const cat=REVIEW_DATA[ci];
+  cat.items.forEach((item,i)=>{
+    const o=document.createElement('option');
+    o.value=i;o.textContent=`${item.id} ${item.name}`;
+    sel.appendChild(o);
+  });
+}
+
+function onItemChange(){
+  const ci=document.getElementById('categorySelect').value;
+  const ii=document.getElementById('itemSelect').value;
+  document.getElementById('specialWarning').classList.add('hidden');
+  if(ci===''||ii===''){
+    selectedItem=null;
+    document.getElementById('criteriaSection').classList.add('hidden');
+    updateButtons();return;
+  }
+  selectedItem=REVIEW_DATA[ci].items[ii];
+  document.getElementById('criteriaSection').classList.remove('hidden');
+  document.getElementById('criteriaPreview').value=selectedItem.prompt;
+  // 特殊班級提醒
+  if(selectedItem.special){
+    document.getElementById('specialWarning').classList.remove('hidden');
+  }
+  updateButtons();
+}
+
+function resetPrompt(){
+  if(selectedItem){
+    document.getElementById('criteriaPreview').value=selectedItem.prompt;
+    showToast('已還原為預設審查標準');
+  }
+}
+
+// ===== Drag & Drop =====
+function setupDragDrop(){
+  const dz=document.getElementById('dropZone');
+  ['dragenter','dragover'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.add('dragover')}));
+  ['dragleave','drop'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.remove('dragover')}));
+  dz.addEventListener('drop',ev=>{
+    const f=ev.dataTransfer.files[0];
+    if(f&&f.type==='application/pdf'){document.getElementById('fileInput').files=ev.dataTransfer.files;handleFile(f)}
+    else showToast('請上傳 PDF 檔案');
+  });
+}
+
+// ===== PDF Extraction =====
+async function handleFile(file){
+  if(!file)return;
+  document.getElementById('fileName').textContent=file.name;
+  document.getElementById('fileStats').textContent='載入 PDF.js 中...';
+  document.getElementById('fileInfo').classList.add('show');
+  document.getElementById('textPreview').textContent='';
+  extractedText='';
+  try{
+    await loadPdfJs();
+    document.getElementById('fileStats').textContent='擷取文字中...';
+    const buf=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    let text='';
+    for(let i=1;i<=pdf.numPages;i++){
+      const page=await pdf.getPage(i);
+      const tc=await page.getTextContent();
+      const pageText=tc.items.map(it=>it.str).join(' ');
+      text+=`\n--- 第 ${i} 頁 ---\n${pageText}\n`;
+    }
+    extractedText=text.trim();
+    const charCount=extractedText.length;
+    if(charCount<50){
+      document.getElementById('fileStats').innerHTML=`共 ${pdf.numPages} 頁，擷取 ${charCount} 字 <span class="tag tag-warn">文字過少，可能為掃描圖檔</span>`;
+    }else{
+      document.getElementById('fileStats').textContent=`共 ${pdf.numPages} 頁，擷取 ${charCount} 字`;
+    }
+    document.getElementById('textPreview').textContent=extractedText.substring(0,500)+(charCount>500?'\n...（以上為前500字預覽）':'');
+    updateButtons();
+  }catch(err){
+    document.getElementById('fileStats').innerHTML=`<span style="color:var(--danger)">擷取失敗：${err.message}</span>`;
+    extractedText='';
+  }
+}
+
+// ===== Settings =====
+function loadSettings(){
+  const provider=localStorage.getItem('tyc_provider')||'gemini';
+  const key=localStorage.getItem('tyc_apikey')||'';
+  const model=localStorage.getItem('tyc_model')||'';
+  document.getElementById('apiProvider').value=provider;
+  document.getElementById('apiKey').value=key;
+  onProviderChange();
+  if(model)document.getElementById('apiModel').value=model;
+  if(!key)document.getElementById('settingsPanel').open=true;
+}
+
+const API_INFO={
+  gemini:{
+    url:'https://aistudio.google.com/app/apikey',
+    label:'免費申請 Gemini API 金鑰',
+    hint:'Google Gemini 提供免費額度，適合個人使用。點擊上方按鈕前往 Google AI Studio 申請。'
+  },
+  openai:{
+    url:'https://platform.openai.com/api-keys',
+    label:'前往 OpenAI 申請 API 金鑰',
+    hint:'OpenAI API 需付費使用。注意：從本機開啟 HTML 時可能有 CORS 限制，建議改用「複製提示詞」功能。'
+  }
+};
+
+function onProviderChange(){
+  const p=document.getElementById('apiProvider').value;
+  const sel=document.getElementById('apiModel');
+  sel.innerHTML='';
+  (MODELS[p]||[]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)});
+  document.getElementById('openaiWarning').classList.toggle('hidden',p!=='openai');
+  // Update API key link
+  const info=API_INFO[p]||API_INFO.gemini;
+  const link=document.getElementById('apiKeyLink');
+  link.href=info.url;
+  link.innerHTML=`&#128273; ${info.label}`;
+  document.getElementById('apiKeyHint').textContent=info.hint;
+}
+
+function saveSettings(){
+  localStorage.setItem('tyc_provider',document.getElementById('apiProvider').value);
+  localStorage.setItem('tyc_apikey',document.getElementById('apiKey').value);
+  localStorage.setItem('tyc_model',document.getElementById('apiModel').value);
+  showToast('設定已儲存');
+}
+
+// ===== Prompt Assembly =====
+function assemblePrompt(){
+  if(!selectedItem||!extractedText)return null;
+  // 使用 textarea 中的內容（使用者可能已修改）
+  const editedPrompt=document.getElementById('criteriaPreview').value||selectedItem.prompt;
+  const userPrompt=`${editedPrompt}\n\n## 以下是待審查的課程計畫內容：\n---\n${extractedText}\n---`;
+  return{system:SYSTEM_PROMPT,user:userPrompt};
+}
+
+// ===== API Calls =====
+async function callGemini(apiKey,model,system,user){
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      system_instruction:{parts:[{text:system}]},
+      contents:[{role:'user',parts:[{text:user}]}],
+      generationConfig:{temperature:0.3,maxOutputTokens:8192}
+    })
+  });
+  if(!res.ok){
+    const err=await res.json().catch(()=>({}));
+    throw new Error(err.error?.message||`API 錯誤 (${res.status})`);
+  }
+  const data=await res.json();
+  if(!data.candidates||!data.candidates[0])throw new Error('AI 未回傳結果');
+  return data.candidates[0].content.parts[0].text;
+}
+
+async function callOpenAI(apiKey,model,system,user){
+  const res=await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
+    body:JSON.stringify({
+      model,messages:[{role:'system',content:system},{role:'user',content:user}],
+      temperature:0.3,max_tokens:8192
+    })
+  });
+  if(!res.ok){
+    const err=await res.json().catch(()=>({}));
+    throw new Error(err.error?.message||`API 錯誤 (${res.status})`);
+  }
+  const data=await res.json();
+  return data.choices[0].message.content;
+}
+
+// ===== Execute Review =====
+async function executeReview(){
+  const prompt=assemblePrompt();
+  if(!prompt){showToast('請先上傳 PDF 並選擇審查項次');return}
+  const apiKey=document.getElementById('apiKey').value||localStorage.getItem('tyc_apikey');
+  if(!apiKey){showToast('請先設定 API 金鑰');document.getElementById('settingsPanel').open=true;return}
+  const provider=document.getElementById('apiProvider').value||localStorage.getItem('tyc_provider');
+  const model=document.getElementById('apiModel').value||localStorage.getItem('tyc_model');
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('btnReview').disabled=true;
+  document.getElementById('resultContent').classList.add('hidden');
+  document.getElementById('resultActions').classList.add('hidden');
+  try{
+    let result;
+    if(provider==='gemini'){
+      result=await callGemini(apiKey,model,prompt.system,prompt.user);
+    }else{
+      result=await callOpenAI(apiKey,model,prompt.system,prompt.user);
+    }
+    showResult(result);
+  }catch(err){
+    let msg=err.message;
+    if(msg.includes('Failed to fetch')||msg.includes('NetworkError')){
+      if(provider==='openai')msg='OpenAI API 不支援從本地檔案直接呼叫（CORS 限制）。請改用 Gemini API 或使用「複製提示詞」功能。';
+      else msg='網路連線錯誤，請確認網路狀態及 API 金鑰是否正確。';
+    }
+    showResult(`**審查失敗**\n\n${msg}`);
+  }finally{
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('btnReview').disabled=false;
+  }
+}
+
+// ===== Copy Prompt =====
+function copyPrompt(){
+  const prompt=assemblePrompt();
+  if(!prompt){showToast('請先上傳 PDF 並選擇審查項次');return}
+  const full=`${prompt.system}\n\n${prompt.user}`;
+  navigator.clipboard.writeText(full).then(()=>{
+    showToast('已複製提示詞！請貼到 ChatGPT 或 Gemini 網頁版使用');
+  }).catch(()=>{
+    // Fallback for file:// protocol
+    const ta=document.createElement('textarea');
+    ta.value=full;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    showToast('已複製提示詞！');
+  });
+}
+
+// ===== Simple Markdown Renderer =====
+function renderMarkdown(text){
+  let html=text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code>$1</code>');
+  // Lists
+  const lines=html.split('\n');
+  let out='',inUl=false,inOl=false;
+  for(const line of lines){
+    const ulMatch=line.match(/^[\-\*]\s+(.+)/);
+    const olMatch=line.match(/^\d+\.\s+(.+)/);
+    if(ulMatch){
+      if(!inUl){out+='<ul>';inUl=true}
+      out+=`<li>${ulMatch[1]}</li>`;
+    }else if(olMatch){
+      if(!inOl){out+='<ol>';inOl=true}
+      out+=`<li>${olMatch[1]}</li>`;
+    }else{
+      if(inUl){out+='</ul>';inUl=false}
+      if(inOl){out+='</ol>';inOl=false}
+      if(line.trim()==='')out+='<br>';
+      else if(!line.startsWith('<h'))out+=`<p>${line}</p>`;
+      else out+=line;
+    }
+  }
+  if(inUl)out+='</ul>';
+  if(inOl)out+='</ol>';
+  return out;
+}
+
+// ===== Result Display =====
+let lastResult='';
+function showResult(text){
+  lastResult=text;
+  const el=document.getElementById('resultContent');
+  el.innerHTML=renderMarkdown(text);
+  el.classList.remove('hidden');
+  document.getElementById('resultActions').classList.remove('hidden');
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function copyResult(){
+  navigator.clipboard.writeText(lastResult).then(()=>showToast('已複製審查結果')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=lastResult;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('已複製審查結果');
+  });
+}
+
+function clearResult(){
+  document.getElementById('resultContent').innerHTML='';
+  document.getElementById('resultContent').classList.add('hidden');
+  document.getElementById('resultActions').classList.add('hidden');
+  lastResult='';
+}
+
+// ===== Reset File (for re-upload workflow) =====
+function resetFile(){
+  extractedText='';
+  document.getElementById('fileInput').value='';
+  document.getElementById('fileInfo').classList.remove('show');
+  document.getElementById('fileName').textContent='';
+  document.getElementById('fileStats').textContent='';
+  document.getElementById('textPreview').textContent='';
+  updateButtons();
+  // Scroll back to upload area
+  document.getElementById('dropZone').scrollIntoView({behavior:'smooth',block:'center'});
+  showToast('請上傳修正後的 PDF 檔案');
+}
+
+// ===== Buttons State =====
+function updateButtons(){
+  const ready=extractedText.length>0&&selectedItem!==null;
+  document.getElementById('btnReview').disabled=!ready;
+  document.getElementById('btnCopy').disabled=!ready;
+}
+
+// ===== Toast =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
