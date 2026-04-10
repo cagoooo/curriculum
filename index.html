@@ -25,53 +25,88 @@
 <meta name="twitter:image" content="https://cagoooo.github.io/curriculum/og-image.png">
 <!-- 搜尋引擎描述 -->
 <meta name="description" content="上傳課程計畫 PDF，依據桃園市教育局115學年度審查標準，透過 Gemini AI 自動審查40+項次是否符合規定｜阿凱老師製作">
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --primary:#2e7d6f;--primary-light:#e0f2ef;--primary-dark:#1b5e50;
-  --accent:#3498db;--bg:#f5f7fa;--card:#fff;--text:#333;--text-light:#666;
-  --border:#dde1e6;--danger:#e74c3c;--success:#27ae60;--warn:#f39c12;
-  --radius:10px;--shadow:0 2px 8px rgba(0,0,0,.08);
+  --primary:#1a8a7a;--primary-light:#d0f0eb;--primary-dark:#0d5e52;
+  --step1:#3b82f6;--step1-light:#eff6ff;--step1-dark:#1d4ed8;
+  --step2:#7c3aed;--step2-light:#f5f3ff;--step2-dark:#5b21b6;
+  --step3:#d97706;--step3-light:#fffbeb;--step3-dark:#92400e;
+  --accent:#3498db;--bg:#eef6f5;--card:#ffffff;--text:#1f2937;--text-light:#6b7280;
+  --border:#e5e7eb;--danger:#ef4444;--success:#10b981;--warn:#f59e0b;
+  --radius:14px;--shadow:0 1px 4px rgba(0,0,0,.08),0 6px 20px rgba(0,0,0,.06);
+  --shadow-lg:0 4px 8px rgba(0,0,0,.08),0 16px 40px rgba(0,0,0,.1);
 }
-body{font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:16px}
-.container{max-width:920px;margin:0 auto}
-header{text-align:center;padding:24px 0 16px;border-bottom:3px solid var(--primary)}
-header h1{font-size:1.5rem;color:var(--primary-dark);margin-bottom:4px}
-header p{color:var(--text-light);font-size:.9rem}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-top:16px}
-.card-title{font-size:1.1rem;font-weight:700;color:var(--primary-dark);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.card-title .step{background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
-details{border:1px solid var(--border);border-radius:var(--radius);margin-top:16px;background:var(--card)}
-details>summary{padding:14px 20px;cursor:pointer;font-weight:600;color:var(--primary-dark);list-style:none;display:flex;align-items:center;gap:8px;user-select:none}
-details>summary::before{content:"";display:inline-block;width:0;height:0;border:5px solid transparent;border-left:7px solid var(--primary);transition:transform .2s}
+body{font-family:"Nunito","Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:0}
+.container{max-width:940px;margin:0 auto;padding:0 16px 36px}
+/* ── HERO HEADER ─────────────────── */
+header{position:relative;overflow:hidden;background:linear-gradient(140deg,#062e28 0%,#0d5e52 35%,#1a8a7a 65%,#2cb5a0 100%);color:#fff;padding:44px 20px 34px;text-align:center}
+.header-orb{position:absolute;border-radius:50%;pointer-events:none}
+.header-orb-1{width:380px;height:380px;background:rgba(255,255,255,.07);top:-130px;right:-90px}
+.header-orb-2{width:240px;height:240px;background:rgba(79,209,197,.12);bottom:-80px;left:-60px}
+.header-orb-3{width:110px;height:110px;background:rgba(255,255,255,.06);top:28px;left:38%}
+.header-content{position:relative;z-index:1;max-width:700px;margin:0 auto}
+.header-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 18px;border-radius:30px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);font-size:.8rem;font-weight:700;margin-bottom:16px;letter-spacing:.5px}
+header h1{font-size:2.1rem;font-weight:900;margin-bottom:10px;letter-spacing:-.6px;line-height:1.2}
+.header-accent{color:#6ee7b7;font-style:italic}
+header p{font-size:.92rem;opacity:.88;margin-bottom:18px;max-width:520px;margin-left:auto;margin-right:auto}
+.header-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.header-chip{padding:6px 15px;border-radius:30px;font-size:.78rem;font-weight:700;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;transition:background .2s}
+.header-chip:hover{background:rgba(255,255,255,.25)}
+/* ── CARD ───────────────────────── */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-top:16px;border:1px solid var(--border);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--primary-dark))}
+.card-step1::before{background:linear-gradient(90deg,#60a5fa,var(--step1-dark))}
+.card-step2::before{background:linear-gradient(90deg,#a78bfa,var(--step2-dark))}
+.card-step3::before{background:linear-gradient(90deg,#fcd34d,var(--step3-dark))}
+.card-title{font-size:1.08rem;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.card-title .step{color:#fff;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:900;flex-shrink:0;background:linear-gradient(135deg,var(--primary),var(--primary-dark));box-shadow:0 2px 8px rgba(26,138,122,.35)}
+.card-step1 .step{background:linear-gradient(135deg,#60a5fa,var(--step1-dark));box-shadow:0 2px 10px rgba(59,130,246,.4)}
+.card-step2 .step{background:linear-gradient(135deg,#a78bfa,var(--step2-dark));box-shadow:0 2px 10px rgba(124,58,237,.4)}
+.card-step3 .step{background:linear-gradient(135deg,#fcd34d,var(--step3-dark));box-shadow:0 2px 10px rgba(217,119,6,.4)}
+/* ── SETTINGS ───────────────────── */
+details{border:1px solid var(--border);border-radius:var(--radius);margin-top:16px;background:var(--card);overflow:hidden}
+details>summary{padding:14px 20px;cursor:pointer;font-weight:800;color:var(--primary-dark);list-style:none;display:flex;align-items:center;gap:8px;user-select:none;background:var(--primary-light)}
+details>summary::before{content:"";display:inline-block;width:0;height:0;border:5px solid transparent;border-left:7px solid var(--primary-dark);transition:transform .2s}
 details[open]>summary::before{transform:rotate(90deg)}
-details>.details-body{padding:0 20px 16px}
-label{display:block;font-weight:600;margin-bottom:4px;font-size:.9rem;color:var(--text)}
-select,input[type=text],input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:.95rem;font-family:inherit;background:#fff}
-select:focus,input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,125,111,.15)}
-.row{display:flex;gap:12px;flex-wrap:wrap}
+details>.details-body{padding:16px 20px 18px}
+/* ── FORM ───────────────────────── */
+label{display:block;font-weight:700;margin-bottom:5px;font-size:.88rem;color:var(--text)}
+select,input[type=text],input[type=password]{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:9px;font-size:.95rem;font-family:inherit;background:#fff;transition:border-color .15s,box-shadow .15s;color:var(--text)}
+select:focus,input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,138,122,.15)}
+.row{display:flex;gap:14px;flex-wrap:wrap}
 .row>*{flex:1;min-width:200px}
-.drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-light);position:relative}
-.drop-zone:hover,.drop-zone.dragover{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark)}
+/* ── DROP ZONE ──────────────────── */
+.drop-zone{border:2.5px dashed #c8d9e6;border-radius:var(--radius);padding:44px 20px;text-align:center;cursor:pointer;transition:all .25s;color:var(--text-light);position:relative;background:linear-gradient(160deg,#f8fbff 0%,#f0f7ff 100%)}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--step1);background:linear-gradient(160deg,var(--step1-light),#dbeafe);color:var(--step1-dark);transform:translateY(-3px);box-shadow:0 8px 28px rgba(59,130,246,.18)}
 .drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.drop-zone .icon{font-size:2.5rem;margin-bottom:8px;display:block}
-.file-info{margin-top:12px;padding:12px;background:var(--primary-light);border-radius:6px;font-size:.9rem;color:var(--primary-dark);display:none}
+.drop-zone .icon{font-size:3.2rem;margin-bottom:12px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.1))}
+.drop-zone .dz-title{font-size:1rem;font-weight:800;margin-bottom:4px;color:var(--text)}
+.drop-zone .dz-sub{font-size:.82rem;color:#94a3b8}
+.file-info{margin-top:12px;padding:14px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:10px;font-size:.9rem;color:#1e3a8a;display:none}
 .file-info.show{display:block}
-.preview-box{margin-top:8px;max-height:150px;overflow-y:auto;background:#f8f9fa;border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.82rem;white-space:pre-wrap;word-break:break-all;color:var(--text-light)}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;border:none;border-radius:6px;font-size:.95rem;font-family:inherit;font-weight:600;cursor:pointer;transition:all .15s}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-dark)}
-.btn-primary:disabled{background:#aaa;cursor:not-allowed}
-.btn-secondary{background:#fff;color:var(--primary);border:1.5px solid var(--primary)}
-.btn-secondary:hover{background:var(--primary-light)}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-sm{padding:7px 14px;font-size:.85rem}
-.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.criteria-preview{margin-top:0;background:#f8f9fa;border:1px solid var(--border);border-radius:6px;padding:12px;font-size:.85rem;white-space:pre-wrap;line-height:1.6;color:var(--text)}
+.preview-box{margin-top:8px;max-height:140px;overflow-y:auto;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:.82rem;white-space:pre-wrap;word-break:break-all;color:var(--text-light)}
+/* ── BUTTONS ────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;border:none;border-radius:9px;font-size:.95rem;font-family:inherit;font-weight:700;cursor:pointer;transition:all .18s;letter-spacing:.2px}
+.btn-primary{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;box-shadow:0 2px 8px rgba(26,138,122,.3)}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 5px 18px rgba(26,138,122,.4)}
+.btn-primary:disabled{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#fff;box-shadow:none;cursor:not-allowed;transform:none;filter:none}
+.btn-secondary{background:#fff;color:var(--primary);border:2px solid var(--primary);font-weight:700}
+.btn-secondary:hover{background:var(--primary-light);transform:translateY(-1px)}
+.btn-danger{background:linear-gradient(135deg,#f87171,var(--danger));color:#fff;box-shadow:0 2px 8px rgba(239,68,68,.25)}
+.btn-sm{padding:7px 14px;font-size:.84rem}
+.btn-group{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+/* ── CRITERIA ───────────────────── */
+.criteria-preview{margin-top:0;background:#fafafa;border:2px solid var(--border);border-radius:9px;padding:12px;font-size:.85rem;white-space:pre-wrap;line-height:1.6;color:var(--text)}
 textarea.criteria-preview{outline:none;transition:border-color .2s}
-textarea.criteria-preview:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,125,111,.15)}
+textarea.criteria-preview:focus{border-color:var(--step2);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+/* ── RESULT ─────────────────────── */
 .result-area{margin-top:16px;min-height:80px}
-.result-content{background:#f8f9fa;border:1px solid var(--border);border-radius:var(--radius);padding:20px;font-size:.92rem;line-height:1.8}
+.result-content{background:#fafafa;border:1px solid var(--border);border-radius:var(--radius);padding:22px;font-size:.92rem;line-height:1.8}
 .result-content h1,.result-content h2,.result-content h3{color:var(--primary-dark);margin:16px 0 8px}
 .result-content h1{font-size:1.3rem}
 .result-content h2{font-size:1.15rem}
@@ -83,49 +118,77 @@ textarea.criteria-preview:focus{border-color:var(--primary);box-shadow:0 0 0 3px
 .result-content table{border-collapse:collapse;width:100%;margin:10px 0}
 .result-content th,.result-content td{border:1px solid var(--border);padding:8px;text-align:left;font-size:.88rem}
 .result-content th{background:var(--primary-light)}
-.loading{display:none;text-align:center;padding:30px}
+/* ── LOADING ────────────────────── */
+.loading{display:none;text-align:center;padding:34px}
 .loading.show{display:block}
-.spinner{display:inline-block;width:36px;height:36px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+.spinner{display:inline-block;width:42px;height:42px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary-dark);color:#fff;padding:12px 24px;border-radius:8px;font-size:.9rem;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+/* ── TOAST ──────────────────────── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:12px 28px;border-radius:12px;font-size:.9rem;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;font-weight:700;box-shadow:0 4px 24px rgba(0,0,0,.28)}
 .toast.show{opacity:1}
-.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+/* ── TAGS ───────────────────────── */
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700}
 .tag-primary{background:var(--primary-light);color:var(--primary-dark)}
-.tag-warn{background:#fff3cd;color:#856404}
-footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;margin-top:24px}
+.tag-warn{background:#fef3c7;color:#92400e}
+/* ── FOOTER ─────────────────────── */
+footer{text-align:center;padding:24px 0 16px;color:var(--text-light);font-size:.8rem;margin-top:24px;border-top:1px solid var(--border)}
 .hidden{display:none!important}
-/* A: Result section coloring */
-.result-pass-banner{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:2px solid var(--success);border-radius:12px;padding:24px 20px;text-align:center;color:#1b5e20;margin-bottom:8px}
-.result-pass-banner .pass-icon{font-size:2.6rem;display:block;margin-bottom:6px}
-.result-pass-banner .pass-title{font-size:1.25rem;font-weight:700}
-.result-pass-banner .pass-sub{font-size:.88rem;color:#388e3c;margin-top:4px}
-.result-section{border-radius:8px;padding:14px 16px;margin:10px 0}
-.result-section-pass{background:#f0faf0;border:1px solid #a5d6a7}
-.result-section-pass h2,.result-section-pass h3{color:#1b5e20}
-.result-section-pass strong{color:#2e7d32}
-.result-section-fail{background:#fff5f5;border:1px solid #fca5a5}
+/* ── A: Result coloring ─────────── */
+.result-pass-banner{background:linear-gradient(135deg,#d1fae5,#ecfdf5);border:2px solid var(--success);border-radius:14px;padding:28px 20px;text-align:center;color:#064e3b;margin-bottom:8px}
+.result-pass-banner .pass-icon{font-size:3rem;display:block;margin-bottom:8px}
+.result-pass-banner .pass-title{font-size:1.3rem;font-weight:900}
+.result-pass-banner .pass-sub{font-size:.9rem;color:#059669;margin-top:6px}
+.result-section{border-radius:10px;padding:14px 18px;margin:10px 0}
+.result-section-pass{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1.5px solid #6ee7b7}
+.result-section-pass h2,.result-section-pass h3{color:#065f46}
+.result-section-pass strong{color:#047857}
+.result-section-fail{background:linear-gradient(135deg,#fff1f2,#fef2f2);border:1.5px solid #fca5a5}
 .result-section-fail h2,.result-section-fail h3{color:#7f1d1d}
-/* B: Key visibility toggle */
+/* ── B: Key toggle ──────────────── */
 .key-input-wrap{position:relative}
 .key-input-wrap input{padding-right:42px!important}
 .btn-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.05rem;color:var(--text-light);padding:4px 5px;line-height:1;border-radius:4px}
 .btn-eye:hover{color:var(--primary);background:var(--primary-light)}
-/* C: Last review bar */
-.last-review-bar{margin-top:10px;padding:7px 16px;background:var(--primary-light);border-radius:6px;font-size:.82rem;color:var(--primary-dark);display:flex;align-items:center;gap:6px;cursor:default}
-@media(max-width:600px){
-  header h1{font-size:1.2rem}
+/* ── C: Last review bar ─────────── */
+.last-review-bar{margin-top:14px;padding:9px 16px;background:linear-gradient(90deg,var(--primary-light),#f0fdf4);border:1px solid #6ee7b7;border-radius:10px;font-size:.83rem;color:var(--primary-dark);display:flex;align-items:center;gap:7px;font-weight:600}
+/* ── RWD ────────────────────────── */
+@media(max-width:768px){
+  header{padding:32px 16px 24px}
+  header h1{font-size:1.7rem}
+  .container{padding:0 12px 24px}
+  .card{padding:18px}
+  .row>*{min-width:100%}
+  .header-chips{gap:6px}
+}
+@media(max-width:480px){
+  header h1{font-size:1.3rem}
+  header p{font-size:.85rem}
+  .header-chip{font-size:.74rem;padding:4px 10px}
   .card{padding:14px}
   .btn{padding:10px 16px;font-size:.88rem}
-  .row>*{min-width:100%}
+  .btn-group{gap:8px}
+  .card-title{font-size:.98rem}
 }
 </style>
 </head>
 <body>
+<header>
+  <div class="header-orb header-orb-1"></div>
+  <div class="header-orb header-orb-2"></div>
+  <div class="header-orb header-orb-3"></div>
+  <div class="header-content">
+    <div class="header-badge">&#127978; 桃園市 115 學年度 &middot; 國民小學</div>
+    <h1>課程計畫 <span class="header-accent">AI 審查</span>工具</h1>
+    <p>上傳 PDF，依據教育局審查標準，透過 AI 自動審查各項次是否符合規定</p>
+    <div class="header-chips">
+      <span class="header-chip">&#128203; 40+ 審查項次</span>
+      <span class="header-chip">&#129302; Gemini AI 驅動</span>
+      <span class="header-chip">&#9999;&#65039; 可彈性修改提示詞</span>
+      <span class="header-chip">&#128273; 免費申請金鑰</span>
+    </div>
+  </div>
+</header>
 <div class="container">
-  <header>
-    <h1>桃園市115學年度國民小學課程計畫 AI 審查工具</h1>
-    <p>依據教育局審查標準，上傳課程計畫 PDF 即可進行 AI 自動審查</p>
-  </header>
   <!-- C: Last review bar -->
   <div id="lastReviewBar" class="last-review-bar hidden"></div>
 
@@ -176,13 +239,13 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
   </details>
 
   <!-- Step 1: Upload PDF -->
-  <div class="card">
+  <div class="card card-step1">
     <div class="card-title"><span class="step">1</span>上傳課程計畫 PDF</div>
     <div class="drop-zone" id="dropZone">
       <input type="file" id="fileInput" accept=".pdf" onchange="handleFile(this.files[0])">
       <span class="icon">&#128196;</span>
-      <div>點擊選擇或拖拉 PDF 檔案至此處</div>
-      <div style="font-size:.8rem;margin-top:4px;color:#999">支援文字型 PDF，掃描圖檔可能無法正確擷取</div>
+      <div class="dz-title">點擊選擇或拖拉 PDF 檔案至此處</div>
+      <div class="dz-sub">支援文字型 PDF &nbsp;·&nbsp; 掃描圖檔可能無法正確擷取</div>
     </div>
     <div class="file-info" id="fileInfo">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
@@ -202,7 +265,7 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
   </div>
 
   <!-- Step 2: Select Review Item -->
-  <div class="card">
+  <div class="card card-step2">
     <div class="card-title"><span class="step">2</span>選擇審查項次</div>
     <div class="row" style="margin-bottom:10px">
       <div>
@@ -252,7 +315,7 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
   </div>
 
   <!-- Step 3: Execute -->
-  <div class="card">
+  <div class="card card-step3">
     <div class="card-title"><span class="step">3</span>執行審查</div>
     <div class="btn-group">
       <button class="btn btn-primary" id="btnReview" onclick="executeReview()" disabled>送出 AI 審查</button>
@@ -273,7 +336,7 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
   </div>
 
   <footer>
-    課程計畫 AI 審查工具 v1.5 | 審查標準依據桃園市教育局115學年度審查用語 | 阿凱老師製作<br>
+    課程計畫 AI 審查工具 v1.6 | 審查標準依據桃園市教育局115學年度審查用語 | 阿凱老師製作<br>
     本工具僅供參考，正式審查結果以教育局委員審定為準
   </footer>
 </div>
