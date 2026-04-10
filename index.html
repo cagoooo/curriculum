@@ -94,6 +94,24 @@ textarea.criteria-preview:focus{border-color:var(--primary);box-shadow:0 0 0 3px
 .tag-warn{background:#fff3cd;color:#856404}
 footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;margin-top:24px}
 .hidden{display:none!important}
+/* A: Result section coloring */
+.result-pass-banner{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:2px solid var(--success);border-radius:12px;padding:24px 20px;text-align:center;color:#1b5e20;margin-bottom:8px}
+.result-pass-banner .pass-icon{font-size:2.6rem;display:block;margin-bottom:6px}
+.result-pass-banner .pass-title{font-size:1.25rem;font-weight:700}
+.result-pass-banner .pass-sub{font-size:.88rem;color:#388e3c;margin-top:4px}
+.result-section{border-radius:8px;padding:14px 16px;margin:10px 0}
+.result-section-pass{background:#f0faf0;border:1px solid #a5d6a7}
+.result-section-pass h2,.result-section-pass h3{color:#1b5e20}
+.result-section-pass strong{color:#2e7d32}
+.result-section-fail{background:#fff5f5;border:1px solid #fca5a5}
+.result-section-fail h2,.result-section-fail h3{color:#7f1d1d}
+/* B: Key visibility toggle */
+.key-input-wrap{position:relative}
+.key-input-wrap input{padding-right:42px!important}
+.btn-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.05rem;color:var(--text-light);padding:4px 5px;line-height:1;border-radius:4px}
+.btn-eye:hover{color:var(--primary);background:var(--primary-light)}
+/* C: Last review bar */
+.last-review-bar{margin-top:10px;padding:7px 16px;background:var(--primary-light);border-radius:6px;font-size:.82rem;color:var(--primary-dark);display:flex;align-items:center;gap:6px;cursor:default}
 @media(max-width:600px){
   header h1{font-size:1.2rem}
   .card{padding:14px}
@@ -108,6 +126,8 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
     <h1>桃園市115學年度國民小學課程計畫 AI 審查工具</h1>
     <p>依據教育局審查標準，上傳課程計畫 PDF 即可進行 AI 自動審查</p>
   </header>
+  <!-- C: Last review bar -->
+  <div id="lastReviewBar" class="last-review-bar hidden"></div>
 
   <!-- Settings -->
   <details id="settingsPanel">
@@ -135,7 +155,10 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
             &#128273; 免費申請 API 金鑰
           </a>
         </div>
-        <input type="password" id="apiKey" placeholder="請輸入您的 API 金鑰">
+        <div class="key-input-wrap">
+          <input type="password" id="apiKey" placeholder="請輸入您的 API 金鑰">
+          <button type="button" class="btn-eye" id="btnToggleKey" onclick="toggleKeyVisible()" title="顯示/隱藏金鑰">&#128065;</button>
+        </div>
         <div id="apiKeyHint" style="margin-top:5px;font-size:.8rem;color:var(--text-light)">
           Google Gemini 提供免費額度，適合自行使用。點擊上方按鈕前往 Google AI Studio 申請。
         </div>
@@ -171,6 +194,11 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
       </div>
       <div class="preview-box" id="textPreview"></div>
     </div>
+    <!-- D: PDF length warning -->
+    <div id="pdfLengthWarning" class="hidden" style="margin-top:8px;padding:9px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:.83rem;color:#664d03;display:flex;align-items:flex-start;gap:8px">
+      <span style="flex-shrink:0">&#9888;&#65039;</span>
+      <span>本 PDF 字數較多（超過 5 萬字），可能超出 AI 的 Token 上限導致審查結果不完整。建議僅上傳<strong>相關章節</strong>，或改用支援更多 Token 的模型（如 <strong>gemini-2.5-pro</strong>）。</span>
+    </div>
   </div>
 
   <!-- Step 2: Select Review Item -->
@@ -195,9 +223,17 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
       <span>此項次為<strong>特殊班級</strong>（特教/藝才/體育），目前尚未有完整專屬審查 Prompt，AI 審查結果僅供初步參考，<strong>仍需搭配人工審查</strong>。</span>
     </div>
     <div id="criteriaSection" class="hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:4px">
         <div style="font-size:.9rem;font-weight:600;color:var(--primary-dark)">審查提示詞（可直接編輯調整條件）：</div>
-        <button class="btn btn-sm" style="background:#eee;color:var(--text);padding:4px 10px;font-size:.78rem" onclick="resetPrompt()">還原預設</button>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-sm" style="background:#e8f0fe;color:#1a56db;border:1px solid #a4cafe;padding:4px 10px;font-size:.78rem" onclick="toggleItemDesc()">&#128161; 查看說明</button>
+          <button class="btn btn-sm" style="background:#eee;color:var(--text);padding:4px 10px;font-size:.78rem" onclick="resetPrompt()">還原預設</button>
+        </div>
+      </div>
+      <!-- F: Plain-language description panel -->
+      <div id="itemDescPanel" class="hidden" style="margin-bottom:8px;padding:10px 14px;background:#e8f0fe;border:1px solid #a4cafe;border-radius:6px;font-size:.84rem;color:#1e3a5f;line-height:1.7">
+        <div style="font-weight:700;margin-bottom:4px;color:#1a56db">💡 這個項次在審查什麼？</div>
+        <div id="itemDescText"></div>
       </div>
       <textarea id="criteriaPreview" class="criteria-preview" style="width:100%;min-height:160px;resize:vertical;font-family:inherit;cursor:text"></textarea>
       <div style="margin-top:6px;font-size:.8rem;color:var(--warn);display:flex;align-items:center;gap:4px">
@@ -237,7 +273,7 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
   </div>
 
   <footer>
-    課程計畫 AI 審查工具 v1.2 | 審查標準依據桃園市教育局115學年度審查用語 | 阿凱老師製作<br>
+    課程計畫 AI 審查工具 v1.5 | 審查標準依據桃園市教育局115學年度審查用語 | 阿凱老師製作<br>
     本工具僅供參考，正式審查結果以教育局委員審定為準
   </footer>
 </div>
@@ -245,17 +281,18 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== PDF.js Lazy Load =====
+// ===== PDF.js v4 Lazy Load (ES Module via dynamic import) =====
 let pdfjsLoaded=false;
-function loadPdfJs(){
-  if(pdfjsLoaded)return Promise.resolve();
-  return new Promise((resolve,reject)=>{
-    const s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-    s.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';pdfjsLoaded=true;resolve()};
-    s.onerror=()=>reject(new Error('PDF.js 載入失敗，請確認網路連線'));
-    document.head.appendChild(s);
-  });
+async function loadPdfJs(){
+  if(pdfjsLoaded)return;
+  try{
+    const pdfjs=await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs');
+    window.pdfjsLib=pdfjs;
+    pdfjs.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs';
+    pdfjsLoaded=true;
+  }catch(e){
+    throw new Error('PDF.js 載入失敗，請確認網路連線');
+  }
 }
 
 // ===== Review Criteria Data =====
@@ -629,6 +666,61 @@ const REVIEW_DATA=[
 ]}
 ];
 
+// ===== Item Plain-Language Descriptions (F) =====
+const ITEM_DESC={
+  '0-1':'確認計畫書含「依據」與「目的」兩段落。依據中必須列出4個指定文件（107年教育部函文、十二年國教課綱、115學年市府籌備會議決議、學校課發會決議），且課發會決議日期須在114年8月1日至115年7月31日之間。',
+  '1-1':'確認有三個完整表格：①學校基本資料、②全校教職員工編制人數（含各類教師）、③特殊教育及特殊類型教育班級教師人數，三表均需填寫完成。',
+  '1-2':'確認有「內部因素分析」（校內環境、師生家長）與「外部因素分析」（政策趨勢、教育資源）兩部分，並針對分析提出可行性策略。',
+  '2-1':'確認計畫書明確包含「學校願景」、「課程願景」、「學生圖像」三個項目的敘述或圖表。',
+  '3-1-1':'確認總體架構表含願景→課程目標→學生圖像縱向連結，涵蓋各年級所有領域與彈性課程。至少1個年級需將性平、安全（含交通）或戶外教育其中一個議題融入彈性課程，每學年4節課。',
+  '3-1-2':'確認節數符合規定—部定課程：低年級20節、中年級25節、高年級26節；彈性課程：低年級2-4節、中年級3-6節、高年級4-7節；學習總節數：23、29、32節。',
+  '3-2':'確認5項法定議題（性平、家庭教育等）均有1-6年級分別規劃。性平需上下學期各至少6節、家庭教育至少6節，且性平與家庭教育需安排為校訂課程（非部定課程）。',
+  '3-3':'確認六年級畢業考後至畢業典禮前有課程活動規劃，內容需與學習有關，能延續學生學習發展（不可為純休閒娛樂活動）。',
+  '4-1-1':'確認針對各年級各領域/科目及彈性課程，說明授課場所/設備、時間安排、教學人力等具體實施規劃。',
+  '4-1-2':'確認有三個組織的說明：①課程發展委員會、②領域/科目教學研究會與學年會議、③教師專業學習社群或專案小組的運作說明及規劃。',
+  '4-1-3':'確認有教師研習活動規劃，且必須涵蓋115學年度3項必辦研習：「班級經營」、「數位學習」、「雙閱讀」精進研習。',
+  '4-2':'確認有涵蓋「課程設計」、「課程實施」、「學習效果」三面向的評鑑規劃，並說明評鑑方式與時程。',
+  '5-1-1':'確認各年級各領域/科目課程計畫含六個要素：核心素養或能力指標、教學單元/主題名稱、教學重點、教學進度、學習節數、評量方式。',
+  '5-1-2':'特殊教育班依各班型（資源班/集中式）及適用課綱，規劃各領域/科目的課程節數與教學計畫。⚠️ 本項目建議搭配人工審查。',
+  '5-1-3':'藝術才能班依各班型及適用課綱，規劃各領域/科目（含藝術才能科目）的課程節數與教學計畫。⚠️ 本項目建議搭配人工審查。',
+  '5-1-4':'體育班依各班型及適用課綱，規劃各領域/科目（含體育專長訓練）的課程節數與教學計畫。⚠️ 本項目建議搭配人工審查。',
+  '5-2':'確認有1至6年級各自獨立的教學進度表（共6份），含所有部定科目名稱。週次：1-5年級上下學期各20週；6年級上學期20週、下學期17或18週；每週均需填寫課程內容。',
+  '5-3-1':'確認有1至6年級各自獨立的選書表（共6份）。各年級需呈現歷年選書版本（1年級呈現1年份，6年級需呈現6年份）。不適用項目以◎標示即可。',
+  '5-3-2':'若有自編教材，需加註學校課發會審查日期（年月日）。若無任何自編教材，填寫「本校無」即算通過。',
+  '5-4':'若有跨領域協同教學，確認計畫具課程統整精神，師資與時數規劃合理可行。若本校未辦理，填寫「本校無」即算通過。',
+  '6-1':'確認1至6年級的彈性課程規劃表，各年段節數符合規定（低年級60/63/66節、中年級80/84/88節、高年級120/126/132節）。3至6年級需有1門課程名稱標註「(科技)」，並完成3-6年級資訊科技教育課程地圖。',
+  '6-2-1-1':'審查一年級3門統整性探究課程。每門須有：跨領域課程名稱、2項以上核心素養、正確引用低年級（I）領綱代碼+文字、融入性平/安全/戶外議題之一、含ASK三面向學習目標、各單元表現任務、評量方式，不得為單一領域重複學習。',
+  '6-2-1-2':'審查二年級3門統整性探究課程，規定同一年級。重點確認學習階段引用為低年級（I），不得出現Ⅱ、Ⅲ、Ⅳ、Ⅴ。',
+  '6-2-1-3':'審查三年級4門統整性探究課程。重點確認學習階段引用為中年級（Ⅱ），不得出現I、Ⅲ、Ⅳ、Ⅴ。其餘要求同一、二年級。',
+  '6-2-1-4':'審查四年級4門統整性探究課程，規定同三年級。重點確認學習階段引用為中年級（Ⅱ）。',
+  '6-2-1-5':'審查五年級6門統整性探究課程。重點確認學習階段引用為高年級（Ⅲ），不得出現I、Ⅱ、Ⅳ、Ⅴ。',
+  '6-2-1-6':'審查六年級6門統整性探究課程，規定同五年級。重點確認學習階段引用為高年級（Ⅲ）。',
+  '6-2-2':'社團活動與技藝課程計畫：需附學校社團實施辦法，課程內容不得僅有學術性社團或單一社團，需含多元類型。確認核心素養、領綱引用（符合年級學習階段）、ASK目標、表現任務、評量方式均齊全。',
+  '6-2-3':'特殊需求領域課程，依適用課綱規劃。⚠️ 本項目建議搭配人工審查。',
+  '6-2-4':'其他類彈性課程（本土語文、服務學習、戶外教育、自主學習等九類之一），確認已勾選類別，並具備核心素養、領綱引用、ASK目標、表現任務、評量方式等要素。',
+  '6-3':'確認1至6年級各自獨立的議題融入表。5項法定議題（性平等、家庭教育等）須1-6年級均有規劃，性平與家庭教育需為校訂課程。第6-7項議題也須全年級規劃；第8-20項可彈性分配。',
+  '6-4':'確認1至6年級各自獨立的彈性課程教學進度表（共6份）。各年段每週節數：低年級3節、中年級4節、高年級6節。週次規定同5-2，每週均需填課程內容。',
+  '6-5':'確認各年級彈性課程教材欄位不只列「教科書」，需含一種以上多元教材。備註欄需列出課發會通過日期（須為115年）。',
+  '6-6':'確認計畫書中有融入桃園在地化課程：「品桃園」、「賞桃園」、「讀桃園」三項均需實施。',
+  '7-1-1':'確認課發會組織要點的標題含學校名稱，委員名單包含領域代表、特教代表、家長代表三類成員。',
+  '7-1-2-1':'確認課發會會議紀錄至少6次，每次含時間、記錄、簽到表。需含114學年課程計畫審查提案及通過決議；每次須三分之二以上委員出席且二分之一以上委員通過。',
+  '7-1-2-2':'確認有特殊教育推行委員會及學校課發會審核通過的會議紀錄，含簽到表。（特教班適用）',
+  '7-1-2-3':'確認有藝術才能班課程發展小組及學校課發會審核通過的會議紀錄，含簽到表。（藝才班適用）',
+  '7-1-2-4':'確認有體育班課程規畫小組、體育班發展委員會及學校課發會審核通過的會議紀錄，含簽到表。（體育班適用）',
+  '7-2':'若有學生在同一學習階段使用不同版本，需提供版本差異分析及銜接計畫。若無，填「本校無」即算通過。',
+  '7-3':'確認全校教師授課節數一覽表符合桃園市教師每週授課節數實施要點，表頭學年度需為115。',
+  '7-4-1':'確認課程評鑑計畫的表頭加入學校名稱。',
+  '7-4-2':'確認有至少一份學校課程評鑑檢核表（教科書檢核表可列此）。主要呈現114學年度規劃，無需填寫檢核結果及簽名核章。',
+  '7-5':'確認全校學生每日作息時間表符合「桃園市國民中小學學生在校時間實施原則」，表頭學年度需為115。',
+  '7-6':'確認年度行事曆加註家庭教育、在地化課程、交通安全教育、戶外教育、生命教育的實施時間，並標示學校社區資源運用（人力、物力、環境）。',
+  '7-7':'確認有114學年度3份彈性課程評鑑（量化1份+質性2份，或全部質性3份），每份評鑑均需含審查委員檢核簽名。',
+  '7-8':'確認有含學校名稱的校長及教師公開授課實施計畫，依「桃園市國民中小學校長及教師公開授課實施要點」辦理。',
+  '7-9':'確認校外人士協助課程的計畫已經學校課發會審查通過，依「校外人士協助高級中等以下學校教學或活動注意事項」辦理。',
+  '7-10':'確認雙語融入課程計畫自主檢核表已經學校課發會審查通過。',
+  '7-11':'確認第一階段課程計畫重點項目檢核表每列均已勾選（符合或不符合），並有審查人員簽名及承辦人、校長核章。',
+  '7-12':'確認第二階段課程計畫重點項目檢核表每列均已勾選（藍色底色項目無需審查），並有審查人員簽名及承辦人、校長核章。'
+};
+
 // ===== State =====
 let extractedText='';
 let selectedItem=null;
@@ -648,6 +740,7 @@ const MODELS={
     loadSettings();
     populateCategories();
     setupDragDrop();
+    showLastReview();
   }
 })();
 
@@ -680,6 +773,7 @@ function onItemChange(){
   const ci=document.getElementById('categorySelect').value;
   const ii=document.getElementById('itemSelect').value;
   document.getElementById('specialWarning').classList.add('hidden');
+  document.getElementById('itemDescPanel').classList.add('hidden');
   if(ci===''||ii===''){
     selectedItem=null;
     document.getElementById('criteriaSection').classList.add('hidden');
@@ -688,6 +782,10 @@ function onItemChange(){
   selectedItem=REVIEW_DATA[ci].items[ii];
   document.getElementById('criteriaSection').classList.remove('hidden');
   document.getElementById('criteriaPreview').value=selectedItem.prompt;
+  // F: 更新說明文字，重設按鈕文字
+  const desc=ITEM_DESC[selectedItem.id]||'';
+  document.getElementById('itemDescText').textContent=desc||'（此項次目前尚無白話說明）';
+  document.querySelector('[onclick="toggleItemDesc()"]').innerHTML='&#128161; 查看說明';
   // 特殊班級提醒
   if(selectedItem.special){
     document.getElementById('specialWarning').classList.remove('hidden');
@@ -738,8 +836,13 @@ async function handleFile(file){
     const charCount=extractedText.length;
     if(charCount<50){
       document.getElementById('fileStats').innerHTML=`共 ${pdf.numPages} 頁，擷取 ${charCount} 字 <span class="tag tag-warn">文字過少，可能為掃描圖檔</span>`;
+      document.getElementById('pdfLengthWarning').classList.add('hidden');
+    }else if(charCount>50000){
+      document.getElementById('fileStats').innerHTML=`共 ${pdf.numPages} 頁，擷取 ${charCount.toLocaleString()} 字 <span class="tag tag-warn">字數較多</span>`;
+      document.getElementById('pdfLengthWarning').classList.remove('hidden');
     }else{
-      document.getElementById('fileStats').textContent=`共 ${pdf.numPages} 頁，擷取 ${charCount} 字`;
+      document.getElementById('fileStats').textContent=`共 ${pdf.numPages} 頁，擷取 ${charCount.toLocaleString()} 字`;
+      document.getElementById('pdfLengthWarning').classList.add('hidden');
     }
     document.getElementById('textPreview').textContent=extractedText.substring(0,500)+(charCount>500?'\n...（以上為前500字預覽）':'');
     updateButtons();
@@ -965,8 +1068,13 @@ function copyPrompt(){
   });
 }
 
-// ===== Simple Markdown Renderer =====
+// ===== Enhanced Markdown Renderer (A: color-coded sections) =====
 function renderMarkdown(text){
+  const trimmed=text.trim();
+  // A: Pure "表件通過" → big green banner
+  if(/^表件通過[。！!]?\s*$/.test(trimmed)){
+    return `<div class="result-pass-banner"><span class="pass-icon">✅</span><div class="pass-title">表件通過！</div><div class="pass-sub">本審查項次所有規定均符合，無須修正。</div></div>`;
+  }
   let html=text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/^### (.+)$/gm,'<h3>$1</h3>')
@@ -997,6 +1105,16 @@ function renderMarkdown(text){
   }
   if(inUl)out+='</ul>';
   if(inOl)out+='</ol>';
+  // A: Wrap sections by heading keyword → color card
+  const parts=out.split(/(?=<h[23]>)/);
+  out=parts.map(part=>{
+    if(!/<h[23]>/.test(part))return part;
+    if(/<h[23]>[^<]*(?:符合|通過)[^<]*<\/h[23]>/i.test(part))
+      return `<div class="result-section result-section-pass">${part}</div>`;
+    if(/<h[23]>[^<]*(?:待修正|需修正|不符|修正)[^<]*<\/h[23]>/i.test(part))
+      return `<div class="result-section result-section-fail">${part}</div>`;
+    return part;
+  }).join('');
   return out;
 }
 
@@ -1004,6 +1122,13 @@ function renderMarkdown(text){
 let lastResult='';
 function showResult(text){
   lastResult=text;
+  // C: 記錄上次審查
+  if(selectedItem){
+    localStorage.setItem('tyc_last_review',JSON.stringify({
+      id:selectedItem.id,name:selectedItem.name,time:new Date().toISOString()
+    }));
+    showLastReview();
+  }
   const el=document.getElementById('resultContent');
   el.innerHTML=renderMarkdown(text);
   el.classList.remove('hidden');
@@ -1043,6 +1168,50 @@ function updateButtons(){
   const ready=extractedText.length>0&&selectedItem!==null;
   document.getElementById('btnReview').disabled=!ready;
   document.getElementById('btnCopy').disabled=!ready;
+}
+
+// ===== B: API Key Visibility Toggle =====
+function toggleKeyVisible(){
+  const inp=document.getElementById('apiKey');
+  const btn=document.getElementById('btnToggleKey');
+  if(inp.type==='password'){
+    inp.type='text';
+    btn.innerHTML='&#128584;';
+    btn.title='隱藏金鑰';
+  }else{
+    inp.type='password';
+    btn.innerHTML='&#128065;';
+    btn.title='顯示金鑰';
+  }
+}
+
+// ===== C: Last Review Record =====
+function relativeTime(d){
+  const diff=Date.now()-d.getTime();
+  const m=Math.floor(diff/60000);
+  if(m<1)return '剛剛';
+  if(m<60)return `${m} 分鐘前`;
+  const h=Math.floor(m/60);
+  if(h<24)return `${h} 小時前`;
+  return `${Math.floor(h/24)} 天前`;
+}
+function showLastReview(){
+  const raw=localStorage.getItem('tyc_last_review');
+  if(!raw)return;
+  try{
+    const{id,name,time}=JSON.parse(raw);
+    const el=document.getElementById('lastReviewBar');
+    el.innerHTML=`&#128336; 上次審查：<strong>${id} ${name}</strong>（${relativeTime(new Date(time))}）`;
+    el.classList.remove('hidden');
+  }catch(e){}
+}
+
+// ===== F: Item Description Panel Toggle =====
+function toggleItemDesc(){
+  const panel=document.getElementById('itemDescPanel');
+  const btn=document.querySelector('[onclick="toggleItemDesc()"]');
+  const isHidden=panel.classList.toggle('hidden');
+  if(btn)btn.innerHTML=isHidden?'&#128161; 查看說明':'&#128161; 收起說明';
 }
 
 // ===== Toast =====
