@@ -8,6 +8,12 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="favicon.png">
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a8a7a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="課程計畫AI審查">
 <!-- Open Graph / LINE / Facebook 分享預覽 -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cagoooo.github.io/curriculum/">
@@ -200,6 +206,82 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
   .btn-group{gap:8px}
   .card-title{font-size:.98rem}
 }
+/* ── E: Font Size Control ─────── */
+.font-size-ctrl{position:fixed;right:14px;top:14px;z-index:1100;display:flex;gap:2px;background:rgba(255,255,255,.96);border:1.5px solid var(--border);border-radius:10px;padding:3px;box-shadow:var(--shadow);backdrop-filter:blur(6px)}
+.font-size-ctrl button{background:none;border:none;cursor:pointer;font-weight:800;padding:5px 8px;border-radius:7px;font-size:.8rem;color:var(--text-light);transition:all .15s;line-height:1;font-family:inherit}
+.font-size-ctrl button:hover,.font-size-ctrl button.fs-active{background:var(--primary-light);color:var(--primary-dark)}
+@media(max-width:480px){.font-size-ctrl{right:8px;top:8px}}
+/* ── C: Item Search ───────────── */
+.item-search-row{position:relative;margin-bottom:10px}
+.item-search-row input{width:100%;padding:9px 13px 9px 36px;border:2px solid var(--border);border-radius:9px;font-size:.9rem;font-family:inherit;background:#fff;transition:border-color .15s;color:var(--text)}
+.item-search-row input:focus{outline:none;border-color:var(--step2);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.item-search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-light);pointer-events:none;font-size:.9rem}
+/* ── H: Mode Tabs ─────────────── */
+.mode-toggle{display:flex;gap:4px;background:#f3f4f6;padding:4px;border-radius:10px;margin-bottom:14px}
+.mode-tab{flex:1;padding:8px 12px;border:none;border-radius:7px;font-size:.88rem;font-weight:700;cursor:pointer;background:none;color:var(--text-light);transition:all .2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+.mode-tab.active{background:#fff;color:var(--step2-dark);box-shadow:0 1px 6px rgba(0,0,0,.12)}
+/* ── H: Batch Panel ───────────── */
+.batch-panel{display:none}
+.batch-panel.show{display:block}
+.batch-cat-block{margin-bottom:10px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.batch-cat-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#f8fafc;border-bottom:1px solid var(--border)}
+.batch-cat-hdr-title{font-size:.85rem;font-weight:800;color:var(--step2-dark)}
+.batch-items-wrap{padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px}
+.b-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:.78rem;cursor:pointer;transition:all .15s;color:var(--text);user-select:none;font-weight:600}
+.b-chip:hover{border-color:var(--step2);color:var(--step2-dark);background:var(--step2-light)}
+.b-chip.sel{background:var(--step2-light);border-color:var(--step2);color:var(--step2-dark)}
+.b-chip.special-chip{border-style:dashed;color:#92400e;border-color:#fcd34d;background:#fffbeb}
+.b-chip.special-chip.sel{background:#fef3c7;border-color:#f59e0b}
+.b-chip.st-pass{background:#ecfdf5!important;border-color:#6ee7b7!important;color:#065f46!important;cursor:default}
+.b-chip.st-fail{background:#fff1f2!important;border-color:#fca5a5!important;color:#7f1d1d!important;cursor:default}
+.b-chip.st-err{background:#fef9c3!important;border-color:#fde047!important;color:#713f12!important;cursor:default}
+.batch-global-ctrl{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.batch-start-area{margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.batch-progress-wrap{margin:12px 0;display:none}
+.batch-progress-wrap.show{display:block}
+.batch-prog-track{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:5px}
+.batch-prog-fill{height:100%;background:linear-gradient(90deg,var(--step2),var(--primary));border-radius:5px;transition:width .5s ease}
+.batch-prog-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-light)}
+.batch-results-wrap{margin-top:14px}
+.b-res-item{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.b-res-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:#fafafa;transition:background .15s;border:none;width:100%;text-align:left;font-family:inherit}
+.b-res-hdr:hover{background:#f3f4f6}
+.b-res-status{font-size:1.1rem;flex-shrink:0;line-height:1}
+.b-res-title{flex:1;font-size:.88rem;font-weight:700;color:var(--text)}
+.b-res-tog{font-size:.78rem;color:var(--text-light);flex-shrink:0}
+.b-res-body{display:none;padding:14px;border-top:1px solid var(--border);background:#fff;font-size:.88rem}
+.b-res-body.open{display:block}
+.batch-summary{display:flex;gap:16px;padding:12px 16px;background:linear-gradient(135deg,#f5f3ff,#eff6ff);border-radius:10px;margin-bottom:12px;flex-wrap:wrap;border:1px solid #e9d5ff}
+.bsum-item{display:flex;align-items:center;gap:6px;font-size:.9rem;font-weight:700}
+/* ── B: Print Styles ──────────── */
+@media print{
+  .font-size-ctrl,#pwaInstallBanner,.header-chips,footer,details,
+  .card-step1,.card-step2,#lastReviewBar,.mode-toggle,.batch-panel,.loading,
+  #pdfLengthWarning,.btn-group{display:none!important}
+  body{background:#fff!important}
+  header{background:#fff!important;color:#000!important;padding:10pt 0!important;
+    text-align:left!important;border-bottom:2pt solid #1a8a7a;overflow:visible!important}
+  header h1{font-size:15pt!important;color:#0d5e52!important;letter-spacing:0!important}
+  header p{font-size:10pt!important;color:#555!important;opacity:1!important}
+  .header-badge{background:none!important;border:none!important;color:#555!important;
+    padding:0!important;font-size:9pt!important;margin-bottom:4pt!important;display:inline!important}
+  .card-step3{box-shadow:none!important;border:1px solid #ddd!important;
+    margin-top:0!important;border-radius:4px!important;break-inside:avoid}
+  .result-content{padding:0!important;font-size:11pt!important;line-height:1.8!important}
+  .result-section{break-inside:avoid;margin:8pt 0!important}
+  .result-section-pass,.result-section-fail,.result-pass-banner{
+    -webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  @page{margin:2cm;size:A4}
+}
+/* ── L: PWA Install Banner ─────── */
+.pwa-banner{display:flex;align-items:center;gap:10px;padding:8px 16px;
+  background:rgba(255,255,255,.14);border-radius:10px;border:1px solid rgba(255,255,255,.25);
+  font-size:.82rem;color:#fff;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.pwa-btn-install{background:rgba(255,255,255,.9);color:#0d5e52;border:none;
+  padding:5px 16px;border-radius:7px;font-size:.82rem;font-weight:800;cursor:pointer;transition:all .15s}
+.pwa-btn-install:hover{background:#fff;transform:scale(1.03)}
+.pwa-btn-dismiss{background:none;border:none;color:rgba(255,255,255,.6);
+  cursor:pointer;font-size:1rem;padding:2px 6px;line-height:1}
 </style>
 </head>
 <body>
@@ -217,8 +299,20 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
       <span class="header-chip">&#9999;&#65039; 可彈性修改提示詞</span>
       <span class="header-chip">&#128273; 免費申請金鑰</span>
     </div>
+    <!-- L: PWA Install Banner -->
+    <div id="pwaInstallBanner" class="pwa-banner hidden">
+      <span>&#128241; 安裝此工具，像 App 一樣在桌面快速開啟</span>
+      <button class="pwa-btn-install" onclick="installPwa()">+ 加入主畫面</button>
+      <button class="pwa-btn-dismiss" onclick="document.getElementById('pwaInstallBanner').classList.add('hidden')" title="關閉">&#10005;</button>
+    </div>
   </div>
 </header>
+<!-- E: Font Size Control (fixed) -->
+<div class="font-size-ctrl" id="fontSizeCtrl" title="調整字型大小">
+  <button onclick="setFontSize('sm')" title="小字">A&#8315;</button>
+  <button onclick="setFontSize('md')" class="fs-active" title="預設">A</button>
+  <button onclick="setFontSize('lg')" title="大字">A&#8314;</button>
+</div>
 <div class="container">
   <!-- C: Last review bar -->
   <div id="lastReviewBar" class="last-review-bar hidden"></div>
@@ -298,42 +392,64 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
   <!-- Step 2: Select Review Item -->
   <div class="card card-step2">
     <div class="card-title"><span class="step">2</span>選擇審查項次</div>
-    <div class="row" style="margin-bottom:10px">
-      <div>
-        <label for="categorySelect">審查分類</label>
-        <select id="categorySelect" onchange="onCategoryChange()">
-          <option value="">-- 請選擇分類 --</option>
-        </select>
-      </div>
-      <div>
-        <label for="itemSelect">審查項次</label>
-        <select id="itemSelect" onchange="onItemChange()">
-          <option value="">-- 請先選擇分類 --</option>
-        </select>
-      </div>
+    <!-- H: Mode Toggle -->
+    <div class="mode-toggle">
+      <button class="mode-tab active" id="tabSingle" onclick="switchMode('single')">&#128196; 單項審查</button>
+      <button class="mode-tab" id="tabBatch" onclick="switchMode('batch')">&#128203; 批次審查</button>
     </div>
-    <div id="specialWarning" class="hidden" style="margin-top:10px;padding:10px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:.85rem;color:#664d03;display:flex;align-items:center;gap:8px">
-      <span style="font-size:1.1rem">&#9888;&#65039;</span>
-      <span>此項次為<strong>特殊班級</strong>（特教/藝才/體育），目前尚未有完整專屬審查 Prompt，AI 審查結果僅供初步參考，<strong>仍需搭配人工審查</strong>。</span>
-    </div>
-    <div id="criteriaSection" class="hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:4px">
-        <div style="font-size:.9rem;font-weight:600;color:var(--primary-dark)">審查提示詞（可直接編輯調整條件）：</div>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-sm" style="background:#e8f0fe;color:#1a56db;border:1px solid #a4cafe;padding:4px 10px;font-size:.78rem" onclick="toggleItemDesc()">&#128161; 查看說明</button>
-          <button class="btn btn-sm" style="background:#eee;color:var(--text);padding:4px 10px;font-size:.78rem" onclick="resetPrompt()">還原預設</button>
+    <!-- Single Mode Panel -->
+    <div id="singlePanel">
+      <!-- C: Quick Search -->
+      <div class="item-search-row">
+        <span class="item-search-icon">&#128269;</span>
+        <input type="text" id="itemSearch" placeholder="快速搜尋項次名稱（如：彈性、附件、5-1、統整...）" oninput="filterItems(this.value)">
+      </div>
+      <!-- Normal: category + item selects -->
+      <div class="row" id="normalSelectRow" style="margin-bottom:10px">
+        <div>
+          <label for="categorySelect">審查分類</label>
+          <select id="categorySelect" onchange="onCategoryChange()">
+            <option value="">-- 請選擇分類 --</option>
+          </select>
+        </div>
+        <div>
+          <label for="itemSelect">審查項次</label>
+          <select id="itemSelect" onchange="onItemChange()">
+            <option value="">-- 請先選擇分類 --</option>
+          </select>
         </div>
       </div>
-      <!-- F: Plain-language description panel -->
-      <div id="itemDescPanel" class="hidden" style="margin-bottom:8px;padding:10px 14px;background:#e8f0fe;border:1px solid #a4cafe;border-radius:6px;font-size:.84rem;color:#1e3a5f;line-height:1.7">
-        <div style="font-weight:700;margin-bottom:4px;color:#1a56db">💡 這個項次在審查什麼？</div>
-        <div id="itemDescText"></div>
+      <!-- C: Search result select (shown when search is active) -->
+      <div id="searchResultRow" style="display:none;margin-bottom:10px">
+        <label for="searchResultSelect" style="color:var(--step2-dark)">&#128269; 搜尋結果</label>
+        <select id="searchResultSelect" style="width:100%" onchange="onSearchSelect()">
+          <option value="">-- 選擇項次 --</option>
+        </select>
       </div>
-      <textarea id="criteriaPreview" class="criteria-preview" style="width:100%;min-height:160px;resize:vertical;font-family:inherit;cursor:text"></textarea>
-      <div style="margin-top:6px;font-size:.8rem;color:var(--warn);display:flex;align-items:center;gap:4px">
-        <span>&#9888;&#65039;</span> 若貴校實際狀況與預設條件不同（如課程門數合併），可直接修改上方文字再送出審查
+      <div id="specialWarning" class="hidden" style="margin-top:10px;padding:10px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:.85rem;color:#664d03;display:flex;align-items:center;gap:8px">
+        <span style="font-size:1.1rem">&#9888;&#65039;</span>
+        <span>此項次為<strong>特殊班級</strong>（特教/藝才/體育），目前尚未有完整專屬審查 Prompt，AI 審查結果僅供初步參考，<strong>仍需搭配人工審查</strong>。</span>
+      </div>
+      <div id="criteriaSection" class="hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:4px">
+          <div style="font-size:.9rem;font-weight:600;color:var(--primary-dark)">審查提示詞（可直接編輯調整條件）：</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm" style="background:#e8f0fe;color:#1a56db;border:1px solid #a4cafe;padding:4px 10px;font-size:.78rem" onclick="toggleItemDesc()">&#128161; 查看說明</button>
+            <button class="btn btn-sm" style="background:#eee;color:var(--text);padding:4px 10px;font-size:.78rem" onclick="resetPrompt()">還原預設</button>
+          </div>
+        </div>
+        <div id="itemDescPanel" class="hidden" style="margin-bottom:8px;padding:10px 14px;background:#e8f0fe;border:1px solid #a4cafe;border-radius:6px;font-size:.84rem;color:#1e3a5f;line-height:1.7">
+          <div style="font-weight:700;margin-bottom:4px;color:#1a56db">&#128161; 這個項次在審查什麼？</div>
+          <div id="itemDescText"></div>
+        </div>
+        <textarea id="criteriaPreview" class="criteria-preview" style="width:100%;min-height:160px;resize:vertical;font-family:inherit;cursor:text"></textarea>
+        <div style="margin-top:6px;font-size:.8rem;color:var(--warn);display:flex;align-items:center;gap:4px">
+          <span>&#9888;&#65039;</span> 若貴校實際狀況與預設條件不同（如課程門數合併），可直接修改上方文字再送出審查
+        </div>
       </div>
     </div>
+    <!-- H: Batch Mode Panel (built by JS) -->
+    <div id="batchPanel" class="batch-panel"></div>
   </div>
 
   <!-- AI Notice -->
@@ -359,8 +475,10 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
     <div class="result-area" id="resultArea" class="hidden">
       <div id="resultContent" class="result-content hidden"></div>
       <div class="btn-group hidden" id="resultActions">
-        <button class="btn btn-secondary btn-sm" onclick="copyResult()">複製審查結果</button>
-        <button class="btn btn-sm" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="resetFile();clearResult()">&#128260; 修正後重新上傳審查</button>
+        <button class="btn btn-secondary btn-sm" onclick="copyResult()" title="複製含 Markdown 格式的結果">&#128203; 複製 Markdown</button>
+        <button class="btn btn-sm" style="background:#e8f0fe;color:#1a56db;border:1px solid #a4cafe;font-weight:700" onclick="copyPlainText()" title="複製純文字，適合貼到 Word">&#128291; 複製純文字</button>
+        <button class="btn btn-sm" style="background:#fef3c7;color:#78350f;border:1px solid #fde68a;font-weight:700" onclick="window.print()" title="列印審查結果">&#128424;&#65039; 列印</button>
+        <button class="btn btn-sm" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="resetFile();clearResult()">&#128260; 修正後重新上傳</button>
         <button class="btn btn-sm" style="background:#eee;color:var(--text)" onclick="clearResult()">清除結果</button>
       </div>
     </div>
@@ -377,7 +495,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v1.6</div>
+      <div class="footer-ver">v1.8</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -394,6 +512,9 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
       </a>
       <a class="footer-link" href="https://gemini.google.com" target="_blank" rel="noopener">
         <span class="footer-link-icon fi-blue">&#129302;</span>Gemini 網頁版
+      </a>
+      <a class="footer-link" href="https://github.com/cagoooo/curriculum/issues" target="_blank" rel="noopener">
+        <span class="footer-link-icon fi-gray">&#128027;</span>回報問題 / 功能建議
       </a>
     </div>
     <!-- 技術棧欄 -->
@@ -890,6 +1011,8 @@ const MODELS={
     populateCategories();
     setupDragDrop();
     showLastReview();
+    loadFontSize();   // E: font size
+    buildBatchPanel(); // H: batch review
   }
 })();
 
@@ -1317,6 +1440,7 @@ function updateButtons(){
   const ready=extractedText.length>0&&selectedItem!==null;
   document.getElementById('btnReview').disabled=!ready;
   document.getElementById('btnCopy').disabled=!ready;
+  if(typeof updateBatchStartBtn==='function')updateBatchStartBtn();
 }
 
 // ===== B: API Key Visibility Toggle =====
@@ -1368,6 +1492,373 @@ function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ===== A: Keyboard Shortcuts =====
+document.addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
+    e.preventDefault();
+    if(!batchMode){
+      const btn=document.getElementById('btnReview');
+      if(btn&&!btn.disabled)executeReview();
+    }else{
+      const btn=document.getElementById('btnStartBatch');
+      if(btn&&!btn.disabled)startBatchReview();
+    }
+  }
+});
+
+// ===== C: Item Search =====
+function filterItems(q){
+  q=(q||'').trim().toLowerCase();
+  const normalRow=document.getElementById('normalSelectRow');
+  const searchRow=document.getElementById('searchResultRow');
+  const inp=document.getElementById('itemSearch');
+  if(!q){
+    normalRow.style.display='';
+    searchRow.style.display='none';
+    if(inp)inp.style.borderColor='';
+    return;
+  }
+  normalRow.style.display='none';
+  searchRow.style.display='';
+  if(inp)inp.style.borderColor='var(--step2)';
+  const sel=document.getElementById('searchResultSelect');
+  sel.innerHTML='<option value="">-- 選擇搜尋結果 --</option>';
+  let count=0;
+  REVIEW_DATA.forEach((cat,ci)=>{
+    cat.items.forEach((item,ii)=>{
+      if(item.id.toLowerCase().includes(q)||item.name.toLowerCase().includes(q)){
+        const o=document.createElement('option');
+        o.value=ci+':'+ii;
+        o.textContent=item.id+' '+item.name+(item.special?' ⚠️':'');
+        sel.appendChild(o);count++;
+      }
+    });
+  });
+  if(count===0){
+    if(inp)inp.style.borderColor='var(--danger)';
+    const o=document.createElement('option');o.value='';o.textContent='（無符合結果）';sel.appendChild(o);
+    selectedItem=null;document.getElementById('criteriaSection').classList.add('hidden');updateButtons();
+  }else if(count===1){
+    if(inp)inp.style.borderColor='var(--success)';
+    sel.selectedIndex=1;onSearchSelect();
+  }else{
+    sel.options[0].textContent='-- 搜尋結果（'+count+' 項）--';
+    selectedItem=null;document.getElementById('criteriaSection').classList.add('hidden');updateButtons();
+  }
+}
+function onSearchSelect(){
+  const val=document.getElementById('searchResultSelect').value;
+  if(!val){selectedItem=null;document.getElementById('criteriaSection').classList.add('hidden');updateButtons();return;}
+  const[ci,ii]=val.split(':').map(Number);
+  const item=REVIEW_DATA[ci].items[ii];
+  selectedItem=item;
+  document.getElementById('criteriaSection').classList.remove('hidden');
+  document.getElementById('criteriaPreview').value=item.prompt;
+  const desc=ITEM_DESC[item.id]||'';
+  document.getElementById('itemDescText').textContent=desc||'（此項次目前尚無白話說明）';
+  document.querySelector('[onclick="toggleItemDesc()"]').innerHTML='&#128161; 查看說明';
+  document.getElementById('itemDescPanel').classList.add('hidden');
+  document.getElementById('specialWarning').classList.toggle('hidden',!item.special);
+  updateButtons();
+}
+
+// ===== E: Font Size =====
+const FS_SIZES={sm:'14px',md:'16px',lg:'19px'};
+function setFontSize(s){
+  document.documentElement.style.fontSize=FS_SIZES[s]||'16px';
+  localStorage.setItem('tyc_fontsize',s);
+  document.querySelectorAll('.font-size-ctrl button').forEach(b=>b.classList.remove('fs-active'));
+  const btn=document.querySelector(`.font-size-ctrl button[onclick="setFontSize('${s}')"]`);
+  if(btn)btn.classList.add('fs-active');
+}
+function loadFontSize(){setFontSize(localStorage.getItem('tyc_fontsize')||'md');}
+
+// ===== F: Copy Plain Text =====
+function copyPlainText(){
+  if(!lastResult){showToast('尚無審查結果');return;}
+  const plain=lastResult
+    .replace(/#{1,6}\s+/gm,'')
+    .replace(/\*\*(.+?)\*\*/g,'$1')
+    .replace(/\*(.+?)\*/g,'$1')
+    .replace(/`(.+?)`/g,'$1')
+    .replace(/^[\-\*]\s+/gm,'• ')
+    .replace(/^\d+\.\s+/gm,m=>m)
+    .trim();
+  navigator.clipboard.writeText(plain)
+    .then(()=>showToast('✅ 已複製純文字，可直接貼到 Word 使用'))
+    .catch(()=>{
+      const ta=document.createElement('textarea');ta.value=plain;
+      document.body.appendChild(ta);ta.select();document.execCommand('copy');
+      document.body.removeChild(ta);showToast('已複製純文字！');
+    });
+}
+
+// ===== H: Batch Review =====
+let batchMode=false;
+let batchSelectedIds=new Set();
+let batchResults={};
+let batchRunning=false;
+let batchPaused=false;
+let batchQueue=[];
+let batchCurrentIdx=0;
+
+function switchMode(mode){
+  batchMode=(mode==='batch');
+  document.getElementById('tabSingle').classList.toggle('active',!batchMode);
+  document.getElementById('tabBatch').classList.toggle('active',batchMode);
+  document.getElementById('singlePanel').style.display=batchMode?'none':'';
+  document.getElementById('batchPanel').classList.toggle('show',batchMode);
+  if(batchMode)updateBatchStartBtn();else updateButtons();
+}
+
+function buildBatchPanel(){
+  const panel=document.getElementById('batchPanel');
+  if(!panel)return;
+  let h=`<div class="batch-global-ctrl">
+    <button class="btn btn-sm" style="background:#e8f0fe;color:#1a56db;border:1px solid #a4cafe" onclick="batchSelectAll()">&#9745; 全選</button>
+    <button class="btn btn-sm" style="background:#eee;color:var(--text)" onclick="batchClearAll()">&#9744; 清除全選</button>
+    <span style="font-size:.83rem;color:var(--text-light)" id="batchSelCount">已選 0 項</span>
+  </div>`;
+  REVIEW_DATA.forEach((cat,ci)=>{
+    h+=`<div class="batch-cat-block"><div class="batch-cat-hdr">
+      <span class="batch-cat-hdr-title">${cat.category}</span>
+      <button class="btn btn-sm" style="padding:2px 10px;font-size:.75rem;background:rgba(124,58,237,.1);color:var(--step2-dark);border:1px solid rgba(124,58,237,.25)" onclick="batchSelCat(${ci})">全選此分類</button>
+    </div><div class="batch-items-wrap">`;
+    cat.items.forEach(item=>{
+      h+=`<span class="b-chip${item.special?' special-chip':''}" data-bid="${item.id}" onclick="toggleBChip('${item.id}')"><span class="bchk">&#9744;</span> ${item.id} ${item.name}${item.special?' ⚠️':''}</span>`;
+    });
+    h+=`</div></div>`;
+  });
+  h+=`<div style="margin-top:12px;padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:.82rem;color:#78350f;display:flex;gap:8px;align-items:flex-start">
+    <span>&#9888;&#65039;</span><span>批次審查每項間隔 2 秒以避免 API 速率限制。40 項全審約需 3–5 分鐘。特殊班級（⚠️）仍需搭配人工審查。<strong>Ctrl+Enter</strong> 也可快速開始審查。</span>
+  </div>
+  <div class="batch-start-area">
+    <button class="btn btn-primary" id="btnStartBatch" onclick="startBatchReview()" disabled>&#9654; 開始批次審查</button>
+    <button class="btn btn-secondary hidden" id="btnPauseBatch" onclick="togglePauseBatch()">&#9208;&#65039; 暫停</button>
+    <button class="btn btn-sm hidden" style="background:linear-gradient(135deg,#d1fae5,#ecfdf5);color:#065f46;border:1px solid #6ee7b7;font-weight:700" id="btnDownloadRpt" onclick="downloadReport()">&#128229; 下載審查報告</button>
+  </div>
+  <div class="batch-progress-wrap" id="batchProgressWrap">
+    <div class="batch-prog-track"><div class="batch-prog-fill" id="batchProgFill" style="width:0%"></div></div>
+    <div class="batch-prog-label"><span id="batchProgText">準備中...</span><span id="batchProgCount">0 / 0</span></div>
+  </div>
+  <div class="batch-results-wrap" id="batchResultsWrap"></div>`;
+  panel.innerHTML=h;
+}
+
+function toggleBChip(id){
+  if(batchRunning)return;
+  const chip=document.querySelector(`.b-chip[data-bid="${id}"]`);
+  if(!chip)return;
+  if(batchSelectedIds.has(id)){
+    batchSelectedIds.delete(id);chip.classList.remove('sel');
+    const ck=chip.querySelector('.bchk');if(ck)ck.innerHTML='&#9744;';
+  }else{
+    batchSelectedIds.add(id);chip.classList.add('sel');
+    const ck=chip.querySelector('.bchk');if(ck)ck.innerHTML='&#9745;';
+  }
+  updateBatchUI();
+}
+function batchSelectAll(){
+  if(batchRunning)return;
+  REVIEW_DATA.forEach(cat=>cat.items.forEach(item=>{
+    batchSelectedIds.add(item.id);
+    const c=document.querySelector(`.b-chip[data-bid="${item.id}"]`);
+    if(c){c.classList.add('sel');const ck=c.querySelector('.bchk');if(ck)ck.innerHTML='&#9745;';}
+  }));
+  updateBatchUI();
+}
+function batchClearAll(){
+  if(batchRunning)return;
+  batchSelectedIds.clear();
+  document.querySelectorAll('.b-chip').forEach(c=>{
+    c.classList.remove('sel');const ck=c.querySelector('.bchk');if(ck)ck.innerHTML='&#9744;';
+  });
+  updateBatchUI();
+}
+function batchSelCat(ci){
+  if(batchRunning)return;
+  REVIEW_DATA[ci].items.forEach(item=>{
+    batchSelectedIds.add(item.id);
+    const c=document.querySelector(`.b-chip[data-bid="${item.id}"]`);
+    if(c){c.classList.add('sel');const ck=c.querySelector('.bchk');if(ck)ck.innerHTML='&#9745;';}
+  });
+  updateBatchUI();
+}
+function updateBatchUI(){
+  const n=batchSelectedIds.size;
+  const el=document.getElementById('batchSelCount');if(el)el.textContent=`已選 ${n} 項`;
+  updateBatchStartBtn();
+}
+function updateBatchStartBtn(){
+  const apiKey=(document.getElementById('apiKey')||{}).value||localStorage.getItem('tyc_apikey')||'';
+  const canStart=batchSelectedIds.size>0&&extractedText.length>0&&apiKey.length>0;
+  const btn=document.getElementById('btnStartBatch');
+  if(btn)btn.disabled=!canStart;
+}
+
+async function startBatchReview(){
+  if(!extractedText){showToast('請先上傳 PDF');return;}
+  const apiKey=document.getElementById('apiKey').value||localStorage.getItem('tyc_apikey');
+  if(!apiKey){showToast('請先設定 API 金鑰');document.getElementById('settingsPanel').open=true;return;}
+  batchQueue=[];
+  REVIEW_DATA.forEach(cat=>cat.items.forEach(item=>{if(batchSelectedIds.has(item.id))batchQueue.push(item);}));
+  if(!batchQueue.length){showToast('請先勾選要審查的項次');return;}
+  batchResults={};batchCurrentIdx=0;batchRunning=true;batchPaused=false;
+  document.getElementById('btnStartBatch').disabled=true;
+  document.getElementById('btnPauseBatch').classList.remove('hidden');
+  document.getElementById('btnDownloadRpt').classList.add('hidden');
+  document.getElementById('batchProgressWrap').classList.add('show');
+  document.getElementById('batchResultsWrap').innerHTML='';
+  batchQueue.forEach(item=>{
+    const idS=item.id.replace(/\./g,'-');
+    const div=document.createElement('div');
+    div.className='b-res-item';div.id='bri-'+idS;
+    div.innerHTML=`<button class="b-res-hdr" onclick="toggleBRes('${idS}')">
+      <span class="b-res-status" id="bst-${idS}">&#9203;</span>
+      <span class="b-res-title">${item.id} ${item.name}</span>
+      <span class="b-res-tog" id="btog-${idS}">&#9654; 展開</span>
+    </button><div class="b-res-body" id="brb-${idS}"></div>`;
+    document.getElementById('batchResultsWrap').appendChild(div);
+  });
+  document.getElementById('batchResultsWrap').scrollIntoView({behavior:'smooth',block:'start'});
+  await runBatchQueue(apiKey);
+}
+
+async function runBatchQueue(apiKey){
+  const provider=document.getElementById('apiProvider').value||localStorage.getItem('tyc_provider')||'gemini';
+  const model=document.getElementById('apiModel').value||localStorage.getItem('tyc_model');
+  const total=batchQueue.length;
+  while(batchCurrentIdx<total&&batchRunning){
+    while(batchPaused&&batchRunning)await new Promise(r=>setTimeout(r,300));
+    if(!batchRunning)break;
+    const item=batchQueue[batchCurrentIdx];
+    const idS=item.id.replace(/\./g,'-');
+    document.getElementById('batchProgFill').style.width=Math.round(batchCurrentIdx/total*100)+'%';
+    document.getElementById('batchProgText').textContent='正在審查：'+item.id+' '+item.name;
+    document.getElementById('batchProgCount').textContent=(batchCurrentIdx+1)+' / '+total;
+    const stEl=document.getElementById('bst-'+idS);if(stEl)stEl.textContent='🔄';
+    try{
+      const userPrompt=item.prompt+'\n\n## 以下是待審查的課程計畫內容：\n---\n'+extractedText+'\n---';
+      const result=provider==='gemini'
+        ?await callGemini(apiKey,model,SYSTEM_PROMPT,userPrompt)
+        :await callOpenAI(apiKey,model,SYSTEM_PROMPT,userPrompt);
+      const isPass=/^表件通過[。！!]?\s*$/.test(result.trim());
+      batchResults[item.id]={status:isPass?'pass':'fail',text:result};
+      if(stEl)stEl.textContent=isPass?'✅':'❌';
+      const chip=document.querySelector(`.b-chip[data-bid="${item.id}"]`);
+      if(chip){chip.classList.remove('sel','special-chip');chip.classList.add(isPass?'st-pass':'st-fail');}
+      const body=document.getElementById('brb-'+idS);
+      if(body)body.innerHTML=`<div class="result-content">${renderMarkdown(result)}</div>`;
+    }catch(err){
+      batchResults[item.id]={status:'error',text:err.message};
+      if(stEl)stEl.textContent='⚠️';
+      const chip=document.querySelector(`.b-chip[data-bid="${item.id}"]`);
+      if(chip){chip.classList.remove('sel');chip.classList.add('st-err');}
+      const body=document.getElementById('brb-'+idS);
+      if(body)body.innerHTML=`<div style="color:var(--danger);font-size:.88rem">&#10060; 審查失敗：${err.message}</div>`;
+    }
+    batchCurrentIdx++;
+    if(batchCurrentIdx<total&&batchRunning&&!batchPaused)await new Promise(r=>setTimeout(r,2000));
+  }
+  batchRunning=false;batchPaused=false;
+  document.getElementById('batchProgFill').style.width='100%';
+  const done=batchCurrentIdx>=total;
+  document.getElementById('batchProgText').textContent=done?'✅ 批次審查完成！':'已暫停（'+batchCurrentIdx+' / '+total+' 項完成）';
+  document.getElementById('batchProgCount').textContent=Math.min(batchCurrentIdx,total)+' / '+total;
+  document.getElementById('btnPauseBatch').classList.add('hidden');
+  document.getElementById('btnStartBatch').disabled=false;
+  document.getElementById('btnStartBatch').innerHTML=done?'&#9654; 重新開始批次審查':'&#9654; 繼續批次審查';
+  if(done){document.getElementById('btnDownloadRpt').classList.remove('hidden');showBatchSummary();showToast('🎉 批次審查完成！共 '+total+' 項');}
+}
+
+function togglePauseBatch(){
+  batchPaused=!batchPaused;
+  document.getElementById('btnPauseBatch').innerHTML=batchPaused?'&#9654; 繼續':'&#9208;&#65039; 暫停';
+  showToast(batchPaused?'已暫停批次審查':'繼續批次審查中...');
+}
+
+function showBatchSummary(){
+  const vals=Object.values(batchResults);
+  const pass=vals.filter(v=>v.status==='pass').length;
+  const fail=vals.filter(v=>v.status==='fail').length;
+  const err=vals.filter(v=>v.status==='error').length;
+  const html=`<div class="batch-summary">
+    <div class="bsum-item"><span>✅</span>通過：<span style="color:var(--success)">${pass} 項</span></div>
+    <div class="bsum-item"><span>❌</span>待修正：<span style="color:var(--danger)">${fail} 項</span></div>
+    ${err?`<div class="bsum-item"><span>⚠️</span>錯誤：<span style="color:var(--warn)">${err} 項</span></div>`:''}
+    <div class="bsum-item" style="margin-left:auto;font-size:.8rem;color:var(--text-light)">共 ${vals.length} 項</div>
+  </div>`;
+  document.getElementById('batchResultsWrap').insertAdjacentHTML('afterbegin',html);
+}
+
+function toggleBRes(idS){
+  const body=document.getElementById('brb-'+idS);
+  const tog=document.getElementById('btog-'+idS);
+  if(!body)return;
+  const open=body.classList.toggle('open');
+  if(tog)tog.textContent=open?'▼ 收起':'▶ 展開';
+}
+
+// ===== I: Download Report =====
+function downloadReport(){
+  if(!batchQueue.length||!Object.keys(batchResults).length){showToast('尚無批次審查結果');return;}
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('zh-TW')+' '+now.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+  const model=document.getElementById('apiModel').value||localStorage.getItem('tyc_model')||'';
+  const provider=document.getElementById('apiProvider').value||'';
+  const vals=Object.values(batchResults);
+  const pass=vals.filter(v=>v.status==='pass').length;
+  const fail=vals.filter(v=>v.status==='fail').length;
+  const err=vals.filter(v=>v.status==='error').length;
+  let md='# 課程計畫 AI 審查報告\n\n';
+  md+=`- **審查日期**：${dateStr}\n`;
+  md+=`- **使用模型**：${provider} / ${model}\n`;
+  md+=`- **審查結果**：✅ 通過 ${pass} 項　❌ 待修正 ${fail} 項${err?`　⚠️ 錯誤 ${err} 項`:''}\n`;
+  md+='- **審查標準**：桃園市教育局 115 學年度\n';
+  md+='- **製作工具**：課程計畫 AI 審查工具（阿凱老師製作）\n\n---\n\n## 總覽表格\n\n';
+  md+='| 項次 | 名稱 | 結果 |\n|------|------|------|\n';
+  batchQueue.forEach(item=>{
+    const r=batchResults[item.id];
+    const s=r?(r.status==='pass'?'✅ 通過':r.status==='fail'?'❌ 待修正':'⚠️ 錯誤'):'⏳ 未審查';
+    md+=`| ${item.id} | ${item.name} | ${s} |\n`;
+  });
+  md+='\n---\n\n## 詳細審查結果\n\n';
+  batchQueue.forEach(item=>{
+    const r=batchResults[item.id];if(!r)return;
+    const s=r.status==='pass'?'✅ 通過':r.status==='fail'?'❌ 待修正':'⚠️ 錯誤';
+    md+=`### ${item.id} ${item.name} ${s}\n\n${r.text}\n\n---\n\n`;
+  });
+  md+='*本報告由課程計畫 AI 審查工具自動產生，僅供輔助參考，正式審查結果以教育局委員審定為準。*';
+  const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='課程計畫審查報告_'+now.toLocaleDateString('zh-TW').replace(/\//g,'')+'.md';
+  a.click();URL.revokeObjectURL(url);showToast('📥 報告已下載！');
+}
+
+// ===== L: PWA =====
+let _deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();_deferredPrompt=e;
+  const banner=document.getElementById('pwaInstallBanner');
+  if(banner)banner.classList.remove('hidden');
+});
+function installPwa(){
+  if(!_deferredPrompt)return;
+  _deferredPrompt.prompt();
+  _deferredPrompt.userChoice.then(c=>{
+    if(c.outcome==='accepted')showToast('✅ 已加入主畫面！');
+    _deferredPrompt=null;
+    const banner=document.getElementById('pwaInstallBanner');
+    if(banner)banner.classList.add('hidden');
+  });
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/curriculum/sw.js').catch(()=>{});
+  });
 }
 </script>
 </body>
