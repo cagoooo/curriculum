@@ -131,7 +131,38 @@ textarea.criteria-preview:focus{border-color:var(--step2);box-shadow:0 0 0 3px r
 .tag-primary{background:var(--primary-light);color:var(--primary-dark)}
 .tag-warn{background:#fef3c7;color:#92400e}
 /* ── FOOTER ─────────────────────── */
-footer{text-align:center;padding:24px 0 16px;color:var(--text-light);font-size:.8rem;margin-top:24px;border-top:1px solid var(--border)}
+footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);color:rgba(255,255,255,.9);margin-top:32px}
+.footer-inner{max-width:940px;margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr 1.2fr;gap:36px;padding:40px 24px 30px}
+.footer-brand{}
+.footer-logo{display:flex;align-items:center;gap:10px;font-size:1.05rem;font-weight:900;margin-bottom:10px;color:#fff}
+.footer-logo-icon{font-size:1.6rem;line-height:1}
+.footer-ver{display:inline-block;padding:3px 13px;border-radius:20px;background:rgba(110,231,183,.2);border:1px solid rgba(110,231,183,.35);font-size:.73rem;font-weight:800;margin-bottom:12px;color:#6ee7b7;letter-spacing:.5px}
+.footer-desc{font-size:.83rem;opacity:.7;line-height:1.65;color:rgba(255,255,255,.75)}
+.footer-col-title{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:14px}
+.footer-link{display:flex;align-items:center;gap:8px;font-size:.87rem;color:rgba(255,255,255,.75);text-decoration:none;padding:7px 0;transition:all .18s;font-weight:600;border-bottom:1px solid rgba(255,255,255,.06)}
+.footer-link:last-child{border-bottom:none}
+.footer-link:hover{color:#6ee7b7;transform:translateX(5px);border-bottom-color:transparent}
+.footer-link-icon{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.fi-green{background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.3)}
+.fi-blue{background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.3)}
+.fi-gray{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
+.footer-stack-title{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:12px}
+.footer-stack{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.stack-badge{padding:5px 13px;border-radius:20px;font-size:.76rem;font-weight:700;letter-spacing:.3px}
+.sb-blue{background:rgba(59,130,246,.22);border:1px solid rgba(59,130,246,.4);color:#93c5fd}
+.sb-purple{background:rgba(124,58,237,.22);border:1px solid rgba(124,58,237,.4);color:#c4b5fd}
+.sb-green{background:rgba(16,185,129,.22);border:1px solid rgba(16,185,129,.4);color:#6ee7b7}
+.sb-amber{background:rgba(217,119,6,.22);border:1px solid rgba(217,119,6,.4);color:#fcd34d}
+.sb-teal{background:rgba(45,181,160,.22);border:1px solid rgba(45,181,160,.4);color:#5eead4}
+.footer-privacy{font-size:.79rem;color:rgba(255,255,255,.55);line-height:1.55;display:flex;align-items:flex-start;gap:6px;padding:10px 12px;background:rgba(255,255,255,.06);border-radius:8px;border:1px solid rgba(255,255,255,.1)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;max-width:940px;margin:0 auto}
+.footer-notice{font-size:.78rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:6px}
+.footer-credit{font-size:.78rem;color:rgba(255,255,255,.45);font-weight:700;display:flex;align-items:center;gap:6px}
+.footer-credit a{color:#6ee7b7;text-decoration:none}
+.footer-credit a:hover{text-decoration:underline}
+.footer-divider{width:100%;height:1px;background:rgba(255,255,255,.08);max-width:940px;margin:0 auto}
+@media(max-width:768px){.footer-inner{grid-template-columns:1fr 1fr;gap:28px;padding:30px 18px 24px}.footer-brand{grid-column:1/-1}}
+@media(max-width:480px){.footer-inner{grid-template-columns:1fr;gap:22px;padding:24px 16px 20px}.footer-bottom{flex-direction:column;align-items:flex-start;gap:6px;padding:12px 16px}}
 .hidden{display:none!important}
 /* ── A: Result coloring ─────────── */
 .result-pass-banner{background:linear-gradient(135deg,#d1fae5,#ecfdf5);border:2px solid var(--success);border-radius:14px;padding:28px 20px;text-align:center;color:#064e3b;margin-bottom:8px}
@@ -335,11 +366,66 @@ footer{text-align:center;padding:24px 0 16px;color:var(--text-light);font-size:.
     </div>
   </div>
 
-  <footer>
-    課程計畫 AI 審查工具 v1.6 | 審查標準依據桃園市教育局115學年度審查用語 | 阿凱老師製作<br>
-    本工具僅供參考，正式審查結果以教育局委員審定為準
-  </footer>
 </div>
+
+<footer>
+  <!-- 三欄主體 -->
+  <div class="footer-inner">
+    <!-- 品牌欄 -->
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <span class="footer-logo-icon">&#128203;</span>
+        課程計畫 AI 審查工具
+      </div>
+      <div class="footer-ver">v1.6</div>
+      <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
+    </div>
+    <!-- 快速連結欄 -->
+    <div>
+      <div class="footer-col-title">快速連結</div>
+      <a class="footer-link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">
+        <span class="footer-link-icon fi-green">&#128273;</span>免費申請 Gemini 金鑰
+      </a>
+      <a class="footer-link" href="https://cagoooo.github.io/curriculum/" target="_blank" rel="noopener">
+        <span class="footer-link-icon fi-blue">&#127760;</span>線上使用工具
+      </a>
+      <a class="footer-link" href="https://github.com/cagoooo/curriculum" target="_blank" rel="noopener">
+        <span class="footer-link-icon fi-gray">&#11088;</span>GitHub 原始碼
+      </a>
+      <a class="footer-link" href="https://gemini.google.com" target="_blank" rel="noopener">
+        <span class="footer-link-icon fi-blue">&#129302;</span>Gemini 網頁版
+      </a>
+    </div>
+    <!-- 技術棧欄 -->
+    <div>
+      <div class="footer-stack-title">技術架構</div>
+      <div class="footer-stack">
+        <span class="stack-badge sb-purple">&#129302; Gemini AI</span>
+        <span class="stack-badge sb-blue">PDF.js v4</span>
+        <span class="stack-badge sb-green">GitHub Pages</span>
+        <span class="stack-badge sb-amber">純前端</span>
+        <span class="stack-badge sb-teal">零後端</span>
+      </div>
+      <div class="footer-privacy">
+        <span>&#128274;</span>
+        <span>API 金鑰僅儲存於您的瀏覽器本機（localStorage），不會上傳至任何伺服器。</span>
+      </div>
+    </div>
+  </div>
+  <!-- 底部聲明列 -->
+  <div class="footer-divider"></div>
+  <div class="footer-bottom">
+    <div class="footer-notice">
+      <span>&#9888;&#65039;</span>
+      <span>本工具 AI 審查僅供輔助參考，正式審查結果以教育局委員審定為準</span>
+    </div>
+    <div class="footer-credit">
+      <span>阿凱老師製作</span>
+      <span style="opacity:.4">&middot;</span>
+      <a href="https://github.com/cagoooo/curriculum" target="_blank" rel="noopener">審查標準依據桃園市教育局 115 學年度</a>
+    </div>
+  </div>
+</footer>
 
 <div class="toast" id="toast"></div>
 
