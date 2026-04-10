@@ -142,8 +142,10 @@ footer{text-align:center;padding:20px 0;color:var(--text-light);font-size:.8rem;
       </div>
       <div class="btn-group">
         <button class="btn btn-primary btn-sm" onclick="saveSettings()">儲存設定</button>
+        <button class="btn btn-secondary btn-sm" id="btnTestKey" onclick="testApiKey()">&#128269; 測試 API 金鑰</button>
         <span style="font-size:.8rem;color:var(--text-light);align-self:center">金鑰僅儲存在您的瀏覽器本機中</span>
       </div>
+      <div id="apiTestResult" class="hidden" style="margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.85rem;display:flex;align-items:center;gap:8px"></div>
       <div id="openaiWarning" class="hidden" style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:6px;font-size:.85rem;color:#856404">
         OpenAI API 可能因 CORS 限制無法從本地檔案直接呼叫。建議使用 Google Gemini，或使用「複製提示詞」功能。
       </div>
@@ -791,6 +793,80 @@ function saveSettings(){
   localStorage.setItem('tyc_apikey',document.getElementById('apiKey').value);
   localStorage.setItem('tyc_model',document.getElementById('apiModel').value);
   showToast('設定已儲存');
+}
+
+async function testApiKey(){
+  const provider=document.getElementById('apiProvider').value;
+  const key=document.getElementById('apiKey').value.trim();
+  const model=document.getElementById('apiModel').value;
+  const resultEl=document.getElementById('apiTestResult');
+  const btn=document.getElementById('btnTestKey');
+
+  if(!key){
+    resultEl.className='';
+    resultEl.style.cssText='margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.85rem;display:flex;align-items:center;gap:8px;background:#fff3cd;color:#664d03;border:1px solid #ffc107';
+    resultEl.innerHTML='<span style="font-size:1.1rem">&#9888;&#65039;</span> 請先輸入 API 金鑰再測試';
+    return;
+  }
+
+  // 顯示測試中
+  btn.disabled=true;
+  btn.textContent='測試中...';
+  resultEl.className='';
+  resultEl.style.cssText='margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.85rem;display:flex;align-items:center;gap:8px;background:#f0f4ff;color:#1a56db;border:1px solid #a4cafe';
+  resultEl.innerHTML='<span class="spinner" style="width:16px;height:16px;border-width:2px"></span> 正在測試，請稍候...';
+
+  try{
+    let ok=false, errMsg='';
+    if(provider==='gemini'){
+      const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+      const res=await fetch(url,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          contents:[{role:'user',parts:[{text:'請僅回覆「OK」，不需其他說明。'}]}],
+          generationConfig:{maxOutputTokens:10}
+        })
+      });
+      if(res.ok){ok=true;}
+      else{const d=await res.json().catch(()=>({}));errMsg=d?.error?.message||`HTTP ${res.status}`;}
+    }else{
+      // OpenAI
+      const res=await fetch('https://api.openai.com/v1/chat/completions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
+        body:JSON.stringify({
+          model:model,
+          messages:[{role:'user',content:'請僅回覆「OK」，不需其他說明。'}],
+          max_tokens:10
+        })
+      });
+      if(res.ok){ok=true;}
+      else{const d=await res.json().catch(()=>({}));errMsg=d?.error?.message||`HTTP ${res.status}`;}
+    }
+
+    if(ok){
+      resultEl.style.cssText='margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.85rem;display:flex;align-items:center;gap:8px;background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7';
+      resultEl.innerHTML='<span style="font-size:1.1rem">&#9989;</span> <span><strong>金鑰有效！</strong>API 連線正常，可以開始使用。</span>';
+    }else{
+      // 嘗試提供更友善的錯誤說明
+      let hint='';
+      if(/API_KEY_INVALID|invalid.*key|api key not valid/i.test(errMsg)) hint='金鑰格式錯誤或已失效，請重新申請。';
+      else if(/QUOTA_EXCEEDED|quota/i.test(errMsg)) hint='免費額度已用完，請明日再試或升級方案。';
+      else if(/PERMISSION_DENIED|permission/i.test(errMsg)) hint='金鑰權限不足，請確認已啟用 Gemini API。';
+      else if(/403/.test(errMsg)) hint='存取被拒，請確認金鑰正確且未過期。';
+      resultEl.style.cssText='margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.85rem;display:flex;align-items:flex-start;gap:8px;background:#fde8e8;color:#7f1d1d;border:1px solid #fca5a5';
+      resultEl.innerHTML=`<span style="font-size:1.1rem;flex-shrink:0">&#10060;</span><span><strong>金鑰驗證失敗</strong><br>${hint||errMsg}</span>`;
+    }
+  }catch(e){
+    resultEl.style.cssText='margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.85rem;display:flex;align-items:flex-start;gap:8px;background:#fde8e8;color:#7f1d1d;border:1px solid #fca5a5';
+    const isCors=e.message&&e.message.toLowerCase().includes('cors');
+    resultEl.innerHTML=`<span style="font-size:1.1rem;flex-shrink:0">&#10060;</span><span><strong>${isCors?'CORS 限制':'網路連線錯誤'}</strong><br>${isCors?'請確認您是透過 https:// 開啟本頁，或改用 Google Gemini（支援 file:// 開啟）。':e.message}</span>`;
+  }finally{
+    btn.disabled=false;
+    btn.textContent='🔍 測試 API 金鑰';
+    btn.innerHTML='&#128269; 測試 API 金鑰';
+  }
 }
 
 // ===== Prompt Assembly =====
