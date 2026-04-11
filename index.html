@@ -169,6 +169,11 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
 .footer-credit{font-size:.78rem;color:rgba(255,255,255,.45);font-weight:700;display:flex;align-items:center;gap:6px}
 .footer-credit a{color:#6ee7b7;text-decoration:none}
 .footer-credit a:hover{text-decoration:underline}
+.footer-maker-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:linear-gradient(135deg,#fbbf24 0%,#f87171 50%,#a78bfa 100%);color:#fff;font-size:.8rem;font-weight:800;border-radius:24px;text-decoration:none!important;box-shadow:0 4px 14px rgba(251,191,36,.45),0 2px 6px rgba(0,0,0,.18);transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;letter-spacing:.4px;border:1.5px solid rgba(255,255,255,.3);white-space:nowrap}
+.footer-maker-btn:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 8px 26px rgba(251,191,36,.6),0 4px 12px rgba(0,0,0,.15);text-decoration:none!important}
+.footer-maker-btn:active{transform:translateY(-1px) scale(1.01)}
+.footer-maker-btn .fmb-icon{display:inline-block;animation:fmb-wave 1.1s ease-in-out infinite}
+@keyframes fmb-wave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
 .footer-divider{width:100%;height:1px;background:rgba(255,255,255,.08);max-width:940px;margin:0 auto}
 @media(max-width:768px){.footer-inner{grid-template-columns:1fr 1fr;gap:28px;padding:30px 18px 24px}.footer-brand{grid-column:1/-1}}
 @media(max-width:480px){.footer-inner{grid-template-columns:1fr;gap:22px;padding:24px 16px 20px}.footer-bottom{flex-direction:column;align-items:flex-start;gap:6px;padding:12px 16px}}
@@ -634,7 +639,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v2.2</div>
+      <div class="footer-ver">v2.3</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -683,7 +688,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
       <span>本工具 AI 審查僅供輔助參考，正式審查結果以教育局委員審定為準</span>
     </div>
     <div class="footer-credit">
-      <span>阿凱老師製作</span>
+      <a class="footer-maker-btn" href="https://www.smes.tyc.edu.tw/modules/tadnews/page.php?ncsn=11&nsn=16#a5" target="_blank" rel="noopener"><span class="fmb-icon">👨‍🏫</span> 阿凱老師製作</a>
       <span style="opacity:.4">&middot;</span>
       <a href="https://github.com/cagoooo/curriculum" target="_blank" rel="noopener">審查標準依據桃園市教育局 115 學年度</a>
     </div>
