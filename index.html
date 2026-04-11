@@ -317,6 +317,10 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
 .bsum-item{display:flex;align-items:center;gap:6px;font-size:.9rem;font-weight:700}
 /* ── G: Batch Filter Tabs ──────── */
 .batch-filter-tabs{display:flex;gap:6px;margin:10px 0 8px;flex-wrap:wrap}
+.batch-search-wrap{margin:8px 0 4px;position:relative}
+.batch-search-input{width:100%;padding:8px 36px 8px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:.86rem;font-family:inherit;outline:none;transition:border-color .2s;background:#fff}
+.batch-search-input:focus{border-color:var(--step2);box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+.batch-search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:1rem;cursor:pointer;color:var(--text-light);display:none}
 .b-ftab{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;color:var(--text-light);line-height:1.4}
 .b-ftab:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
 .b-ftab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
@@ -378,6 +382,24 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
   .footer-inner{max-width:1040px}
   .footer-bottom,.footer-divider{max-width:1040px}
 }
+/* ── EE: Tutorial Overlay ──────────── */
+.tut-overlay{display:none;position:fixed;inset:0;z-index:9000;pointer-events:none}
+.tut-overlay.show{display:block;pointer-events:all}
+.tut-bg{position:absolute;inset:0;background:rgba(0,0,0,.62);transition:opacity .3s}
+.tut-spotlight{position:absolute;border-radius:14px;box-shadow:0 0 0 4px rgba(255,255,255,.5),0 0 0 9999px rgba(0,0,0,.62);transition:all .45s cubic-bezier(.4,0,.2,1);z-index:1;pointer-events:none}
+.tut-card{position:absolute;background:#fff;border-radius:16px;padding:22px 24px;width:300px;box-shadow:0 12px 48px rgba(0,0,0,.25);z-index:2;pointer-events:all}
+.tut-card-tag{font-size:.72rem;font-weight:800;color:var(--primary);background:var(--primary-light);padding:2px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;letter-spacing:.5px}
+.tut-card h3{font-size:1.05rem;font-weight:900;color:var(--text);margin-bottom:8px}
+.tut-card p{font-size:.87rem;color:var(--text-light);line-height:1.72;margin-bottom:16px}
+.tut-nav{display:flex;align-items:center;gap:8px}
+.tut-dots{display:flex;gap:5px;flex:1}
+.tut-dot{width:7px;height:7px;border-radius:50%;background:#e5e7eb;transition:background .2s,transform .2s}
+.tut-dot.active{background:var(--primary);transform:scale(1.3)}
+.tut-skip{font-size:.78rem;color:var(--text-light);background:none;border:none;cursor:pointer;padding:4px 8px;text-decoration:underline}
+.tut-next{padding:8px 20px;background:var(--primary);color:#fff;border:none;border-radius:20px;font-size:.86rem;font-weight:700;cursor:pointer;transition:background .2s}
+.tut-next:hover{background:var(--primary-dark)}
+.tut-reopen-btn{position:fixed;bottom:72px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:1rem;cursor:pointer;box-shadow:0 2px 10px rgba(26,138,122,.4);z-index:100;transition:transform .2s}
+.tut-reopen-btn:hover{transform:scale(1.1)}
 /* ── B: Print Styles ──────────── */
 @media print{
   .font-size-ctrl,#pwaInstallBanner,.header-chips,footer,details,
@@ -670,6 +692,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <button class="btn btn-secondary btn-sm" onclick="copyResult()" title="複製含 Markdown 格式的結果">&#128203; 複製 Markdown</button>
         <button class="btn btn-sm" style="background:#e8f0fe;color:#1a56db;border:1px solid #a4cafe;font-weight:700" onclick="copyPlainText()" title="複製純文字，適合貼到 Word">&#128291; 複製純文字</button>
         <button class="btn btn-sm" style="background:#fef3c7;color:#78350f;border:1px solid #fde68a;font-weight:700" onclick="window.print()" title="列印審查結果">&#128424;&#65039; 列印</button>
+        <button class="btn btn-sm" style="background:#fdf4ff;color:#7e22ce;border:1px solid #d8b4fe;font-weight:700" onclick="screenshotResult()" title="截圖下載審查結果">&#128247; 截圖下載</button>
         <button class="btn btn-sm" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="resetFile();clearResult()">&#128260; 修正後重新上傳</button>
         <button class="btn btn-sm" style="background:#eee;color:var(--text)" onclick="clearResult()">清除結果</button>
       </div>
@@ -687,7 +710,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v2.9</div>
+      <div class="footer-ver">v3.0</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -744,6 +767,23 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
 </footer>
 
 <div class="toast" id="toast"></div>
+
+<!-- EE: Tutorial Overlay -->
+<div class="tut-overlay" id="tutOverlay">
+  <div class="tut-bg" id="tutBg" onclick="skipTutorial()"></div>
+  <div class="tut-spotlight" id="tutSpotlight"></div>
+  <div class="tut-card" id="tutCard">
+    <div class="tut-card-tag" id="tutTag">步驟 1 / 5</div>
+    <h3 id="tutTitle">歡迎使用課程計畫 AI 審查工具！</h3>
+    <p id="tutDesc">讓我帶你快速了解工具的主要功能，約 1 分鐘即可完成。</p>
+    <div class="tut-nav">
+      <div class="tut-dots" id="tutDots"></div>
+      <button class="tut-skip" onclick="skipTutorial()">跳過</button>
+      <button class="tut-next" id="tutNext" onclick="nextTutStep()">下一步 →</button>
+    </div>
+  </div>
+</div>
+<button class="tut-reopen-btn" onclick="localStorage.removeItem('tyc_tut_done');startTutorial()" title="使用說明">❓</button>
 
 <script>
 // ===== PDF.js v4 Lazy Load (ES Module via dynamic import) =====
@@ -1211,6 +1251,8 @@ const MODELS={
     // Real-time API key detection: update guide as user types key
     const keyEl=document.getElementById('apiKey');
     if(keyEl)keyEl.addEventListener('input',updateButtons);
+    // EE: Start tutorial on first visit
+    setTimeout(startTutorial, 800);
   }
 })();
 
@@ -1452,6 +1494,19 @@ function assemblePrompt(){
   return{system:SYSTEM_PROMPT,user:userPrompt};
 }
 
+// ===== CC: Auto-Retry Helper =====
+async function withRetry(fn,label='',maxRetries=3,delayMs=5000){
+  for(let attempt=1;attempt<=maxRetries;attempt++){
+    try{return await fn();}
+    catch(err){
+      const isRetryable=/429|503|rate.?limit|too.?many|service.?unavail/i.test(err.message||'');
+      if(!isRetryable||attempt===maxRetries)throw err;
+      showToast(`⚡ ${label} API 限速，${delayMs/1000}s 後重試（${attempt}/${maxRetries}）...`);
+      await new Promise(r=>setTimeout(r,delayMs));
+    }
+  }
+}
+
 // ===== API Calls =====
 async function callGemini(apiKey,model,system,user){
   const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
@@ -1525,11 +1580,9 @@ async function executeReview(){
   document.getElementById('resultActions').classList.add('hidden');
   try{
     let result;
-    if(provider==='gemini'){
-      result=await callGemini(apiKey,model,prompt.system,prompt.user);
-    }else{
-      result=await callOpenAI(apiKey,model,prompt.system,prompt.user);
-    }
+    result=await withRetry(()=>provider==='gemini'
+      ?callGemini(apiKey,model,prompt.system,prompt.user)
+      :callOpenAI(apiKey,model,prompt.system,prompt.user),'');
     showResult(result);
   }catch(err){
     let msg=err.message;
@@ -1700,6 +1753,38 @@ function clearResult(){
   document.getElementById('resultContent').classList.add('hidden');
   document.getElementById('resultActions').classList.add('hidden');
   lastResult='';
+}
+
+// ===== BB: Screenshot Result =====
+async function screenshotResult(){
+  const el=document.getElementById('resultContent');
+  if(!el||el.classList.contains('hidden')){showToast('尚無審查結果');return;}
+  showToast('截圖準備中...');
+  if(!window.html2canvas){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload=res;s.onerror=()=>rej(new Error('載入失敗'));
+      document.head.appendChild(s);
+    }).catch(()=>{showToast('截圖工具載入失敗，請稍後再試');});
+    if(!window.html2canvas)return;
+  }
+  try{
+    const canvas=await html2canvas(el,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false});
+    const ctx=canvas.getContext('2d');
+    ctx.save();
+    ctx.globalAlpha=0.45;
+    ctx.font='bold 13px Nunito,sans-serif';
+    ctx.fillStyle='#4b5563';
+    ctx.fillText('課程計畫 AI 審查工具 · cagoooo.github.io/curriculum',12,canvas.height-14);
+    ctx.restore();
+    const a=document.createElement('a');
+    const itemName=selectedItem?selectedItem.id+'_'+selectedItem.name.substring(0,10):'result';
+    a.download=`審查結果_${itemName}_${new Date().toLocaleDateString('zh-TW').replace(/\//g,'-')}.png`;
+    a.href=canvas.toDataURL('image/png');
+    a.click();
+    showToast('✅ 截圖已下載！');
+  }catch(e){showToast('截圖失敗：'+e.message);}
 }
 
 // ===== Reset File (for re-upload workflow) =====
@@ -2095,6 +2180,7 @@ function buildBatchPanel(){
     <button class="btn btn-primary" id="btnStartBatch" onclick="startBatchReview()" disabled>&#9654; 開始批次審查</button>
     <button class="btn btn-secondary hidden" id="btnPauseBatch" onclick="togglePauseBatch()">&#9208;&#65039; 暫停</button>
     <button class="btn btn-sm hidden" style="background:linear-gradient(135deg,#d1fae5,#ecfdf5);color:#065f46;border:1px solid #6ee7b7;font-weight:700" id="btnDownloadRpt" onclick="downloadReport()">&#128229; 下載審查報告</button>
+    <button class="btn btn-sm hidden" id="btnDownloadDoc" onclick="downloadWordDoc()" style="background:linear-gradient(135deg,#dbeafe,#eff6ff);color:#1d4ed8;border:1px solid #93c5fd;font-weight:700">📄 下載 Word 報告</button>
   </div>
   <div style="margin-top:8px;display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-light)">
     <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none" title="批次審查完成時播放提示音並發送桌面通知">
@@ -2175,10 +2261,20 @@ async function startBatchReview(){
   batchQueue=[];
   REVIEW_DATA.forEach(cat=>cat.items.forEach(item=>{if(batchSelectedIds.has(item.id))batchQueue.push(item);}));
   if(!batchQueue.length){showToast('請先勾選要審查的項次');return;}
+  // DD: Split mode suggestion
+  const pdfLen=extractedText.length;
+  const qLen=batchQueue.length;
+  if(pdfLen>25000&&qLen>12){
+    const batches=Math.ceil(qLen/10);
+    const mins=Math.round(qLen*22/60);
+    const proceed=confirm(`⚠️ 批次審查提醒\n\nPDF 較長（約 ${Math.round(pdfLen/1000)}K 字），一次審查 ${qLen} 項可能有部分項次超出 AI Token 上限。\n\n📌 建議：每批選 10 項，共需 ${batches} 批，約 ${mins} 分鐘\n\n按「確定」仍然繼續全部審查\n按「取消」可手動縮減勾選項目`);
+    if(!proceed)return;
+  }
   batchResults={};batchCurrentIdx=0;batchRunning=true;batchPaused=false;
   document.getElementById('btnStartBatch').disabled=true;
   document.getElementById('btnPauseBatch').classList.remove('hidden');
   document.getElementById('btnDownloadRpt').classList.add('hidden');
+  document.getElementById('btnDownloadDoc').classList.add('hidden');
   document.getElementById('batchProgressWrap').classList.add('show');
   const fillEl=document.getElementById('batchProgFill');
   if(fillEl){fillEl.style.width='0%';fillEl.classList.remove('bp-bar-done');}
@@ -2218,9 +2314,9 @@ async function runBatchQueue(apiKey){
     const stEl=document.getElementById('bst-'+idS);if(stEl)stEl.textContent='🔄';
     try{
       const userPrompt=item.prompt+'\n\n## 以下是待審查的課程計畫內容：\n---\n'+extractedText+'\n---';
-      const result=provider==='gemini'
-        ?await callGemini(apiKey,model,SYSTEM_PROMPT,userPrompt)
-        :await callOpenAI(apiKey,model,SYSTEM_PROMPT,userPrompt);
+      const result=await withRetry(()=>provider==='gemini'
+        ?callGemini(apiKey,model,SYSTEM_PROMPT,userPrompt)
+        :callOpenAI(apiKey,model,SYSTEM_PROMPT,userPrompt),item.id);
       const isPass=/^表件通過[。！!]?\s*$/.test(result.trim());
       batchResults[item.id]={status:isPass?'pass':'fail',text:result};
       if(stEl)stEl.textContent=isPass?'✅':'❌';
@@ -2258,6 +2354,7 @@ async function runBatchQueue(apiKey){
   document.getElementById('btnStartBatch').innerHTML=done?'&#9654; 重新開始批次審查':'&#9654; 繼續批次審查';
   if(done){
     document.getElementById('btnDownloadRpt').classList.remove('hidden');
+    if(done)document.getElementById('btnDownloadDoc').classList.remove('hidden');
     const counts=showBatchSummary(); // G: returns {pass,fail,err,total}
     showToast('🎉 批次審查完成！共 '+total+' 項');
     playCompletionSound();                                        // F
@@ -2294,7 +2391,8 @@ function showBatchSummary(){
   const filterHtml=`<div class="batch-filter-tabs" id="batchFilterTabs">
     ${tabs.map((t,i)=>`<button class="b-ftab ${t.cls}${i===0?' active':''}" data-filter="${t.f}" onclick="filterBatchResults('${t.f}')">${t.label}</button>`).join('')}
   </div>`;
-  document.getElementById('batchResultsWrap').insertAdjacentHTML('afterbegin',summaryHtml+filterHtml);
+  const searchHtml=`<div class="batch-search-wrap"><input class="batch-search-input" id="batchSearchInput" placeholder="🔍 搜尋審查項次..." oninput="filterBatchByKeyword(this.value)" /><button class="batch-search-clear" id="batchSearchClear" onclick="clearBatchSearch()">✕</button></div>`;
+  document.getElementById('batchResultsWrap').insertAdjacentHTML('afterbegin',summaryHtml+filterHtml+searchHtml);
   return {pass,fail,err,total};
 }
 
@@ -2304,6 +2402,21 @@ function toggleBRes(idS){
   if(!body)return;
   const open=body.classList.toggle('open');
   if(tog)tog.textContent=open?'▼ 收起':'▶ 展開';
+}
+
+// ===== FF: Batch Keyword Search =====
+function filterBatchByKeyword(kw){
+  const q=kw.trim().toLowerCase();
+  const clr=document.getElementById('batchSearchClear');
+  if(clr)clr.style.display=q?'block':'none';
+  document.querySelectorAll('#batchResultsWrap .b-res-item').forEach(card=>{
+    const txt=(card.textContent||'').toLowerCase();
+    card.style.display=(!q||txt.includes(q))?'':'none';
+  });
+}
+function clearBatchSearch(){
+  const inp=document.getElementById('batchSearchInput');
+  if(inp){inp.value='';filterBatchByKeyword('');}
 }
 
 // ===== I: Download Report =====
@@ -2341,6 +2454,77 @@ function downloadReport(){
   const a=document.createElement('a');
   a.href=url;a.download='課程計畫審查報告_'+now.toLocaleDateString('zh-TW').replace(/\//g,'')+'.md';
   a.click();URL.revokeObjectURL(url);showToast('📥 報告已下載！');
+}
+
+// ===== EE: Tutorial Mode =====
+const TUT_STEPS=[
+  {target:'dropZone',title:'① 上傳課程計畫 PDF',desc:'點擊此區域或拖拉 PDF 檔案至此。支援文字型 PDF，掃描圖檔可能無法擷取文字。',pos:'right'},
+  {target:'settingsPanel',title:'② 設定 API 金鑰',desc:'展開此區塊，輸入 Gemini API 金鑰（免費申請）即可啟用 AI 自動審查功能。若沒有金鑰，也可使用「複製提示詞」搭配 Gemini 網頁版。',pos:'right'},
+  {target:'criteriaSection',title:'③ 選擇審查項次',desc:'從分類下拉選單選擇要審查的項次，共有 40+ 個審查標準可選。也可直接編輯下方的審查條件文字。',pos:'right'},
+  {target:'btnReview',title:'④ 送出 AI 審查',desc:'設定完成後，點擊「送出 AI 審查」按鈕，AI 約需 30–60 秒返回審查結果。',pos:'top'},
+  {target:'tabBatch',title:'⑤ 批次審查模式',desc:'想一次審查多個項次？切換到「批次審查」頁籤，勾選多項後一鍵送出，並可下載完整報告。',pos:'right'},
+];
+let _tutStep=0;
+function startTutorial(){
+  if(localStorage.getItem('tyc_tut_done')==='1')return;
+  _tutStep=0;
+  document.getElementById('tutOverlay').classList.add('show');
+  _renderTutStep();
+}
+function skipTutorial(){
+  document.getElementById('tutOverlay').classList.remove('show');
+  localStorage.setItem('tyc_tut_done','1');
+}
+function nextTutStep(){
+  _tutStep++;
+  if(_tutStep>=TUT_STEPS.length){skipTutorial();return;}
+  _renderTutStep();
+}
+function _renderTutStep(){
+  const step=TUT_STEPS[_tutStep];
+  const el=document.getElementById(step.target);
+  const card=document.getElementById('tutCard');
+  const spot=document.getElementById('tutSpotlight');
+  document.getElementById('tutTag').textContent=`步驟 ${_tutStep+1} / ${TUT_STEPS.length}`;
+  document.getElementById('tutTitle').textContent=step.title;
+  document.getElementById('tutDesc').textContent=step.desc;
+  document.getElementById('tutNext').textContent=_tutStep===TUT_STEPS.length-1?'完成 ✓':'下一步 →';
+  // Dots
+  const dots=document.getElementById('tutDots');
+  dots.innerHTML=TUT_STEPS.map((_,i)=>`<div class="tut-dot${i===_tutStep?' active':''}"></div>`).join('');
+  // Position spotlight
+  if(el){
+    const r=el.getBoundingClientRect();
+    const pad=10;
+    spot.style.cssText=`left:${r.left-pad}px;top:${r.top-pad+window.scrollY}px;width:${r.width+pad*2}px;height:${r.height+pad*2}px`;
+    // Position card
+    const cardW=300,cardH=220;
+    let cx=r.right+16,cy=r.top+window.scrollY;
+    if(cx+cardW>window.innerWidth-10)cx=r.left-cardW-16;
+    if(cy+cardH>window.scrollY+window.innerHeight-10)cy=window.scrollY+window.innerHeight-cardH-16;
+    card.style.cssText=`left:${Math.max(8,cx)}px;top:${Math.max(8,cy)}px`;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+
+// ===== AA: Download Word Doc =====
+function downloadWordDoc(){
+  const vals=Object.values(batchResults);
+  if(!vals.length){showToast('尚無審查結果');return;}
+  const now=new Date().toLocaleString('zh-TW');
+  const passItems=Object.entries(batchResults).filter(([,v])=>v.status==='pass');
+  const failItems=Object.entries(batchResults).filter(([,v])=>v.status==='fail');
+  const errItems=Object.entries(batchResults).filter(([,v])=>v.status==='error');
+  const findName=id=>{let n=id;REVIEW_DATA.forEach(cat=>cat.items.forEach(it=>{if(it.id===id)n=it.name;}));return n;};
+  const passRows=passItems.map(([id,v])=>`<tr><td>${id}</td><td>${findName(id)}</td><td style="color:#166534">✅ 通過</td><td>${(v.text||'').replace(/\*\*/g,'').replace(/#+\s/g,'').substring(0,120)}...</td></tr>`).join('');
+  const failRows=failItems.map(([id,v])=>`<tr><td>${id}</td><td>${findName(id)}</td><td style="color:#991b1b">❌ 待修正</td><td>${(v.text||'').replace(/\*\*/g,'').replace(/#+\s/g,'').substring(0,200)}</td></tr>`).join('');
+  const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset="UTF-8"><title>課程計畫審查報告</title><style>body{font-family:'微軟正黑體',Calibri,sans-serif;font-size:12pt;margin:2cm}h1{font-size:18pt;color:#0d5e52;border-bottom:2pt solid #1a8a7a;padding-bottom:6pt}h2{font-size:13pt;color:#1a8a7a;margin-top:16pt}p{margin:6pt 0}table{border-collapse:collapse;width:100%;margin:10pt 0}td,th{border:1pt solid #ccc;padding:6pt 8pt;font-size:11pt;vertical-align:top}th{background:#d0f0eb;font-weight:bold}.sum{padding:10pt;background:#f5f3ff;border:1pt solid #ddd6fe;border-radius:6pt;margin:12pt 0}.footer-note{margin-top:24pt;font-size:9pt;color:#6b7280;border-top:1pt solid #e5e7eb;padding-top:8pt}</style></head><body><h1>📋 課程計畫 AI 審查報告</h1><p><b>審查時間：</b>${now}</p><p><b>工具版本：</b>課程計畫 AI 審查工具 v3.0</p><div class="sum"><b>審查摘要：</b> &nbsp; ✅ 通過 ${passItems.length} 項 &nbsp; ❌ 待修正 ${failItems.length} 項${errItems.length?` &nbsp; ⚠️ 錯誤 ${errItems.length} 項`:''} &nbsp; 共 ${vals.length} 項</div><h2>審查結果總覽</h2><table><thead><tr><th>項次</th><th>項目名稱</th><th>審查結果</th><th>說明摘要</th></tr></thead><tbody>${passRows}${failRows}</tbody></table><div class="footer-note">⚠️ 本報告由 AI 自動生成，僅供輔助參考，正式審查結果以教育局委員審定為準。<br>工具連結：https://cagoooo.github.io/curriculum/</div></body></html>`;
+  const blob=new Blob(['\ufeff'+html],{type:'application/msword;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`課程計畫審查報告_${new Date().toLocaleDateString('zh-TW').replace(/\//g,'-')}.doc`;
+  a.click();
+  showToast('✅ Word 報告已下載！');
 }
 
 // ===== L: PWA =====
