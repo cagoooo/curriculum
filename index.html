@@ -38,7 +38,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 /* 電腦端基底字型稍大，改善桌機辨識度；行動端保持 16px */
-html{font-size:17px}
+html{font-size:18px}
 @media(max-width:768px){html{font-size:16px}}
 :root{
   --primary:#1a8a7a;--primary-light:#d0f0eb;--primary-dark:#0d5e52;
@@ -240,11 +240,21 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
 .b-chip.st-err{background:#fef9c3!important;border-color:#fde047!important;color:#713f12!important;cursor:default}
 .batch-global-ctrl{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
 .batch-start-area{margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.batch-progress-wrap{margin:12px 0;display:none}
+.batch-progress-wrap{margin:16px 0;display:none;background:linear-gradient(135deg,#f5f3ff,#eff6ff);border:1px solid #ddd6fe;border-radius:13px;padding:16px 20px}
 .batch-progress-wrap.show{display:block}
-.batch-prog-track{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:5px}
-.batch-prog-fill{height:100%;background:linear-gradient(90deg,var(--step2),var(--primary));border-radius:5px;transition:width .5s ease}
-.batch-prog-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-light)}
+.bp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.bp-left{display:flex;align-items:baseline;gap:8px}
+.bp-pct{font-size:1.7rem;font-weight:900;color:var(--step2);line-height:1;font-family:"Nunito",sans-serif}
+.bp-count{font-size:.82rem;color:var(--text-light);font-weight:700;background:rgba(124,58,237,.1);padding:2px 9px;border-radius:20px}
+.batch-prog-track{height:14px;background:rgba(0,0,0,.07);border-radius:8px;overflow:hidden;margin-bottom:10px;box-shadow:inset 0 2px 4px rgba(0,0,0,.07)}
+.batch-prog-fill{height:100%;background:linear-gradient(90deg,var(--step2),var(--primary),#06b6d4);border-radius:8px;transition:width .6s cubic-bezier(.4,0,.2,1);position:relative;min-width:3px}
+.batch-prog-fill::after{content:'';position:absolute;top:0;left:-80%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:bp-shimmer 1.6s infinite}
+@keyframes bp-shimmer{to{left:140%}}
+.bp-current{display:flex;align-items:center;gap:9px;font-size:.86rem;color:var(--text);padding:9px 13px;background:rgba(255,255,255,.8);border-radius:9px;border:1px solid rgba(124,58,237,.18);min-height:38px}
+.bp-current.bp-done{background:#f0fdf4;border-color:#86efac;color:#166534;font-weight:700}
+.bp-spinner{width:15px;height:15px;border:2.5px solid rgba(124,58,237,.2);border-top-color:var(--step2);border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bp-item-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .batch-results-wrap{margin-top:14px}
 .b-res-item{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
 .b-res-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:#fafafa;transition:background .15s;border:none;width:100%;text-align:left;font-family:inherit}
@@ -293,23 +303,31 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
 .nokey-footer{margin-top:13px;padding:10px 14px;background:rgba(255,255,255,.65);border-radius:9px;font-size:.8rem;color:#92400e;line-height:1.5}
 /* ── Desktop RWD Enhancement (≥769px) ──────────── */
 @media(min-width:769px){
-  .container{max-width:1020px}
-  .card{padding:28px 32px}
-  .card h2{font-size:1.15rem}
-  .card-step1 h2,.card-step2 h2,.card-step3 h2{font-size:1.18rem}
-  label{font-size:.97rem}
-  .form-control,.select-control{font-size:.97rem;padding:10px 14px}
-  .btn{font-size:.97rem;padding:11px 22px}
-  .btn-sm{font-size:.86rem;padding:7px 16px}
-  .b-chip{font-size:.83rem;padding:5px 14px}
-  .criteria-preview{font-size:.88rem;line-height:1.65}
-  .item-desc{font-size:.86rem}
-  .batch-cat-hdr-title{font-size:1rem}
-  .result-content{font-size:.97rem;line-height:1.85}
-  .nokey-step-body strong{font-size:1rem}
-  .nokey-step-body p{font-size:.86rem}
-  .footer-inner{max-width:1020px}
-  .footer-bottom,.footer-divider{max-width:1020px}
+  .container{max-width:1040px}
+  .card{padding:30px 36px}
+  .card-title{font-size:1.18rem}
+  .card h2{font-size:1.22rem}
+  .card-step1 h2,.card-step2 h2,.card-step3 h2{font-size:1.25rem}
+  header h1{font-size:2.5rem}
+  header p{font-size:1rem}
+  .header-badge{font-size:.85rem}
+  .header-chip{font-size:.83rem;padding:7px 17px}
+  label{font-size:1.02rem}
+  .form-control,.select-control{font-size:1.02rem;padding:11px 15px}
+  .btn{font-size:1.02rem;padding:12px 26px}
+  .btn-sm{font-size:.9rem;padding:8px 18px}
+  .b-chip{font-size:.88rem;padding:6px 16px}
+  .criteria-preview{font-size:.93rem;line-height:1.7}
+  .item-desc{font-size:.91rem}
+  .batch-cat-hdr-title{font-size:1.08rem}
+  .result-content{font-size:1rem;line-height:1.9}
+  .b-res-title{font-size:.93rem}
+  .b-res-body{font-size:.93rem}
+  .nokey-step-body strong{font-size:1.05rem}
+  .nokey-step-body p{font-size:.91rem}
+  .bsum-item .bsum-num{font-size:1.5rem}
+  .footer-inner{max-width:1040px}
+  .footer-bottom,.footer-divider{max-width:1040px}
 }
 /* ── B: Print Styles ──────────── */
 @media print{
@@ -616,7 +634,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v2.1</div>
+      <div class="footer-ver">v2.2</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -1723,7 +1741,7 @@ function onSearchSelect(){
 }
 
 // ===== E: Font Size =====
-const FS_SIZES={sm:'14px',md:'17px',lg:'20px'};
+const FS_SIZES={sm:'15px',md:'18px',lg:'21px'};
 function setFontSize(s){
   document.documentElement.style.fontSize=FS_SIZES[s]||'16px';
   localStorage.setItem('tyc_fontsize',s);
@@ -1950,8 +1968,11 @@ function buildBatchPanel(){
     </label>
   </div>
   <div class="batch-progress-wrap" id="batchProgressWrap">
+    <div class="bp-header">
+      <div class="bp-left"><span class="bp-pct" id="batchProgPct">0%</span><span class="bp-count" id="batchProgCount">0 / 0</span></div>
+    </div>
     <div class="batch-prog-track"><div class="batch-prog-fill" id="batchProgFill" style="width:0%"></div></div>
-    <div class="batch-prog-label"><span id="batchProgText">準備中...</span><span id="batchProgCount">0 / 0</span></div>
+    <div class="bp-current" id="batchProgText">準備中...</div>
   </div>
   <div class="batch-results-wrap" id="batchResultsWrap"></div>`;
   panel.innerHTML=h;
@@ -2049,9 +2070,12 @@ async function runBatchQueue(apiKey){
     if(!batchRunning)break;
     const item=batchQueue[batchCurrentIdx];
     const idS=item.id.replace(/\./g,'-');
-    document.getElementById('batchProgFill').style.width=Math.round(batchCurrentIdx/total*100)+'%';
-    document.getElementById('batchProgText').textContent='正在審查：'+item.id+' '+item.name;
+    const pct=Math.round(batchCurrentIdx/total*100);
+    document.getElementById('batchProgFill').style.width=pct+'%';
+    document.getElementById('batchProgPct').textContent=pct+'%';
     document.getElementById('batchProgCount').textContent=(batchCurrentIdx+1)+' / '+total;
+    const progEl=document.getElementById('batchProgText');
+    if(progEl){progEl.innerHTML='<div class="bp-spinner"></div><span class="bp-item-name">正在審查：'+item.id+' '+item.name+'</span>';progEl.classList.remove('bp-done');}
     const stEl=document.getElementById('bst-'+idS);if(stEl)stEl.textContent='🔄';
     try{
       const userPrompt=item.prompt+'\n\n## 以下是待審查的課程計畫內容：\n---\n'+extractedText+'\n---';
@@ -2084,8 +2108,10 @@ async function runBatchQueue(apiKey){
   }
   batchRunning=false;batchPaused=false;
   document.getElementById('batchProgFill').style.width='100%';
+  document.getElementById('batchProgPct').textContent='100%';
   const done=batchCurrentIdx>=total;
-  document.getElementById('batchProgText').textContent=done?'✅ 批次審查完成！':'已暫停（'+batchCurrentIdx+' / '+total+' 項完成）';
+  const progEl2=document.getElementById('batchProgText');
+  if(progEl2){progEl2.innerHTML=done?'✅ 全部審查完成！':'⏸ 已暫停（'+batchCurrentIdx+' / '+total+' 項完成）';progEl2.classList.toggle('bp-done',done);}
   document.getElementById('batchProgCount').textContent=Math.min(batchCurrentIdx,total)+' / '+total;
   document.getElementById('btnPauseBatch').classList.add('hidden');
   document.getElementById('btnStartBatch').disabled=false;
