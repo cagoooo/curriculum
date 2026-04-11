@@ -92,7 +92,7 @@ select:focus,input:focus{outline:none;border-color:var(--primary);box-shadow:0 0
 /* ── DROP ZONE ──────────────────── */
 .drop-zone{border:2.5px dashed #c8d9e6;border-radius:var(--radius);padding:44px 20px;text-align:center;cursor:pointer;transition:all .25s;color:var(--text-light);position:relative;background:linear-gradient(160deg,#f8fbff 0%,#f0f7ff 100%)}
 .drop-zone:hover,.drop-zone.dragover{border-color:var(--step1);background:linear-gradient(160deg,var(--step1-light),#dbeafe);color:var(--step1-dark);transform:translateY(-3px);box-shadow:0 8px 28px rgba(59,130,246,.18)}
-.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop-zone input{display:none}
 .drop-zone .icon{font-size:3.2rem;margin-bottom:12px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.1))}
 .drop-zone .dz-title{font-size:1rem;font-weight:800;margin-bottom:4px;color:var(--text)}
 .drop-zone .dz-sub{font-size:.82rem;color:#94a3b8}
@@ -491,7 +491,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
   <!-- Step 1: Upload PDF -->
   <div class="card card-step1">
     <div class="card-title"><span class="step">1</span>上傳課程計畫 PDF</div>
-    <div class="drop-zone" id="dropZone">
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
       <input type="file" id="fileInput" accept=".pdf" onchange="handleFile(this.files[0])">
       <span class="icon">&#128196;</span>
       <div class="dz-title">點擊選擇或拖拉 PDF 檔案至此處</div>
@@ -687,7 +687,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v2.8</div>
+      <div class="footer-ver">v2.9</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
