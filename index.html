@@ -2458,11 +2458,11 @@ function downloadReport(){
 
 // ===== EE: Tutorial Mode =====
 const TUT_STEPS=[
-  {target:'dropZone',title:'① 上傳課程計畫 PDF',desc:'點擊此區域或拖拉 PDF 檔案至此。支援文字型 PDF，掃描圖檔可能無法擷取文字。',pos:'right'},
-  {target:'settingsPanel',title:'② 設定 API 金鑰',desc:'展開此區塊，輸入 Gemini API 金鑰（免費申請）即可啟用 AI 自動審查功能。若沒有金鑰，也可使用「複製提示詞」搭配 Gemini 網頁版。',pos:'right'},
-  {target:'criteriaSection',title:'③ 選擇審查項次',desc:'從分類下拉選單選擇要審查的項次，共有 40+ 個審查標準可選。也可直接編輯下方的審查條件文字。',pos:'right'},
-  {target:'btnReview',title:'④ 送出 AI 審查',desc:'設定完成後，點擊「送出 AI 審查」按鈕，AI 約需 30–60 秒返回審查結果。',pos:'top'},
-  {target:'tabBatch',title:'⑤ 批次審查模式',desc:'想一次審查多個項次？切換到「批次審查」頁籤，勾選多項後一鍵送出，並可下載完整報告。',pos:'right'},
+  {target:'dropZone',       title:'① 上傳課程計畫 PDF',  desc:'點擊此區域或拖拉 PDF 檔案至此。支援文字型 PDF，掃描圖檔可能無法擷取文字。'},
+  {target:'settingsPanel',  title:'② 設定 API 金鑰',     desc:'展開此區塊，輸入 Gemini API 金鑰（免費申請）即可啟用 AI 自動審查功能。若沒有金鑰，也可使用「複製提示詞」搭配 Gemini 網頁版。'},
+  {target:'normalSelectRow',title:'③ 選擇審查項次',      desc:'從「審查分類」與「審查項次」下拉選單，選擇要審查的項次；共有 40+ 個審查標準可選。也可使用上方搜尋框快速篩選。'},
+  {target:'btnReview',      title:'④ 送出 AI 審查',      desc:'設定完成後，點擊「送出 AI 審查」按鈕，AI 約需 30–60 秒返回審查結果。沒有 API 金鑰時可改用「複製提示詞」貼到 Gemini 網頁版。'},
+  {target:'tabBatch',       title:'⑤ 批次審查模式',      desc:'想一次審查多個項次？點擊此頁籤切換到「批次審查」，勾選多項後一鍵送出，完成後可下載 Word 報告或一鍵截圖分享。'},
 ];
 let _tutStep=0;
 function startTutorial(){
@@ -2492,19 +2492,23 @@ function _renderTutStep(){
   // Dots
   const dots=document.getElementById('tutDots');
   dots.innerHTML=TUT_STEPS.map((_,i)=>`<div class="tut-dot${i===_tutStep?' active':''}"></div>`).join('');
-  // Position spotlight
-  if(el){
+  if(!el)return;
+  // 先滾動到目標元素，等 smooth scroll 完成後再計算座標
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(()=>{
     const r=el.getBoundingClientRect();
-    const pad=10;
-    spot.style.cssText=`left:${r.left-pad}px;top:${r.top-pad+window.scrollY}px;width:${r.width+pad*2}px;height:${r.height+pad*2}px`;
-    // Position card
-    const cardW=300,cardH=220;
-    let cx=r.right+16,cy=r.top+window.scrollY;
+    const pad=12;
+    // tut-overlay 是 position:fixed，子元素座標以 viewport 為基準，不需加 scrollY
+    spot.style.cssText=`left:${r.left-pad}px;top:${r.top-pad}px;width:${r.width+pad*2}px;height:${r.height+pad*2}px`;
+    // 計算說明卡位置
+    const cardW=300,cardH=230;
+    let cx=r.right+16,cy=r.top;
     if(cx+cardW>window.innerWidth-10)cx=r.left-cardW-16;
-    if(cy+cardH>window.scrollY+window.innerHeight-10)cy=window.scrollY+window.innerHeight-cardH-16;
-    card.style.cssText=`left:${Math.max(8,cx)}px;top:${Math.max(8,cy)}px`;
-    el.scrollIntoView({behavior:'smooth',block:'center'});
-  }
+    if(cx<8)cx=8;
+    if(cy+cardH>window.innerHeight-10)cy=window.innerHeight-cardH-16;
+    if(cy<8)cy=8;
+    card.style.cssText=`left:${cx}px;top:${cy}px`;
+  },480);
 }
 
 // ===== AA: Download Word Doc =====
