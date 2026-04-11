@@ -154,19 +154,24 @@ textarea.criteria-preview:focus{border-color:var(--step2);box-shadow:0 0 0 3px r
 .rt-pass-name{font-weight:700;font-size:.9rem;color:#166534;margin-bottom:3px}
 .rt-pass-note{font-size:.84rem;color:#4b7c5b;line-height:1.7;padding-top:5px;border-top:1px dashed #bbf7d0;margin-top:5px}
 /* ── LOADING ────────────────────── */
-.loading{display:none;background:linear-gradient(140deg,#0f172a,#1e1b4b);border-radius:16px;padding:22px 24px;border:1px solid rgba(124,58,237,.4);box-shadow:0 8px 32px rgba(0,0,0,.25)}
+.loading{display:none;background:linear-gradient(140deg,#0f172a,#1e1b4b);border-radius:16px;padding:20px 24px;border:1px solid rgba(124,58,237,.4);box-shadow:0 8px 32px rgba(0,0,0,.25)}
 .loading.show{display:block}
 .loading-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.loading-dots{display:flex;gap:5px;align-items:center}
-.loading-dots span{display:inline-block;width:9px;height:9px;border-radius:50%;background:#c4b5fd;animation:ld-pulse 1.2s ease-in-out infinite}
+.loading-dots{display:flex;gap:5px;align-items:center;flex-shrink:0}
+.loading-dots span{display:inline-block;width:8px;height:8px;border-radius:50%;background:#c4b5fd;animation:ld-pulse 1.2s ease-in-out infinite}
 .loading-dots span:nth-child(2){animation-delay:.2s}
 .loading-dots span:nth-child(3){animation-delay:.4s}
 @keyframes ld-pulse{0%,80%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1);opacity:1}}
-.loading-text{font-size:.95rem;font-weight:800;color:#e0e7ff;letter-spacing:.4px}
-.loading-sub{font-size:.78rem;color:#8b9cf4;margin-top:2px}
+.loading-title-wrap{flex:1}
+.loading-text{font-size:.93rem;font-weight:800;color:#e0e7ff;letter-spacing:.4px}
+.loading-sub{font-size:.76rem;color:#8b9cf4;margin-top:2px}
+.loading-pct{font-size:1.75rem;font-weight:900;color:#c4b5fd;font-family:"Nunito",sans-serif;text-shadow:0 0 16px rgba(196,181,253,.7);line-height:1;letter-spacing:-.5px;flex-shrink:0}
 .loading-track{height:16px;background:rgba(255,255,255,.06);border-radius:9px;overflow:hidden;position:relative;border:1.5px solid rgba(124,58,237,.4);box-shadow:0 0 18px rgba(124,58,237,.2) inset}
-.loading-scan{position:absolute;top:0;left:-45%;width:45%;height:100%;background:linear-gradient(90deg,transparent,rgba(196,181,253,.5),rgba(124,58,237,.9),rgba(196,181,253,.5),transparent);animation:ld-scan 1.9s ease-in-out infinite;border-radius:9px}
-@keyframes ld-scan{0%{left:-45%}100%{left:110%}}
+.loading-fill{position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,#7c3aed 0%,#2563eb 35%,#06b6d4 70%,#6ee7b7 100%);transition:width .5s cubic-bezier(.4,0,.2,1);border-radius:9px;min-width:0}
+.loading-fill::before{content:'';position:absolute;top:3px;left:8px;right:8px;height:4px;background:rgba(255,255,255,.3);border-radius:3px;filter:blur(1px)}
+.loading-fill::after{content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:bp-shimmer 1.7s infinite}
+.loading-fill.done{background:linear-gradient(90deg,#16a34a,#22c55e,#86efac);transition:width .3s ease}
+.loading-fill.done::after{display:none}
 .spinner{display:inline-block;width:42px;height:42px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* ── TOAST ──────────────────────── */
@@ -654,9 +659,10 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
     <div class="loading" id="loading">
       <div class="loading-header">
         <div class="loading-dots"><span></span><span></span><span></span></div>
-        <div><div class="loading-text">&#129302; AI 審查中...</div><div class="loading-sub">約需 30–60 秒，請稍候</div></div>
+        <div class="loading-title-wrap"><div class="loading-text">&#129302; AI 審查中...</div><div class="loading-sub">約需 30–60 秒，請稍候</div></div>
+        <div class="loading-pct" id="loadingPct">0%</div>
       </div>
-      <div class="loading-track"><div class="loading-scan"></div></div>
+      <div class="loading-track"><div class="loading-fill" id="loadingFill" style="width:0%"></div></div>
     </div>
     <div class="result-area" id="resultArea" class="hidden">
       <div id="resultContent" class="result-content hidden"></div>
@@ -681,7 +687,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v2.7</div>
+      <div class="footer-ver">v2.8</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -1485,6 +1491,26 @@ async function callOpenAI(apiKey,model,system,user){
 }
 
 // ===== Execute Review =====
+let _ldTimer=null,_ldPct=0;
+function startLoadingProgress(){
+  _ldPct=0;_setLdPct(0);clearInterval(_ldTimer);
+  _ldTimer=setInterval(()=>{
+    const inc=Math.max(.4,(90-_ldPct)*.045);
+    _ldPct=Math.min(92,_ldPct+inc);
+    _setLdPct(_ldPct);
+    if(_ldPct>=92)clearInterval(_ldTimer);
+  },500);
+}
+function stopLoadingProgress(){
+  clearInterval(_ldTimer);_ldTimer=null;
+  _setLdPct(100,true);
+}
+function _setLdPct(p,done=false){
+  const f=document.getElementById('loadingFill'),t=document.getElementById('loadingPct');
+  const r=Math.round(p);
+  if(f){f.style.width=r+'%';f.classList.toggle('done',done);}
+  if(t)t.textContent=r+'%';
+}
 async function executeReview(){
   const prompt=assemblePrompt();
   if(!prompt){showToast('請先上傳 PDF 並選擇審查項次');return}
@@ -1493,6 +1519,7 @@ async function executeReview(){
   const provider=document.getElementById('apiProvider').value||localStorage.getItem('tyc_provider');
   const model=document.getElementById('apiModel').value||localStorage.getItem('tyc_model');
   document.getElementById('loading').classList.add('show');
+  startLoadingProgress();
   document.getElementById('btnReview').disabled=true;
   document.getElementById('resultContent').classList.add('hidden');
   document.getElementById('resultActions').classList.add('hidden');
@@ -1512,6 +1539,7 @@ async function executeReview(){
     }
     showResult(`**審查失敗**\n\n${msg}`);
   }finally{
+    stopLoadingProgress();
     document.getElementById('loading').classList.remove('show');
     document.getElementById('btnReview').disabled=false;
   }
