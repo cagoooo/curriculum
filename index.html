@@ -115,15 +115,14 @@ textarea.criteria-preview{outline:none;transition:border-color .2s}
 textarea.criteria-preview:focus{border-color:var(--step2);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
 /* ── RESULT ─────────────────────── */
 .result-area{margin-top:16px;min-height:80px}
-.result-content{background:#fafafa;border:1px solid var(--border);border-radius:var(--radius);padding:22px;font-size:.92rem;line-height:1.8}
-.result-content h1,.result-content h2,.result-content h3{color:var(--primary-dark);margin:16px 0 8px}
-.result-content h1{font-size:1.3rem}
-.result-content h2{font-size:1.15rem}
-.result-content h3{font-size:1.05rem}
-.result-content ul,.result-content ol{padding-left:24px;margin:8px 0}
-.result-content li{margin:4px 0}
+.result-content{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;font-size:.92rem;line-height:1.8}
+.result-content h1{font-size:1.22rem;font-weight:900;color:var(--primary-dark);margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid var(--primary-light);display:flex;align-items:center;gap:8px}
+.result-content h2{font-size:1.1rem;font-weight:800;color:var(--primary-dark);margin:18px 0 10px;padding-left:10px;border-left:4px solid var(--primary)}
+.result-content h3{font-size:1rem;font-weight:700;color:var(--text);margin:14px 0 8px}
+.result-content ul,.result-content ol{padding-left:22px;margin:8px 0}
+.result-content li{margin:5px 0;line-height:1.75}
 .result-content strong{color:var(--danger)}
-.result-content p{margin:6px 0}
+.result-content p{margin:7px 0;line-height:1.8}
 .result-content table{border-collapse:collapse;width:100%;margin:10px 0}
 .result-content th,.result-content td{border:1px solid var(--border);padding:8px;text-align:left;font-size:.88rem}
 .result-content th{background:var(--primary-light)}
@@ -145,6 +144,15 @@ textarea.criteria-preview:focus{border-color:var(--step2);box-shadow:0 0 0 3px r
 .rt-fix-box{padding:10px 16px;background:#fffbeb;border-top:1px solid #fde68a}
 .rt-fix-tag{display:inline-block;font-size:.75rem;font-weight:700;color:#92400e;background:#fef3c7;border:1px solid #fcd34d;padding:2px 9px;border-radius:12px;margin-bottom:7px}
 .rt-fix-body{font-size:.88rem;line-height:1.78;color:#78350f}
+/* ── Result Summary Bar ──────────── */
+.rt-summary{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 18px;background:linear-gradient(135deg,#f5f3ff,#eff6ff);border-radius:12px;margin-bottom:16px;border:1px solid #ddd6fe}
+.rt-sum-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:.86rem;font-weight:800}
+.rt-sum-badge.pass{background:#dcfce7;border:1.5px solid #86efac;color:#166534}
+.rt-sum-badge.fail{background:#fee2e2;border:1.5px solid #fca5a5;color:#991b1b}
+.rt-sum-badge.warn{background:#fef3c7;border:1.5px solid #fcd34d;color:#92400e}
+/* ── Pass card with note ──────────── */
+.rt-pass-name{font-weight:700;font-size:.9rem;color:#166534;margin-bottom:3px}
+.rt-pass-note{font-size:.84rem;color:#4b7c5b;line-height:1.7;padding-top:5px;border-top:1px dashed #bbf7d0;margin-top:5px}
 /* ── LOADING ────────────────────── */
 .loading{display:none;background:linear-gradient(140deg,#0f172a,#1e1b4b);border-radius:16px;padding:22px 24px;border:1px solid rgba(124,58,237,.4);box-shadow:0 8px 32px rgba(0,0,0,.25)}
 .loading.show{display:block}
@@ -673,7 +681,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v2.6</div>
+      <div class="footer-ver">v2.7</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -1575,27 +1583,61 @@ function renderMarkdown(text){
 }
 
 function renderTableCards(lines,esc,fmt){
-  // cell: escape + restore <br> + inline format
   const cell=s=>{const b=s.replace(/<br\s*\/?>/gi,'\x01');return fmt(esc(b)).replace(/\x01/g,'<br>');};
-  // Remove separator rows |:---|:---|
   const data=lines.filter(l=>!/^\|[\s:|-]+\|$/.test(l));
   if(!data.length)return'';
   const parseRow=l=>l.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
   const rows=data.map(parseRow);
   const hdrs=rows[0];
   const body=rows.slice(1).filter(r=>r.some(c=>c.length>0));
-  // 符合項目 (single column)
-  if(hdrs.length===1&&/符合/.test(hdrs[0])){
-    return`<div class="rt-section rt-pass-section"><div class="rt-hdr"><span class="rt-hdr-icon">✅</span><span>符合項目（${body.length} 項）</span></div><div class="rt-list">${body.map(r=>`<div class="rt-pass-card">${cell(r[0]||'')}</div>`).join('')}</div></div>`;
+
+  // ── 3-col: 項目 | 審查結果 | 具體修改建議 ──────────
+  if(hdrs.length>=2&&/審查結果/.test(hdrs.join(''))){
+    const sections=[];let cur=null;
+    body.forEach(r=>{
+      const isEmpty=!r[1]&&!r[2];
+      if(isEmpty&&/符合|待修正/.test(r[0])){
+        cur={type:/待修正/.test(r[0])?'fail':'pass',rows:[]};sections.push(cur);
+      } else if(cur){
+        cur.rows.push(r);
+      } else {
+        const t=/待修正/.test(r[1]||'')?'fail':'pass';
+        cur={type:t,rows:[]};sections.push(cur);cur.rows.push(r);
+      }
+    });
+    const passCount=sections.filter(s=>s.type==='pass').reduce((n,s)=>n+s.rows.length,0);
+    const failCount=sections.filter(s=>s.type==='fail').reduce((n,s)=>n+s.rows.length,0);
+    let html=`<div class="rt-summary">`;
+    if(passCount)html+=`<span class="rt-sum-badge pass">✅ 符合 ${passCount} 項</span>`;
+    if(failCount)html+=`<span class="rt-sum-badge fail">❌ 待修正 ${failCount} 項</span>`;
+    html+=`</div>`;
+    sections.forEach(sec=>{
+      if(sec.type==='pass'){
+        html+=`<div class="rt-section rt-pass-section"><div class="rt-hdr"><span class="rt-hdr-icon">✅</span><span>符合項目（${sec.rows.length} 項）</span></div><div class="rt-list">${sec.rows.map(r=>{
+          const name=cell(r[0]||''),note=cell(r[2]||'');
+          return`<div class="rt-pass-card"><div class="rt-pass-name">${name}</div>${note?`<div class="rt-pass-note">${note}</div>`:''}</div>`;
+        }).join('')}</div></div>`;
+      } else {
+        html+=`<div class="rt-section rt-fail-section"><div class="rt-hdr"><span class="rt-hdr-icon">📋</span><span>待修正項目（${sec.rows.length} 項）</span></div><div class="rt-list">${sec.rows.map(r=>{
+          const name=cell(r[0]||''),fix=cell(r[2]||'');
+          return`<div class="rt-fail-card"><div class="rt-fail-issue"><span class="rt-fail-num">❌</span><div class="rt-fail-text">${name}</div></div>${fix?`<div class="rt-fix-box"><span class="rt-fix-tag">✏️ 修改建議</span><div class="rt-fix-body">${fix}</div></div>`:''}</div>`;
+        }).join('')}</div></div>`;
+      }
+    });
+    return html;
   }
-  // 待修正項目 (two columns)
+  // ── 符合項目 (single column) ──────────
+  if(hdrs.length===1&&/符合/.test(hdrs[0])){
+    return`<div class="rt-section rt-pass-section"><div class="rt-hdr"><span class="rt-hdr-icon">✅</span><span>符合項目（${body.length} 項）</span></div><div class="rt-list">${body.map(r=>`<div class="rt-pass-card"><div class="rt-pass-name">${cell(r[0]||'')}</div></div>`).join('')}</div></div>`;
+  }
+  // ── 待修正項目 (two columns) ──────────
   if(hdrs.length>=2&&/待修正/.test(hdrs[0])){
     return`<div class="rt-section rt-fail-section"><div class="rt-hdr"><span class="rt-hdr-icon">📋</span><span>待修正項目（${body.length} 項）</span></div><div class="rt-list">${body.map(r=>{
       const issue=cell(r[0]||''),fix=cell(r[1]||'');
       return`<div class="rt-fail-card"><div class="rt-fail-issue"><span class="rt-fail-num">❌</span><div class="rt-fail-text">${issue}</div></div>${fix?`<div class="rt-fix-box"><span class="rt-fix-tag">✏️ 修改建議</span><div class="rt-fix-body">${fix}</div></div>`:''}</div>`;
     }).join('')}</div></div>`;
   }
-  // Generic table
+  // ── Generic table ──────────
   let html=`<table><thead><tr>${hdrs.map(h=>`<th>${cell(h)}</th>`).join('')}</tr></thead><tbody>`;
   html+=body.map(r=>`<tr>${r.map(c=>`<td>${cell(c)}</td>`).join('')}</tr>`).join('');
   return html+`</tbody></table>`;
