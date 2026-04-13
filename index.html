@@ -400,6 +400,14 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
 .tut-next:hover{background:var(--primary-dark)}
 .tut-reopen-btn{position:fixed;bottom:72px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:1rem;cursor:pointer;box-shadow:0 2px 10px rgba(26,138,122,.4);z-index:100;transition:transform .2s}
 .tut-reopen-btn:hover{transform:scale(1.1)}
+/* ── Canva Guide Button ─────── */
+.canva-guide-wrap{margin-top:14px;display:flex;justify-content:center}
+.canva-guide-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 22px;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.45);border-radius:28px;color:#fff;font-size:.88rem;font-weight:700;text-decoration:none;backdrop-filter:blur(6px);transition:all .2s;letter-spacing:.01em}
+.canva-guide-btn:hover{background:rgba(255,255,255,.26);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.canva-guide-btn .cg-icon{font-size:1.05rem;flex-shrink:0}
+.canva-guide-btn .cg-arrow{font-size:.8rem;opacity:.75}
+.canva-fixed-btn{position:fixed;bottom:116px;right:16px;width:36px;height:36px;border-radius:50%;background:#7c3aed;color:#fff;font-size:1rem;cursor:pointer;box-shadow:0 2px 10px rgba(124,58,237,.45);z-index:100;transition:transform .2s;display:flex;align-items:center;justify-content:center;text-decoration:none;border:none}
+.canva-fixed-btn:hover{transform:scale(1.1)}
 /* ── B: Print Styles ──────────── */
 @media print{
   .font-size-ctrl,#pwaInstallBanner,.header-chips,footer,details,
@@ -445,6 +453,14 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
       <span class="header-chip">&#129302; Gemini AI 驅動</span>
       <span class="header-chip">&#9999;&#65039; 可彈性修改提示詞</span>
       <span class="header-chip">&#128273; 免費申請金鑰</span>
+    </div>
+    <!-- Canva Tutorial Guide Button -->
+    <div class="canva-guide-wrap">
+      <a class="canva-guide-btn" href="https://canva.link/115curriculum" target="_blank" rel="noopener">
+        <span class="cg-icon">🎨</span>
+        <span>初次使用？點我看完整使用教學簡報</span>
+        <span class="cg-arrow">↗</span>
+      </a>
     </div>
     <!-- L: PWA Install Banner -->
     <div id="pwaInstallBanner" class="pwa-banner hidden">
@@ -783,6 +799,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
     </div>
   </div>
 </div>
+<a class="canva-fixed-btn" href="https://canva.link/115curriculum" target="_blank" rel="noopener" title="使用教學簡報">🎨</a>
 <button class="tut-reopen-btn" onclick="localStorage.removeItem('tyc_tut_done');startTutorial()" title="使用說明">❓</button>
 
 <script>
