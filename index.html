@@ -99,6 +99,51 @@ select:focus,input:focus{outline:none;border-color:var(--primary);box-shadow:0 0
 .file-info{margin-top:12px;padding:14px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:10px;font-size:.9rem;color:#1e3a8a;display:none}
 .file-info.show{display:block}
 .preview-box{margin-top:8px;max-height:140px;overflow-y:auto;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:.82rem;white-space:pre-wrap;word-break:break-all;color:var(--text-light)}
+/* F: PDF thumbnail preview */
+.fi-main{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.fi-thumb-wrap{flex-shrink:0;position:relative;width:100px;height:140px;background:#fff;border:1.5px solid #bfdbfe;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(59,130,246,.15);cursor:zoom-in;transition:transform .18s,box-shadow .18s}
+.fi-thumb-wrap:hover{transform:scale(1.04);box-shadow:0 8px 20px rgba(59,130,246,.28)}
+.fi-thumb-wrap canvas{width:100%;height:100%;display:block;object-fit:cover}
+.fi-thumb-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:.75rem;background:#f1f5f9;flex-direction:column;gap:4px}
+.fi-thumb-loading .sp{width:18px;height:18px;border:2px solid #cbd5e1;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite}
+.fi-thumb-badge{position:absolute;bottom:3px;right:3px;background:rgba(30,58,138,.85);color:#fff;font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.3px}
+.fi-text{flex:1;min-width:0}
+/* F: Lightbox */
+.fi-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9800;display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+.fi-lightbox.show{display:flex}
+.fi-lightbox canvas{max-width:94vw;max-height:92vh;box-shadow:0 20px 60px rgba(0,0,0,.6);border-radius:6px;background:#fff}
+.fi-lightbox-close{position:absolute;top:18px;right:22px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);font-size:1.4rem;cursor:pointer;transition:all .18s}
+.fi-lightbox-close:hover{background:rgba(255,255,255,.28);transform:rotate(90deg)}
+/* KK: Summary card template */
+.kk-card{position:fixed;top:-20000px;left:0;width:820px;padding:48px 56px;background:linear-gradient(155deg,#f0f4ff 0%,#faf5ff 55%,#fef3f2 100%);font-family:"Nunito","Noto Sans TC",sans-serif;color:#1e1b4b;box-sizing:border-box;border-radius:24px;overflow:hidden}
+.kk-card::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.18),transparent 70%)}
+.kk-card::after{content:'';position:absolute;bottom:-80px;left:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.18),transparent 70%)}
+.kk-card-inner{position:relative;z-index:1}
+.kk-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.kk-brand-logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;box-shadow:0 6px 16px rgba(124,58,237,.4)}
+.kk-brand-text{font-size:1.1rem;font-weight:900;color:#312e81;letter-spacing:-.5px}
+.kk-brand-sub{font-size:.78rem;color:#6366f1;font-weight:700;margin-top:2px}
+.kk-title{font-size:2rem;font-weight:900;color:#1e1b4b;line-height:1.25;margin:6px 0 22px;letter-spacing:-1px}
+.kk-main-row{display:flex;align-items:center;gap:36px;margin:14px 0 24px}
+.kk-ring-wrap{flex-shrink:0;width:180px;height:180px;position:relative}
+.kk-ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.kk-ring-wrap .kk-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.kk-ring-pct{font-size:3rem;font-weight:900;color:#1e1b4b;line-height:1;letter-spacing:-2px;font-family:"Nunito",sans-serif}
+.kk-ring-label{font-size:.78rem;font-weight:800;color:#6366f1;margin-top:4px;letter-spacing:1px}
+.kk-stats{flex:1;display:flex;flex-direction:column;gap:10px}
+.kk-stat{display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.8);border-radius:12px;backdrop-filter:blur(8px);box-shadow:0 4px 12px rgba(0,0,0,.04)}
+.kk-stat-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+.kk-stat-pass .kk-stat-icon{background:#dcfce7;color:#15803d}
+.kk-stat-fail .kk-stat-icon{background:#fee2e2;color:#b91c1c}
+.kk-stat-err .kk-stat-icon{background:#fef9c3;color:#854d0e}
+.kk-stat-label{font-size:.85rem;color:#475569;font-weight:700;flex:1}
+.kk-stat-num{font-size:1.6rem;font-weight:900;color:#1e1b4b;font-family:"Nunito",sans-serif;line-height:1}
+.kk-stat-num small{font-size:.8rem;color:#64748b;font-weight:700;margin-left:3px}
+.kk-meta{display:flex;gap:20px;flex-wrap:wrap;margin:20px 0 4px;padding:14px 18px;background:rgba(255,255,255,.55);border:1.5px dashed rgba(99,102,241,.3);border-radius:12px}
+.kk-meta-item{font-size:.82rem;color:#475569;font-weight:700;display:flex;align-items:center;gap:6px}
+.kk-footer{margin-top:22px;padding-top:18px;border-top:2px solid rgba(99,102,241,.18);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.kk-footer-left{font-size:.78rem;color:#64748b;font-weight:700}
+.kk-footer-right{font-size:.76rem;color:#7c3aed;font-weight:800;letter-spacing:.3px}
 /* ── BUTTONS ────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;border:none;border-radius:9px;font-size:.95rem;font-family:inherit;font-weight:700;cursor:pointer;transition:all .18s;letter-spacing:.2px}
 .btn-primary{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;box-shadow:0 2px 8px rgba(26,138,122,.3)}
@@ -563,14 +608,26 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
       <div class="dz-sub">支援文字型 PDF &nbsp;·&nbsp; 掃描圖檔可能無法正確擷取</div>
     </div>
     <div class="file-info" id="fileInfo">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div>
-          <strong id="fileName"></strong><br>
-          <span id="fileStats"></span>
+      <div class="fi-main">
+        <div class="fi-thumb-wrap" id="fiThumbWrap" onclick="openPdfLightbox()" title="點擊放大預覽">
+          <div class="fi-thumb-loading" id="fiThumbLoading"><div class="sp"></div><span>縮圖載入中</span></div>
         </div>
-        <button class="btn btn-sm" style="background:#eee;color:var(--text)" onclick="resetFile()">&#128260; 重新上傳</button>
+        <div class="fi-text">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px">
+            <div>
+              <strong id="fileName"></strong><br>
+              <span id="fileStats"></span>
+            </div>
+            <button class="btn btn-sm" style="background:#eee;color:var(--text)" onclick="resetFile()">&#128260; 重新上傳</button>
+          </div>
+          <div class="preview-box" id="textPreview"></div>
+        </div>
       </div>
-      <div class="preview-box" id="textPreview"></div>
+    </div>
+    <!-- F: PDF Lightbox -->
+    <div class="fi-lightbox" id="fiLightbox" onclick="closePdfLightbox(event)">
+      <button class="fi-lightbox-close" onclick="closePdfLightbox(event)" title="關閉（Esc）">✕</button>
+      <div id="fiLightboxContent"></div>
     </div>
     <!-- D: PDF length warning -->
     <div id="pdfLengthWarning" class="hidden" style="margin-top:8px;padding:9px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:.83rem;color:#664d03;display:flex;align-items:flex-start;gap:8px">
@@ -1284,11 +1341,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v3.5';
+const APP_VERSION='v3.6';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（B重審 / E展開收起 / D計時器 / UU LINE分享 / G彩帶）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（KK 摘要圖卡 / F PDF 縮圖預覽）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
@@ -1398,12 +1455,17 @@ async function handleFile(file){
   document.getElementById('fileStats').textContent='載入 PDF.js 中...';
   document.getElementById('fileInfo').classList.add('show');
   document.getElementById('textPreview').textContent='';
+  // F: reset thumbnail area
+  const twrap=document.getElementById('fiThumbWrap');
+  if(twrap){twrap.innerHTML='<div class="fi-thumb-loading" id="fiThumbLoading"><div class="sp"></div><span>縮圖載入中</span></div>';}
   extractedText='';
   try{
     await loadPdfJs();
     document.getElementById('fileStats').textContent='擷取文字中...';
     const buf=await file.arrayBuffer();
     const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    // F: render first page thumbnail (non-blocking, runs in parallel with text extraction)
+    renderPdfThumbnail(pdf,pdf.numPages).catch(()=>{});
     let text='';
     for(let i=1;i<=pdf.numPages;i++){
       const page=await pdf.getPage(i);
@@ -1871,11 +1933,64 @@ function resetFile(){
   document.getElementById('fileName').textContent='';
   document.getElementById('fileStats').textContent='';
   document.getElementById('textPreview').textContent='';
+  // F: clear thumbnail and lightbox state
+  const tw=document.getElementById('fiThumbWrap');
+  if(tw)tw.innerHTML='<div class="fi-thumb-loading"><div class="sp"></div><span>縮圖載入中</span></div>';
+  _pdfThumbFullCanvas=null;
   updateButtons();
   // Scroll back to upload area
   document.getElementById('dropZone').scrollIntoView({behavior:'smooth',block:'center'});
   showToast('請上傳修正後的 PDF 檔案');
 }
+
+// ===== F: PDF Thumbnail Preview =====
+let _pdfThumbFullCanvas=null; // store full-res canvas for lightbox
+async function renderPdfThumbnail(pdf,totalPages){
+  try{
+    const page=await pdf.getPage(1);
+    // Full-size canvas for lightbox (scale ~1.5 for clarity)
+    const fullVp=page.getViewport({scale:1.5});
+    const fullCanvas=document.createElement('canvas');
+    fullCanvas.width=fullVp.width;fullCanvas.height=fullVp.height;
+    await page.render({canvasContext:fullCanvas.getContext('2d'),viewport:fullVp}).promise;
+    _pdfThumbFullCanvas=fullCanvas;
+    // Thumbnail: scaled to fit 100x140 container
+    const wrap=document.getElementById('fiThumbWrap');
+    if(!wrap)return;
+    const thumbCanvas=document.createElement('canvas');
+    const tw=200,th=Math.round(tw*fullVp.height/fullVp.width); // 2x pixel density for sharpness
+    thumbCanvas.width=tw;thumbCanvas.height=th;
+    thumbCanvas.getContext('2d').drawImage(fullCanvas,0,0,tw,th);
+    wrap.innerHTML='';
+    wrap.appendChild(thumbCanvas);
+    const badge=document.createElement('span');
+    badge.className='fi-thumb-badge';
+    badge.textContent=totalPages+' 頁';
+    wrap.appendChild(badge);
+  }catch(e){
+    const wrap=document.getElementById('fiThumbWrap');
+    if(wrap)wrap.innerHTML='<div class="fi-thumb-loading"><span style="font-size:1.3rem">📄</span><span>縮圖不可用</span></div>';
+  }
+}
+function openPdfLightbox(){
+  if(!_pdfThumbFullCanvas){showToast('縮圖尚未生成');return;}
+  const body=document.getElementById('fiLightboxContent');
+  body.innerHTML='';
+  // Canvas cloneNode doesn't copy bitmap — draw into a fresh canvas
+  const c=document.createElement('canvas');
+  c.width=_pdfThumbFullCanvas.width;c.height=_pdfThumbFullCanvas.height;
+  c.getContext('2d').drawImage(_pdfThumbFullCanvas,0,0);
+  body.appendChild(c);
+  document.getElementById('fiLightbox').classList.add('show');
+  document.addEventListener('keydown',_lbEsc);
+}
+function closePdfLightbox(e){
+  // Don't close if the click is on the canvas itself
+  if(e&&e.target&&e.target.tagName==='CANVAS')return;
+  document.getElementById('fiLightbox').classList.remove('show');
+  document.removeEventListener('keydown',_lbEsc);
+}
+function _lbEsc(e){if(e.key==='Escape')closePdfLightbox();}
 
 // ===== Buttons State =====
 function updateButtons(){
@@ -2265,6 +2380,7 @@ function buildBatchPanel(){
     <button class="btn btn-sm hidden" style="background:linear-gradient(135deg,#d1fae5,#ecfdf5);color:#065f46;border:1px solid #6ee7b7;font-weight:700" id="btnDownloadRpt" onclick="downloadReport()">&#128229; 下載審查報告</button>
     <button class="btn btn-sm hidden" id="btnDownloadDoc" onclick="downloadWordDoc()" style="background:linear-gradient(135deg,#dbeafe,#eff6ff);color:#1d4ed8;border:1px solid #93c5fd;font-weight:700">📄 下載 Word 報告</button>
     <button class="btn btn-sm hidden" id="btnDownloadCsv" onclick="downloadCSV()" style="background:linear-gradient(135deg,#fef9c3,#fefce8);color:#713f12;border:1px solid #fde047;font-weight:700">📊 下載 CSV</button>
+    <button class="btn btn-sm hidden" id="btnSummaryCard" onclick="generateSummaryCard()" style="background:linear-gradient(135deg,#f3e8ff,#faf5ff);color:#6b21a8;border:1px solid #d8b4fe;font-weight:700">📇 摘要圖卡</button>
     <button class="btn btn-sm hidden" id="btnShareBatch" onclick="shareBatchSummary()" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);color:#166534;border:1px solid #86efac;font-weight:700">📤 分享摘要</button>
     <button class="btn btn-sm hidden" id="btnLineBatch" onclick="shareBatchToLine()" style="background:linear-gradient(135deg,#dcfce7,#f0fdf4);color:#15803d;border:1px solid #4ade80;font-weight:700">💬 LINE 分享</button>
     <button class="btn btn-sm hidden" id="btnEmailBatch" onclick="emailBatchSummary()" style="background:linear-gradient(135deg,#fff1f2,#ffe4e6);color:#9f1239;border:1px solid #fda4af;font-weight:700">📧 Email 給主任</button>
@@ -2371,7 +2487,7 @@ async function startBatchReview(){
   ppClear(); // PP: clear old auto-save on new run
   document.getElementById('btnStartBatch').disabled=true;
   document.getElementById('btnPauseBatch').classList.remove('hidden');
-  ['btnDownloadRpt','btnDownloadDoc','btnDownloadCsv','btnShareBatch','btnLineBatch','btnEmailBatch','btnReReviewFail','btnReReviewError'].forEach(id=>{
+  ['btnDownloadRpt','btnDownloadDoc','btnDownloadCsv','btnSummaryCard','btnShareBatch','btnLineBatch','btnEmailBatch','btnReReviewFail','btnReReviewError'].forEach(id=>{
     document.getElementById(id)?.classList.add('hidden');
   });
   ppStartTimer(); // PP: start auto-save every 5 min
@@ -2476,7 +2592,7 @@ async function runBatchQueue(apiKey){
     if(elEl)elEl.textContent='⏱ 耗時 '+fmtElapsed(totalMs);
   }
   if(done){
-    ['btnDownloadRpt','btnDownloadDoc','btnDownloadCsv','btnShareBatch','btnLineBatch','btnEmailBatch'].forEach(id=>{
+    ['btnDownloadRpt','btnDownloadDoc','btnDownloadCsv','btnSummaryCard','btnShareBatch','btnLineBatch','btnEmailBatch'].forEach(id=>{
       document.getElementById(id)?.classList.remove('hidden');
     });
     const counts=showBatchSummary(); // returns {pass,fail,err,total}
@@ -2715,7 +2831,7 @@ function ppRestore(){
     }
     const counts=showBatchSummary();
     _lastBatchCounts=counts;
-    ['btnDownloadRpt','btnDownloadDoc','btnDownloadCsv','btnShareBatch','btnEmailBatch'].forEach(id=>{document.getElementById(id)?.classList.remove('hidden');});
+    ['btnDownloadRpt','btnDownloadDoc','btnDownloadCsv','btnSummaryCard','btnShareBatch','btnLineBatch','btnEmailBatch'].forEach(id=>{document.getElementById(id)?.classList.remove('hidden');});
     showToast('✅ 批次審查結果已恢復！共 '+resEntries.length+' 項');
   }catch(e){showToast('❌ 恢復失敗：'+e.message);}
   document.getElementById('ppRestoreBanner')?.remove();
@@ -2829,7 +2945,7 @@ async function reReviewItems(filterStatus){
   batchCurrentIdx=0;batchRunning=true;batchPaused=false;
   document.getElementById('btnStartBatch').disabled=true;
   document.getElementById('btnPauseBatch').classList.remove('hidden');
-  ['btnDownloadRpt','btnDownloadDoc','btnDownloadCsv','btnShareBatch','btnLineBatch','btnEmailBatch','btnReReviewFail','btnReReviewError'].forEach(id=>{document.getElementById(id)?.classList.add('hidden');});
+  ['btnDownloadRpt','btnDownloadDoc','btnDownloadCsv','btnSummaryCard','btnShareBatch','btnLineBatch','btnEmailBatch','btnReReviewFail','btnReReviewError'].forEach(id=>{document.getElementById(id)?.classList.add('hidden');});
   document.getElementById('batchProgressWrap').classList.add('show');
   const fillEl=document.getElementById('batchProgFill');
   if(fillEl){fillEl.style.width='0%';fillEl.classList.remove('bp-bar-done');}
@@ -2884,6 +3000,91 @@ function shareResultToLine(){
   const isPass=/^表件通過[。！!]?\s*$/.test(lastResult.trim());
   const text=`${isPass?'✅':'❌'} ${title} 審查結果\n${isPass?'表件通過！':'有待修正項目，請確認修改說明。'}\n\n工具：https://cagoooo.github.io/curriculum/`;
   shareToLine(text);
+}
+
+// ===== KK: Batch Summary Card (html2canvas) =====
+async function generateSummaryCard(){
+  if(!_lastBatchCounts.total){showToast('尚無批次審查結果');return;}
+  const {pass,fail,err,total}=_lastBatchCounts;
+  const pct=Math.round(pass/total*100);
+  showToast('🎨 圖卡生成中...');
+  // Lazy load html2canvas (reuse BB screenshot lib)
+  if(!window.html2canvas){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload=res;s.onerror=()=>rej(new Error('載入失敗'));
+      document.head.appendChild(s);
+    }).catch(()=>{showToast('圖卡工具載入失敗，請稍後再試');});
+    if(!window.html2canvas)return;
+  }
+  // Build the card DOM (off-screen)
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'});
+  const timeStr=now.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false});
+  // Compute ring stroke-dashoffset (circumference=2πr, r=80 → ~502.65)
+  const circ=2*Math.PI*80;
+  const offset=circ*(1-pct/100);
+  const ringColor=pct>=90?'#22c55e':pct>=70?'#f59e0b':'#ef4444';
+  const ratingTxt=pct>=90?'🏆 表現優異':pct>=70?'👍 整體不錯':'💪 持續加油';
+  const host=document.createElement('div');
+  host.className='kk-card';
+  host.innerHTML=`<div class="kk-card-inner">
+    <div class="kk-brand">
+      <div class="kk-brand-logo">🎓</div>
+      <div><div class="kk-brand-text">課程計畫 AI 審查工具</div><div class="kk-brand-sub">桃園市 115 學年度 · 阿凱老師製作</div></div>
+    </div>
+    <div class="kk-title">📊 批次審查摘要<br><span style="font-size:1.1rem;color:#6366f1;font-weight:700">${ratingTxt}</span></div>
+    <div class="kk-main-row">
+      <div class="kk-ring-wrap">
+        <svg viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="80" fill="none" stroke="#e9d5ff" stroke-width="14"/>
+          <circle cx="90" cy="90" r="80" fill="none" stroke="${ringColor}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+        </svg>
+        <div class="kk-ring-center"><div class="kk-ring-pct">${pct}<span style="font-size:1.3rem">%</span></div><div class="kk-ring-label">通過率</div></div>
+      </div>
+      <div class="kk-stats">
+        <div class="kk-stat kk-stat-pass"><div class="kk-stat-icon">✅</div><div class="kk-stat-label">通過</div><div class="kk-stat-num">${pass}<small>項</small></div></div>
+        <div class="kk-stat kk-stat-fail"><div class="kk-stat-icon">❌</div><div class="kk-stat-label">待修正</div><div class="kk-stat-num">${fail}<small>項</small></div></div>
+        ${err?`<div class="kk-stat kk-stat-err"><div class="kk-stat-icon">⚠️</div><div class="kk-stat-label">審查錯誤</div><div class="kk-stat-num">${err}<small>項</small></div></div>`:''}
+      </div>
+    </div>
+    <div class="kk-meta">
+      <div class="kk-meta-item">📅 審查日期：${dateStr} ${timeStr}</div>
+      <div class="kk-meta-item">📋 共審查 ${total} 項</div>
+    </div>
+    <div class="kk-footer">
+      <div class="kk-footer-left">⚠️ 本結果由 AI 輔助產生，僅供參考<br>正式審查以教育局委員審定為準</div>
+      <div class="kk-footer-right">cagoooo.github.io/curriculum</div>
+    </div>
+  </div>`;
+  document.body.appendChild(host);
+  try{
+    const canvas=await html2canvas(host,{backgroundColor:null,scale:2,useCORS:true,logging:false,width:host.offsetWidth,height:host.offsetHeight});
+    const fileName=`課程計畫審查摘要_${dateStr.replace(/\//g,'-')}.png`;
+    // Try Web Share API with file first (mobile-friendly for LINE sharing)
+    if(navigator.canShare){
+      try{
+        const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
+        const file=new File([blob],fileName,{type:'image/png'});
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({files:[file],title:'課程計畫審查摘要',text:`✅ 通過 ${pass} 項　❌ 待修正 ${fail} 項　通過率 ${pct}%`});
+          showToast('✅ 圖卡已分享！');
+          return;
+        }
+      }catch(shareErr){/* fall through to download */}
+    }
+    // Fallback: download PNG
+    const a=document.createElement('a');
+    a.download=fileName;
+    a.href=canvas.toDataURL('image/png');
+    a.click();
+    showToast('✅ 摘要圖卡已下載！可傳到 LINE 給主任');
+  }catch(e){
+    showToast('圖卡生成失敗：'+e.message);
+  }finally{
+    host.remove();
+  }
 }
 
 // ===== G: Confetti (All Pass) =====
