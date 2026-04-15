@@ -400,6 +400,24 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
 .tut-next:hover{background:var(--primary-dark)}
 .tut-reopen-btn{position:fixed;bottom:72px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:1rem;cursor:pointer;box-shadow:0 2px 10px rgba(26,138,122,.4);z-index:100;transition:transform .2s}
 .tut-reopen-btn:hover{transform:scale(1.1)}
+/* ── GG: Manual Override ─────── */
+.b-manual-confirmed .b-res-hdr{background:linear-gradient(135deg,#f0fdf4,#dcfce7)!important}
+.b-manual-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;background:#16a34a;color:#fff;border-radius:12px;font-size:.75rem;font-weight:700}
+.btn-manual-confirm{padding:5px 14px;background:#fff;border:1.5px solid #22c55e;color:#166534;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .18s}
+.btn-manual-confirm:hover{background:#f0fdf4}
+.btn-manual-confirm.confirmed{background:#16a34a;color:#fff;border-color:#16a34a;cursor:default}
+/* ── II: Fix Suggestion Box ─── */
+.fix-gen-box{margin-top:10px;border-radius:10px;overflow:hidden;border:1.5px solid #a78bfa;display:none}
+.fix-gen-hdr{display:flex;align-items:center;gap:8px;padding:9px 14px;background:linear-gradient(135deg,#f5f3ff,#ede9fe);font-size:.83rem;font-weight:700;color:#5b21b6}
+.fix-gen-body{padding:12px 14px;background:#fff;font-size:.87rem;line-height:1.75;color:var(--text)}
+.btn-fix-gen{padding:5px 14px;background:#7c3aed;color:#fff;border:none;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:background .18s}
+.btn-fix-gen:hover{background:#6d28d9}
+.btn-fix-gen:disabled{opacity:.6;cursor:not-allowed}
+.fix-copy-btn{display:inline-block;margin-top:8px;padding:4px 14px;background:#7c3aed;color:#fff;border:none;border-radius:16px;font-size:.78rem;cursor:pointer}
+/* ── HH: Version Toast ───────── */
+.ver-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);opacity:0;background:#1e1b4b;color:#e9d5ff;padding:11px 18px;border-radius:12px;font-size:.85rem;font-weight:700;z-index:9500;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.35);max-width:360px;transition:all .35s cubic-bezier(.4,0,.2,1)}
+.ver-toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.ver-toast-btn{padding:4px 14px;background:#7c3aed;color:#fff;border:none;border-radius:20px;font-size:.78rem;font-weight:700;cursor:pointer;flex-shrink:0;white-space:nowrap}
 /* ── Canva Guide Button ─────── */
 .canva-guide-wrap{margin-top:14px;display:flex;justify-content:center}
 .canva-guide-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 22px;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.45);border-radius:28px;color:#fff;font-size:.88rem;font-weight:700;text-decoration:none;backdrop-filter:blur(6px);transition:all .2s;letter-spacing:.01em}
@@ -708,6 +726,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <button class="btn btn-secondary btn-sm" onclick="copyResult()" title="複製含 Markdown 格式的結果">&#128203; 複製 Markdown</button>
         <button class="btn btn-sm" style="background:#e8f0fe;color:#1a56db;border:1px solid #a4cafe;font-weight:700" onclick="copyPlainText()" title="複製純文字，適合貼到 Word">&#128291; 複製純文字</button>
         <button class="btn btn-sm" style="background:#fef3c7;color:#78350f;border:1px solid #fde68a;font-weight:700" onclick="window.print()" title="列印審查結果">&#128424;&#65039; 列印</button>
+        <button class="btn btn-sm" id="btnFixGen" style="background:#ede9fe;color:#5b21b6;border:1px solid #a78bfa;font-weight:700;display:none" onclick="genFixSuggestionSingle()" title="讓 AI 根據審查意見生成修正稿">&#129302; 幫我寫修正稿</button>
         <button class="btn btn-sm" style="background:#fdf4ff;color:#7e22ce;border:1px solid #d8b4fe;font-weight:700" onclick="screenshotResult()" title="截圖下載審查結果">&#128247; 截圖下載</button>
         <button class="btn btn-sm" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="resetFile();clearResult()">&#128260; 修正後重新上傳</button>
         <button class="btn btn-sm" style="background:#eee;color:var(--text)" onclick="clearResult()">清除結果</button>
@@ -1253,6 +1272,21 @@ const MODELS={
   openai:['gpt-4o-mini','gpt-4o','gpt-4.1-mini']
 };
 
+// ===== HH: Version Update Toast =====
+const APP_VERSION='v3.3';
+function showVersionToast(){
+  const t=document.createElement('div');
+  t.id='verToast';t.className='ver-toast';
+  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（GG 人工確認 / II 修正稿生成）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(dismissVersionToast,10000);
+}
+function dismissVersionToast(){
+  const t=document.getElementById('verToast');
+  if(!t)return;t.classList.remove('show');setTimeout(()=>t.remove(),380);
+}
+
 // ===== Init =====
 (function init(){
   if(document.readyState==='loading'){
@@ -1270,6 +1304,10 @@ const MODELS={
     if(keyEl)keyEl.addEventListener('input',updateButtons);
     // EE: Start tutorial on first visit
     setTimeout(startTutorial, 800);
+    // HH: Smart version update notification
+    const knownVer=localStorage.getItem('tyc_known_version');
+    if(knownVer&&knownVer!==APP_VERSION)setTimeout(showVersionToast,1200);
+    localStorage.setItem('tyc_known_version',APP_VERSION);
   }
 })();
 
@@ -1745,6 +1783,12 @@ function renderTableCards(lines,esc,fmt){
 let lastResult='';
 function showResult(text){
   lastResult=text;
+  _singleResultText=text; // II: store for fix suggestion
+  // II: show fix suggestion button only when AI returns fail
+  const isPass=/^表件通過[。！!]?\s*$/.test(text.trim());
+  const fixBtn=document.getElementById('btnFixGen');
+  if(fixBtn)fixBtn.style.display=isPass?'none':'inline-flex';
+  const oldFix=document.getElementById('singleFixBox');if(oldFix)oldFix.remove();
   // C: 記錄上次審查
   if(selectedItem){
     localStorage.setItem('tyc_last_review',JSON.stringify({
@@ -2159,6 +2203,7 @@ let batchMode=false;
 let batchSelectedIds=new Set();
 let batchResults={};
 let batchRunning=false;
+const _fixTexts={}; // II: stores AI result text per item for fix suggestion
 let batchPaused=false;
 let batchQueue=[];
 let batchCurrentIdx=0;
@@ -2339,8 +2384,17 @@ async function runBatchQueue(apiKey){
       if(stEl)stEl.textContent=isPass?'✅':'❌';
       const chip=document.querySelector(`.b-chip[data-bid="${item.id}"]`);
       if(chip){chip.classList.remove('sel','special-chip');chip.classList.add(isPass?'st-pass':'st-fail');}
+      _fixTexts[item.id]=result; // II: store for fix suggestion
       const body=document.getElementById('brb-'+idS);
-      if(body)body.innerHTML=`<div class="result-content">${renderMarkdown(result)}</div>`;
+      const safeId=item.id.replace(/'/g,"\\'");
+      const safeName=item.name.replace(/'/g,"\\'");
+      const actionBar=isPass?'':`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <button id="mgbtn-${idS}" class="btn-manual-confirm" onclick="manualOverride('${safeId}','${safeName}')">✅ 人工確認通過</button>
+        <span id="mgbadge-${idS}" class="b-manual-badge" style="display:none">👩‍🏫 已人工確認通過</span>
+        <button id="fixbtn-${idS}" class="btn-fix-gen" onclick="genFixSuggestion('${safeId}','${safeName}')">🤖 幫我寫修正稿</button>
+      </div>
+      <div id="fixbox-${idS}" class="fix-gen-box"><div class="fix-gen-hdr">🤖 AI 修正草稿</div><div class="fix-gen-body" id="fixbody-${idS}"></div></div>`;
+      if(body)body.innerHTML=`<div class="result-content">${renderMarkdown(result)}</div>${actionBar}`;
       // G: update card status for filter
       const card=document.getElementById('bri-'+idS);
       if(card)card.dataset.bstatus=isPass?'pass':'fail';
@@ -2528,6 +2582,117 @@ function _renderTutStep(){
   },480);
 }
 
+// ===== GG: Manual Override =====
+function manualOverride(itemId,itemName){
+  const idS=itemId.replace(/\./g,'-');
+  const card=document.getElementById('bri-'+idS);
+  const stEl=document.getElementById('bst-'+idS);
+  const btn=document.getElementById('mgbtn-'+idS);
+  const badge=document.getElementById('mgbadge-'+idS);
+  const chip=document.querySelector(`.b-chip[data-bid="${itemId}"]`);
+  batchResults[itemId]={...(batchResults[itemId]||{}),status:'pass-manual'};
+  sessionStorage.setItem('tyc_manual_'+itemId,'1');
+  if(card){card.dataset.bstatus='pass';card.classList.add('b-manual-confirmed');}
+  if(stEl)stEl.textContent='✅';
+  if(btn){btn.textContent='👩‍🏫 已確認通過';btn.classList.add('confirmed');btn.disabled=true;}
+  if(badge)badge.style.display='inline-flex';
+  if(chip){chip.classList.remove('st-fail','st-err');chip.classList.add('st-pass');}
+  showToast('✅ 已人工確認通過：'+itemName);
+}
+
+// ===== II: Generate Fix Suggestion (batch) =====
+async function genFixSuggestion(itemId,itemName){
+  const idS=itemId.replace(/\./g,'-');
+  const btn=document.getElementById('fixbtn-'+idS);
+  const box=document.getElementById('fixbox-'+idS);
+  const bodyEl=document.getElementById('fixbody-'+idS);
+  const resultText=_fixTexts[itemId]||'';
+  const apiKey=document.getElementById('apiKey')?.value?.trim()||localStorage.getItem('tyc_api_key')||'';
+  const provider=document.getElementById('apiProvider')?.value||localStorage.getItem('tyc_provider')||'gemini';
+  const model=document.getElementById('apiModel')?.value||localStorage.getItem('tyc_model');
+  const FIX_SYS='你是課程計畫修正助手，請根據 AI 審查意見，提供修正後可直接使用的繁體中文段落文字。';
+  const prompt=`以下是課程計畫 AI 審查意見，請根據內容幫我生成一段修正後的文字，讓它符合審查標準：
+
+審查項次：${itemName}
+AI 審查意見：
+${resultText.replace(/\*\*/g,'').replace(/#+\s/g,'').substring(0,1000)}
+
+請直接給出修正後的段落文字（繁體中文），可以直接複製貼到課程計畫文件中使用。不需要解釋原因，直接給出修正稿。`;
+  if(apiKey){
+    if(btn){btn.textContent='⏳ 生成中...';btn.disabled=true;}
+    if(box)box.style.display='block';
+    if(bodyEl)bodyEl.innerHTML='<div style="color:#7c3aed;font-size:.85rem;padding:4px 0">🤖 AI 正在生成修正稿，請稍候...</div>';
+    try{
+      const res=await withRetry(()=>provider==='gemini'
+        ?callGemini(apiKey,model,FIX_SYS,prompt)
+        :callOpenAI(apiKey,model,FIX_SYS,prompt),itemId+'修正稿');
+      _fixTexts['__fix__'+itemId]=res;
+      if(bodyEl){
+        bodyEl.innerHTML=`<div class="result-content">${renderMarkdown(res)}</div>
+          <button class="fix-copy-btn" onclick="copyFixText('${itemId.replace(/'/g,"\\'")}')">📋 複製修正稿</button>`;
+      }
+    }catch(err){
+      if(bodyEl)bodyEl.innerHTML=`<div style="color:var(--danger);font-size:.85rem">❌ 生成失敗：${err.message}</div>`;
+    }
+    if(btn){btn.textContent='🔄 重新生成';btn.disabled=false;}
+  }else{
+    try{await navigator.clipboard.writeText(prompt);}catch(e){
+      const ta=document.createElement('textarea');ta.value=prompt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+    }
+    window.open('https://gemini.google.com/','_blank');
+    showToast('📋 修正提示詞已複製！請貼到 Gemini 取得修正稿');
+  }
+}
+function copyFixText(itemId){
+  const txt=_fixTexts['__fix__'+itemId]||'';
+  navigator.clipboard.writeText(txt).catch(()=>{});
+  showToast('📋 修正稿已複製！');
+}
+
+// ===== II: Generate Fix Suggestion (single review) =====
+let _singleResultText='';
+async function genFixSuggestionSingle(){
+  const btn=document.getElementById('btnFixGen');
+  const apiKey=document.getElementById('apiKey')?.value?.trim()||localStorage.getItem('tyc_api_key')||'';
+  const provider=document.getElementById('apiProvider')?.value||localStorage.getItem('tyc_provider')||'gemini';
+  const model=document.getElementById('apiModel')?.value||localStorage.getItem('tyc_model');
+  const itemName=selectedItem?`${selectedItem.id} ${selectedItem.name}`:'此審查項次';
+  const FIX_SYS='你是課程計畫修正助手，請根據 AI 審查意見，提供修正後可直接使用的繁體中文段落文字。';
+  const prompt=`以下是課程計畫 AI 審查意見，請根據內容幫我生成一段修正後的文字，讓它符合審查標準：
+
+審查項次：${itemName}
+AI 審查意見：
+${_singleResultText.replace(/\*\*/g,'').replace(/#+\s/g,'').substring(0,1000)}
+
+請直接給出修正後的段落文字（繁體中文），可以直接複製貼到課程計畫文件中使用。不需要解釋原因，直接給出修正稿。`;
+  if(apiKey){
+    if(btn){btn.textContent='⏳ 生成中...';btn.disabled=true;}
+    try{
+      const res=await withRetry(()=>provider==='gemini'
+        ?callGemini(apiKey,model,FIX_SYS,prompt)
+        :callOpenAI(apiKey,model,FIX_SYS,prompt),'單項修正稿');
+      // 在結果區下方加一個修正稿 box
+      let fixBox=document.getElementById('singleFixBox');
+      if(!fixBox){
+        fixBox=document.createElement('div');fixBox.id='singleFixBox';
+        fixBox.className='fix-gen-box';fixBox.style.display='block';fixBox.style.marginTop='12px';
+        const rc=document.getElementById('resultContent');
+        if(rc&&rc.parentNode)rc.parentNode.insertBefore(fixBox,rc.nextSibling);
+      }
+      fixBox.innerHTML=`<div class="fix-gen-hdr">🤖 AI 修正草稿 — ${itemName}</div>
+        <div class="fix-gen-body">${renderMarkdown(res)}
+          <button class="fix-copy-btn" onclick="navigator.clipboard.writeText(this.dataset.t);showToast('📋 修正稿已複製！')" data-t="${res.replace(/"/g,'&quot;').replace(/\n/g,'&#10;')}">📋 複製修正稿</button>
+        </div>`;
+      showToast('✅ 修正稿已生成！');
+    }catch(err){showToast('❌ 生成失敗：'+err.message);}
+    if(btn){btn.textContent='🔄 重新生成修正稿';btn.disabled=false;}
+  }else{
+    try{await navigator.clipboard.writeText(prompt);}catch(e){}
+    window.open('https://gemini.google.com/','_blank');
+    showToast('📋 修正提示詞已複製！請貼到 Gemini 取得修正稿');
+  }
+}
+
 // ===== AA: Download Word Doc =====
 function downloadWordDoc(){
   const vals=Object.values(batchResults);
@@ -2568,6 +2733,12 @@ function installPwa(){
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('/curriculum/sw.js').catch(()=>{});
+  });
+  // HH: listen for SW_UPDATED message (page already open when SW updates)
+  navigator.serviceWorker.addEventListener('message',e=>{
+    if(e.data&&e.data.type==='SW_UPDATED'){
+      setTimeout(()=>showVersionToast(),800);
+    }
   });
 }
 </script>
