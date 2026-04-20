@@ -1256,7 +1256,7 @@ const REVIEW_DATA=[
 {id:'7-4-2',name:'課程評鑑檢核表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤無須說明，僅出現表件通過即可
 7-4-2 課程評鑑檢核表
 1. 需含至少一份學校課程評鑑檢核表，教科書檢核表可規劃於此項
-2. 評鑑表主要為 114 學年度的規劃，無須填寫檢核結果及簽名核章`},
+2. 評鑑表主要為 115 學年度的規劃，無須填寫檢核結果及簽名核章`},
 {id:'7-5',name:'全校學生每日作息時間表',prompt:`請審查附加文件，並以表列方式列出本表件不符規定，說明須修正的部分，若正確無誤部分無須說明，僅出現表件通過即可
 7-5 全校學生每日作息時間表審查標準
 1. 請依據「桃園市國民中小學學生在校時間實施原則」進行審查
@@ -1335,7 +1335,7 @@ const ITEM_DESC={
   '7-2':'若有學生在同一學習階段使用不同版本，需提供版本差異分析及銜接計畫。若無，填「本校無」即算通過。',
   '7-3':'確認全校教師授課節數一覽表符合桃園市教師每週授課節數實施要點，表頭學年度需為115。',
   '7-4-1':'確認課程評鑑計畫的表頭加入學校名稱。',
-  '7-4-2':'確認有至少一份學校課程評鑑檢核表（教科書檢核表可列此）。主要呈現114學年度規劃，無需填寫檢核結果及簽名核章。',
+  '7-4-2':'確認有至少一份學校課程評鑑檢核表（教科書檢核表可列此）。主要呈現115學年度規劃，無需填寫檢核結果及簽名核章。',
   '7-5':'確認全校學生每日作息時間表符合「桃園市國民中小學學生在校時間實施原則」，表頭學年度需為115。',
   '7-6':'確認年度行事曆加註家庭教育、在地化課程、交通安全教育、戶外教育、生命教育的實施時間，並標示學校社區資源運用（人力、物力、環境）。',
   '7-7':'確認有114學年度3份彈性課程評鑑（量化1份+質性2份，或全部質性3份），每份評鑑均需含審查委員檢核簽名。',
@@ -1357,11 +1357,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v3.6.3';
+const APP_VERSION='v3.6.4';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（數學領域學習內容編碼修正 + 配分比例嚴格模式）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（對照教育局 0420 版本，7-4-2 評鑑學年度修正為 115）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
