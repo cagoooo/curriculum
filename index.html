@@ -114,6 +114,45 @@ select:focus,input:focus{outline:none;border-color:var(--primary);box-shadow:0 0
 .fi-lightbox canvas{max-width:94vw;max-height:92vh;box-shadow:0 20px 60px rgba(0,0,0,.6);border-radius:6px;background:#fff}
 .fi-lightbox-close{position:absolute;top:18px;right:22px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);font-size:1.4rem;cursor:pointer;transition:all .18s}
 .fi-lightbox-close:hover{background:rgba(255,255,255,.28);transform:rotate(90deg)}
+/* XX: API Key Guide Modal */
+.ak-modal{position:fixed;inset:0;background:rgba(15,23,42,.78);z-index:9900;display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;backdrop-filter:blur(4px)}
+.ak-modal.show{display:flex;animation:akFadeIn .2s ease}
+@keyframes akFadeIn{from{opacity:0}to{opacity:1}}
+.ak-modal-box{background:#fff;max-width:640px;width:100%;border-radius:18px;box-shadow:0 25px 70px rgba(0,0,0,.45);overflow:hidden;animation:akSlideUp .32s cubic-bezier(.2,.8,.3,1);margin:auto}
+@keyframes akSlideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ak-modal-head{background:linear-gradient(135deg,#4285f4 0%,#0f9d58 100%);color:#fff;padding:22px 28px;position:relative}
+.ak-modal-head h3{margin:0;font-size:1.25rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.ak-modal-head p{margin:6px 0 0;font-size:.85rem;opacity:.92}
+.ak-modal-close{position:absolute;top:14px;right:16px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;border:none;font-size:1.2rem;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center}
+.ak-modal-close:hover{background:rgba(255,255,255,.35);transform:rotate(90deg)}
+.ak-modal-body{padding:22px 28px 8px;max-height:62vh;overflow-y:auto}
+.ak-steps{list-style:none;margin:0;padding:0;counter-reset:akstep}
+.ak-steps li{position:relative;padding:0 0 22px 52px;counter-increment:akstep}
+.ak-steps li::before{content:counter(akstep);position:absolute;left:0;top:-2px;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#0f9d58);color:#fff;font-weight:800;font-size:1.05rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(66,133,244,.32)}
+.ak-steps li::after{content:'';position:absolute;left:17px;top:36px;bottom:0;width:2px;background:linear-gradient(to bottom,#bfdbfe,transparent)}
+.ak-steps li:last-child{padding-bottom:8px}
+.ak-steps li:last-child::after{display:none}
+.ak-steps .ak-title{font-weight:700;font-size:1rem;color:#1e293b;margin-bottom:6px}
+.ak-steps .ak-desc{font-size:.88rem;color:#475569;line-height:1.55}
+.ak-steps .ak-desc code{background:#f1f5f9;padding:2px 7px;border-radius:4px;font-size:.82rem;color:#db2777;font-family:Consolas,Monaco,monospace;font-weight:600}
+.ak-tip{margin:10px 0 0;padding:11px 14px;background:linear-gradient(135deg,#fef3c7,#fffbeb);border-left:4px solid #f59e0b;border-radius:6px;font-size:.83rem;color:#78350f;line-height:1.55}
+.ak-tip strong{color:#92400e}
+.ak-info{margin:6px 0 0;padding:11px 14px;background:linear-gradient(135deg,#dbeafe,#eff6ff);border-left:4px solid #3b82f6;border-radius:6px;font-size:.83rem;color:#1e3a8a;line-height:1.55}
+.ak-modal-foot{padding:16px 28px 24px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.ak-btn-primary{background:linear-gradient(135deg,#4285f4,#0f9d58);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:.92rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none;transition:transform .15s,box-shadow .15s;font-family:inherit}
+.ak-btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(66,133,244,.35)}
+.ak-btn-ghost{background:#fff;color:#64748b;border:1px solid #cbd5e1;padding:10px 16px;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
+.ak-btn-ghost:hover{background:#f1f5f9;border-color:#94a3b8}
+@media (max-width:520px){
+  .ak-modal-box{border-radius:14px}
+  .ak-modal-head{padding:18px 20px}
+  .ak-modal-body{padding:18px 20px 6px}
+  .ak-modal-foot{padding:14px 20px 20px;justify-content:stretch}
+  .ak-modal-foot .ak-btn-primary,.ak-modal-foot .ak-btn-ghost{flex:1;justify-content:center}
+  .ak-steps li{padding-left:46px}
+  .ak-steps li::before{width:32px;height:32px;font-size:.95rem}
+  .ak-steps li::after{left:15px}
+}
 /* KK: Summary card template */
 .kk-card{position:fixed;top:-20000px;left:0;width:820px;padding:48px 56px;background:linear-gradient(155deg,#f0f4ff 0%,#faf5ff 55%,#fef3f2 100%);font-family:"Nunito","Noto Sans TC",sans-serif;color:#1e1b4b;box-sizing:border-box;border-radius:24px;overflow:hidden}
 .kk-card::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.18),transparent 70%)}
@@ -573,8 +612,10 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
           <label for="apiKey" style="margin-bottom:0">API 金鑰</label>
           <a id="apiKeyLink" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener"
-            style="display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:var(--primary);text-decoration:none;font-weight:600;padding:3px 10px;border:1.5px solid var(--primary);border-radius:5px;transition:all .15s"
-            onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background='transparent'">
+            onclick="event.preventDefault();openApiKeyGuide()"
+            style="display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:var(--primary);text-decoration:none;font-weight:600;padding:3px 10px;border:1.5px solid var(--primary);border-radius:5px;transition:all .15s;cursor:pointer"
+            onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background='transparent'"
+            title="點擊查看完整申請步驟">
             &#128273; 免費申請 API 金鑰
           </a>
         </div>
@@ -597,6 +638,45 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
       </div>
     </div>
   </details>
+
+  <!-- XX: API Key Application Guide Modal -->
+  <div class="ak-modal" id="apiKeyGuideModal" onclick="if(event.target===this)closeApiKeyGuide()">
+    <div class="ak-modal-box" role="dialog" aria-modal="true" aria-labelledby="akModalTitle">
+      <div class="ak-modal-head">
+        <h3 id="akModalTitle">&#128273; 如何免費申請 Gemini API 金鑰</h3>
+        <p>4 個步驟，大約 2 分鐘完成，完全免費。</p>
+        <button class="ak-modal-close" onclick="closeApiKeyGuide()" title="關閉（Esc）" aria-label="關閉">&#10005;</button>
+      </div>
+      <div class="ak-modal-body">
+        <ol class="ak-steps">
+          <li>
+            <div class="ak-title">登入 Google 帳號</div>
+            <div class="ak-desc">用您常用的 Google 帳號（例如學校 Gmail 或個人信箱）登入即可。若尚未登入，點下方藍色按鈕時系統會自動引導您登入。</div>
+          </li>
+          <li>
+            <div class="ak-title">前往 Google AI Studio</div>
+            <div class="ak-desc">點下方「開啟 Google AI Studio」按鈕，會在新分頁打開 <code>aistudio.google.com</code>。首次進入時可能會請您同意使用條款，勾選後按「<strong>Continue</strong>」即可。</div>
+          </li>
+          <li>
+            <div class="ak-title">點選「Create API key」建立金鑰</div>
+            <div class="ak-desc">進入網頁後，點選右上方的藍色按鈕 <code>Create API key</code> →「<strong>Create API key in new project</strong>」（建立於新專案），系統會自動產生一組金鑰。</div>
+            <div class="ak-info">💡 如果畫面是英文，看到 <code>Get API key</code> 也是同一顆按鈕。</div>
+          </li>
+          <li>
+            <div class="ak-title">複製金鑰貼回本工具</div>
+            <div class="ak-desc">點金鑰右側的 <strong>📋 複製</strong> 圖示，回到本工具的「API 金鑰」欄位貼上 → 按「<strong>儲存設定</strong>」→ 再按「<strong>🔍 測試 API 金鑰</strong>」確認可用即大功告成！</div>
+            <div class="ak-tip"><strong>⚠️ 重要提醒：</strong>金鑰等同於密碼，請勿分享或截圖外流。本工具僅儲存在您的瀏覽器本機（localStorage），不會上傳任何伺服器。</div>
+          </li>
+        </ol>
+      </div>
+      <div class="ak-modal-foot">
+        <button class="ak-btn-ghost" onclick="closeApiKeyGuide()">稍後再說</button>
+        <a class="ak-btn-primary" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" onclick="closeApiKeyGuide()">
+          &#128279; 開啟 Google AI Studio
+        </a>
+      </div>
+    </div>
+  </div>
 
   <!-- Step 1: Upload PDF -->
   <div class="card card-step1">
@@ -773,7 +853,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         </div>
         <div class="nokey-footer">
           💡 <strong>想要全自動審查，不用手動貼上？</strong>
-          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" onclick="event.preventDefault();document.getElementById('settingsPanel').open=true;document.getElementById('settingsPanel').scrollIntoView({behavior:'smooth'})" style="color:var(--primary);font-weight:700;text-decoration:underline">免費申請 Gemini API 金鑰</a>，設定完成後即可一鍵自動審查
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" onclick="event.preventDefault();document.getElementById('settingsPanel').open=true;document.getElementById('settingsPanel').scrollIntoView({behavior:'smooth'});setTimeout(openApiKeyGuide,400)" style="color:var(--primary);font-weight:700;text-decoration:underline;cursor:pointer">免費申請 Gemini API 金鑰</a>，設定完成後即可一鍵自動審查
         </div>
       </div>
     </div>
@@ -822,7 +902,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
       <a class="footer-link" href="https://drive.google.com/file/d/1K6_Uoaj6VJhM4pCr_HudIh8XfDbZmQt1/view?usp=sharing" target="_blank" rel="noopener">
         <span class="footer-link-icon" style="background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.35)">&#128196;</span>教育局提示詞參考文件
       </a>
-      <a class="footer-link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">
+      <a class="footer-link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" onclick="event.preventDefault();openApiKeyGuide()">
         <span class="footer-link-icon fi-green">&#128273;</span>免費申請 Gemini 金鑰
       </a>
       <a class="footer-link" href="https://cagoooo.github.io/curriculum/" target="_blank" rel="noopener">
@@ -1360,11 +1440,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v3.6.6';
+const APP_VERSION='v3.7.0';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（教育局提示詞參考文件更新至 0420 版本）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（新增 API 金鑰 4 步驟圖文申請引導，首次使用更友善）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
@@ -2010,6 +2090,26 @@ function closePdfLightbox(e){
   document.removeEventListener('keydown',_lbEsc);
 }
 function _lbEsc(e){if(e.key==='Escape')closePdfLightbox();}
+
+// ===== XX: API Key Guide Modal =====
+function openApiKeyGuide(){
+  const m=document.getElementById('apiKeyGuideModal');
+  if(!m)return;
+  m.classList.add('show');
+  document.body.style.overflow='hidden';
+  document.addEventListener('keydown',_akEsc);
+  // Scroll modal body to top when opened
+  const body=m.querySelector('.ak-modal-body');
+  if(body)body.scrollTop=0;
+}
+function closeApiKeyGuide(){
+  const m=document.getElementById('apiKeyGuideModal');
+  if(!m)return;
+  m.classList.remove('show');
+  document.body.style.overflow='';
+  document.removeEventListener('keydown',_akEsc);
+}
+function _akEsc(e){if(e.key==='Escape')closeApiKeyGuide();}
 
 // ===== Buttons State =====
 function updateButtons(){
