@@ -681,7 +681,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:4px">
           <div style="font-size:.9rem;font-weight:600;color:var(--primary-dark)">審查提示詞（可直接編輯調整條件）：</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <a class="btn btn-sm" href="https://drive.google.com/file/d/1kiimq5BDRFzD9gQpre70cGsi3SQnPNoO/view" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#fef3c7,#fffbeb);color:#92400e;border:1px solid #fcd34d;padding:4px 10px;font-size:.78rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:4px" title="查看桃園市教育局提供的完整審查提示詞參考文件">&#128196; 教育局提示詞參考</a>
+            <a class="btn btn-sm" href="https://drive.google.com/file/d/1K6_Uoaj6VJhM4pCr_HudIh8XfDbZmQt1/view?usp=sharing" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#fef3c7,#fffbeb);color:#92400e;border:1px solid #fcd34d;padding:4px 10px;font-size:.78rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:4px" title="查看桃園市教育局提供的完整審查提示詞參考文件">&#128196; 教育局提示詞參考</a>
             <button class="btn btn-sm" style="background:#e8f0fe;color:#1a56db;border:1px solid #a4cafe;padding:4px 10px;font-size:.78rem" onclick="toggleItemDesc()">&#128161; 查看說明</button>
             <button class="btn btn-sm" style="background:#eee;color:var(--text);padding:4px 10px;font-size:.78rem" onclick="resetPrompt()">還原預設</button>
           </div>
@@ -819,7 +819,7 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
     <!-- 快速連結欄 -->
     <div>
       <div class="footer-col-title">快速連結</div>
-      <a class="footer-link" href="https://drive.google.com/file/d/1kiimq5BDRFzD9gQpre70cGsi3SQnPNoO/view" target="_blank" rel="noopener">
+      <a class="footer-link" href="https://drive.google.com/file/d/1K6_Uoaj6VJhM4pCr_HudIh8XfDbZmQt1/view?usp=sharing" target="_blank" rel="noopener">
         <span class="footer-link-icon" style="background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.35)">&#128196;</span>教育局提示詞參考文件
       </a>
       <a class="footer-link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">
@@ -1360,11 +1360,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v3.6.5';
+const APP_VERSION='v3.6.6';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（對照教育局 0420 全面更新 5 項：4-1-3、5-1-1、5-3-1、6-1、7-1-2-1）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（教育局提示詞參考文件更新至 0420 版本）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
