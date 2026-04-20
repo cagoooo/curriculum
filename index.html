@@ -1440,11 +1440,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v3.7.1';
+const APP_VERSION='v3.7.2';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（修復表格分隔線誤渲染為內容的顯示 Bug）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（擴充自動重試 + 友善中文錯誤提示，解決伺服器壅塞困擾）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
@@ -1724,12 +1724,19 @@ function assemblePrompt(){
 
 // ===== CC: Auto-Retry Helper =====
 async function withRetry(fn,label='',maxRetries=3,delayMs=5000){
+  // v3.7.2: Expanded retryable pattern to catch Gemini "high demand" / overload messages
+  // Covers: 429, 503, rate limit, too many, service unavailable, high demand, overload, spikes, try again later, temporarily, 502, 504 (bad gateway / timeout)
+  const retryPattern=/429|502|503|504|rate.?limit|too.?many|service.?unavail|high.?demand|overload|spike|try.?again|temporarily|experiencing/i;
   for(let attempt=1;attempt<=maxRetries;attempt++){
     try{return await fn();}
     catch(err){
-      const isRetryable=/429|503|rate.?limit|too.?many|service.?unavail/i.test(err.message||'');
+      const msg=err.message||'';
+      const isRetryable=retryPattern.test(msg);
       if(!isRetryable||attempt===maxRetries)throw err;
-      showToast(`⚡ ${label} API 限速，${delayMs/1000}s 後重試（${attempt}/${maxRetries}）...`);
+      // More specific toast message depending on error type
+      const isOverload=/high.?demand|overload|spike|experiencing|temporarily/i.test(msg);
+      const reason=isOverload?'伺服器壅塞':'API 限速';
+      showToast(`⚡ ${label} ${reason}，${delayMs/1000}s 後重試（${attempt}/${maxRetries}）...`);
       await new Promise(r=>setTimeout(r,delayMs));
     }
   }
@@ -1814,9 +1821,16 @@ async function executeReview(){
     showResult(result);
   }catch(err){
     let msg=err.message;
+    // v3.7.2: Friendly Chinese error messages for common failure types
     if(msg.includes('Failed to fetch')||msg.includes('NetworkError')){
       if(provider==='openai')msg='OpenAI API 不支援從本地檔案直接呼叫（CORS 限制）。請改用 Gemini API 或使用「複製提示詞」功能。';
       else msg='網路連線錯誤，請確認網路狀態及 API 金鑰是否正確。';
+    }else if(/high.?demand|overload|spike|experiencing|temporarily|try.?again/i.test(msg)){
+      msg=`**伺服器壅塞中**（Google 側暫時過載，已重試 3 次仍失敗）\n\n**原始訊息：** ${msg}\n\n**建議做法（擇一）：**\n- 🕐 **稍後再試**：壅塞通常 1–3 分鐘就會緩解，等一下再按「送出 AI 審查」\n- 🔄 **切換較穩定的模型**：到「⚙️ API 設定」把模型從 \`gemini-2.5-pro\` 改成 \`gemini-2.5-flash\`（flash 比較穩、也較快，品質對課程計畫審查幾乎沒差）\n- 📋 **改用複製提示詞**：點「複製提示詞」→ 貼到 Gemini 網頁版執行（網頁版較少壅塞）\n- 🌙 **避開尖峰時段**：晚上 9 點到半夜 2 點是國際尖峰，白天使用較順暢`;
+    }else if(/429|rate.?limit|too.?many|quota/i.test(msg)){
+      msg=`**API 用量超限**（已重試 3 次仍失敗）\n\n**原始訊息：** ${msg}\n\n**可能原因：**\n- 您的免費額度本分鐘/本日用完了（Gemini 免費額度：2.5-pro 每分鐘 5 次、2.5-flash 每分鐘 15 次）\n- 多個裝置共用同一把金鑰\n\n**建議做法：**\n- ⏱️ **等 1 分鐘**後再試（分鐘限額會重置）\n- 🔄 **改用 flash 模型**（限額是 pro 的 3 倍）\n- 📋 **改用複製提示詞**功能搭配 Gemini 網頁版（不耗 API 額度）`;
+    }else if(/api.?key|invalid|unauthorized|permission/i.test(msg)){
+      msg=`**API 金鑰無效**\n\n**原始訊息：** ${msg}\n\n**請檢查：**\n- 金鑰是否正確複製貼上（開頭應為 \`AIza...\`，無多餘空白）\n- 金鑰是否已被刪除或停用（到 Google AI Studio 確認）\n- 點「🔍 測試 API 金鑰」按鈕即時驗證`;
     }
     showResult(`**審查失敗**\n\n${msg}`);
   }finally{
@@ -2696,12 +2710,19 @@ async function runBatchQueue(apiKey){
       const card=document.getElementById('bri-'+idS);
       if(card)card.dataset.bstatus=isPass?'pass':'fail';
     }catch(err){
-      batchResults[item.id]={status:'error',text:err.message};
+      // v3.7.2: Friendly short error hint for batch mode
+      let shortMsg=err.message;
+      if(/high.?demand|overload|spike|experiencing|temporarily|try.?again/i.test(shortMsg)){
+        shortMsg='⚡ 伺服器壅塞（Google 側暫時過載，已重試 3 次）— 建議稍後對此項次使用「⚡ 重審失敗」按鈕，或改用 gemini-2.5-flash';
+      }else if(/429|rate.?limit|too.?many|quota/i.test(shortMsg)){
+        shortMsg='⏱️ API 用量超限 — 建議等 1 分鐘後按「⚡ 重審失敗」，或改用 gemini-2.5-flash（限額為 pro 的 3 倍）';
+      }
+      batchResults[item.id]={status:'error',text:shortMsg};
       if(stEl)stEl.textContent='⚠️';
       const chip=document.querySelector(`.b-chip[data-bid="${item.id}"]`);
       if(chip){chip.classList.remove('sel');chip.classList.add('st-err');}
       const body=document.getElementById('brb-'+idS);
-      if(body)body.innerHTML=`<div style="color:var(--danger);font-size:.88rem">&#10060; 審查失敗：${err.message}</div>`;
+      if(body)body.innerHTML=`<div style="color:var(--danger);font-size:.88rem;line-height:1.6">&#10060; 審查失敗：${shortMsg}</div>`;
       // G: update card status for filter
       const card=document.getElementById('bri-'+idS);
       if(card)card.dataset.bstatus='error';
