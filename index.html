@@ -1440,11 +1440,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v3.7.0';
+const APP_VERSION='v3.7.1';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（新增 API 金鑰 4 步驟圖文申請引導，首次使用更友善）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！（修復表格分隔線誤渲染為內容的顯示 Bug）</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
@@ -1893,13 +1893,31 @@ function renderMarkdown(text){
 
 function renderTableCards(lines,esc,fmt){
   const cell=s=>{const b=s.replace(/<br\s*\/?>/gi,'\x01');return fmt(esc(b)).replace(/\x01/g,'<br>');};
-  const data=lines.filter(l=>!/^\|[\s:|-]+\|$/.test(l));
+  // Enhanced separator / trash row filter (v3.7.1 fix)
+  // A separator row: all cells contain only dashes/colons/spaces (Markdown alignment syntax)
+  // A trash row: entire line after stripping outer pipes is just dashes/colons/spaces/pipes
+  const isSeparatorOrTrash=l=>{
+    const t=l.trim();
+    if(!t.startsWith('|'))return false;
+    const stripped=t.replace(/^\|+|\|+$/g,'');
+    // Case 1: Line is entirely separator characters (handles any weird format)
+    if(/^[\s:|\-–—]*$/.test(stripped)&&/[\-–—]/.test(stripped))return true;
+    // Case 2: Every cell is a valid Markdown separator cell (e.g. "---", ":---", "---:", ":---:")
+    const cells=stripped.split('|').map(c=>c.trim());
+    if(cells.every(c=>/^:?-{2,}:?$/.test(c))&&cells.length>0)return true;
+    return false;
+  };
+  const data=lines.filter(l=>!isSeparatorOrTrash(l));
   if(!data.length)return'';
   const parseRow=l=>l.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
   const rows=data.map(parseRow);
   const hdrs=rows[0];
-  const body=rows.slice(1).filter(r=>r.some(c=>c.length>0));
+  // Filter out body rows where ALL cells are empty or just dashes/separators (protective filter)
+  const body=rows.slice(1).filter(r=>r.some(c=>c.length>0&&!/^[\s:\-–—]+$/.test(c)));
 
+  // v3.7.1: If body is empty after filtering, treat as 表件通過
+  const passBanner=`<div class="result-pass-banner"><span class="pass-icon">✅</span><div class="pass-title">表件通過！</div><div class="pass-sub">本審查項次所有規定均符合，無須修正。</div></div>`;
+  if(body.length===0)return passBanner;
   // ── 3-col: 項目 | 審查結果 | 具體修改建議 ──────────
   if(hdrs.length>=2&&/審查結果/.test(hdrs.join(''))){
     const sections=[];let cur=null;
