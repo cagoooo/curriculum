@@ -1446,12 +1446,63 @@ let selectedItem=null;
 // 透過 smes-e1dc3 Cloud Functions proxy 推 LINE Flex 卡片給 admin
 // best-effort:失敗不擋使用者流程
 const NOTIFY_URL='https://asia-east1-smes-e1dc3.cloudfunctions.net/notifyCurriculum';
+// v3.10.0: session ID（每分頁一份，sessionStorage）讓 admin 可串連 started→success/failed
+function _getSessionId(){
+  try{
+    let sid=sessionStorage.getItem('tyc_sid');
+    if(!sid){
+      sid=(Date.now().toString(36)+Math.random().toString(36).slice(2,8)).toUpperCase();
+      sessionStorage.setItem('tyc_sid',sid);
+    }
+    return sid;
+  }catch(_){return 'NO-SID'}
+}
+// v3.10.0: 解析 UA 拿瀏覽器/OS（簡化版,不引外部 lib）
+function _parseUA(){
+  const ua=navigator.userAgent||'';
+  let os='Unknown', br='Unknown', dev='Desktop';
+  if(/Windows NT 10/.test(ua))os='Windows 10/11';
+  else if(/Windows NT/.test(ua))os='Windows';
+  else if(/Mac OS X ([\d_]+)/.test(ua))os='macOS '+RegExp.$1.replace(/_/g,'.');
+  else if(/Android ([\d.]+)/.test(ua)){os='Android '+RegExp.$1;dev='Mobile'}
+  else if(/iPhone OS ([\d_]+)/.test(ua)){os='iOS '+RegExp.$1.replace(/_/g,'.');dev='iPhone'}
+  else if(/iPad/.test(ua)){os='iPadOS';dev='iPad'}
+  else if(/Linux/.test(ua))os='Linux';
+  if(/Edg\/([\d.]+)/.test(ua))br='Edge '+RegExp.$1.split('.')[0];
+  else if(/OPR\/([\d.]+)/.test(ua))br='Opera '+RegExp.$1.split('.')[0];
+  else if(/Chrome\/([\d.]+)/.test(ua))br='Chrome '+RegExp.$1.split('.')[0];
+  else if(/Firefox\/([\d.]+)/.test(ua))br='Firefox '+RegExp.$1.split('.')[0];
+  else if(/Safari\/([\d.]+)/.test(ua))br='Safari';
+  return{os,br,dev};
+}
+// v3.10.0: 收集前端 meta — IP 由後端從 x-forwarded-for 抓
+function _collectMeta(){
+  try{
+    const{os,br,dev}=_parseUA();
+    return{
+      sid:_getSessionId(),
+      ver:APP_VERSION||'?',
+      os,br,dev,
+      lang:navigator.language||'',
+      tz:Intl.DateTimeFormat().resolvedOptions().timeZone||'',
+      screen:`${screen.width}×${screen.height}`,
+      viewport:`${innerWidth}×${innerHeight}`,
+      page:location.pathname+location.search,
+      referrer:(document.referrer||'').substring(0,120),
+    };
+  }catch(_){return{sid:_getSessionId()}}
+}
 function notifyAdmin(status,title,fields,footerNote){
   try{
     fetch(NOTIFY_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json; charset=utf-8'},
-      body:JSON.stringify({status,title,fields:fields||[],footerNote:footerNote||''}),
+      body:JSON.stringify({
+        status,title,
+        fields:fields||[],
+        footerNote:footerNote||'',
+        meta:_collectMeta(),
+      }),
       keepalive:true
     }).catch(()=>{});
   }catch(_){}
@@ -1464,7 +1515,7 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v3.9.0';
+const APP_VERSION='v3.10.0';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
