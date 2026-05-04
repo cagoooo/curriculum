@@ -1442,6 +1442,21 @@ const ITEM_DESC={
 let extractedText='';
 let selectedItem=null;
 
+// ===== LINE 通知 (管理員告警) =====
+// 透過 smes-e1dc3 Cloud Functions proxy 推 LINE Flex 卡片給 admin
+// best-effort:失敗不擋使用者流程
+const NOTIFY_URL='https://asia-east1-smes-e1dc3.cloudfunctions.net/notifyCurriculum';
+function notifyAdmin(status,title,fields,footerNote){
+  try{
+    fetch(NOTIFY_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json; charset=utf-8'},
+      body:JSON.stringify({status,title,fields:fields||[],footerNote:footerNote||''}),
+      keepalive:true
+    }).catch(()=>{});
+  }catch(_){}
+}
+
 // ===== Models =====
 const MODELS={
   gemini:['gemini-2.5-flash','gemini-2.5-pro','gemini-2.0-flash'],
@@ -1449,7 +1464,7 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v3.8.0';
+const APP_VERSION='v3.9.0';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
@@ -1817,6 +1832,16 @@ async function executeReview(){
   if(!apiKey){showToast('請先設定 API 金鑰');document.getElementById('settingsPanel').open=true;return}
   const provider=document.getElementById('apiProvider').value||localStorage.getItem('tyc_provider');
   const model=document.getElementById('apiModel').value||localStorage.getItem('tyc_model');
+  const pdfName=document.getElementById('fileName').textContent||'(未知)';
+  const itemLabel=selectedItem?`${selectedItem.id} ${selectedItem.name}`:'(未選)';
+  const startedAt=Date.now();
+  // 通知:開始審查
+  notifyAdmin('started','使用者送出 AI 審查',[
+    {icon:'📄',label:'PDF',value:pdfName},
+    {icon:'📋',label:'項次',value:itemLabel},
+    {icon:'🤖',label:'模型',value:`${provider} / ${model}`},
+    {icon:'📝',label:'PDF 字數',value:`${extractedText.length.toLocaleString()} 字`},
+  ]);
   document.getElementById('loading').classList.add('show');
   startLoadingProgress();
   document.getElementById('btnReview').disabled=true;
@@ -1828,6 +1853,16 @@ async function executeReview(){
       ?callGemini(apiKey,model,prompt.system,prompt.user)
       :callOpenAI(apiKey,model,prompt.system,prompt.user),'');
     showResult(result);
+    // 通知:成功
+    const elapsed=((Date.now()-startedAt)/1000).toFixed(1);
+    const isPass=/^表件通過[。！!]?\s*$/.test((result||'').trim());
+    notifyAdmin('success',isPass?'AI 審查完成 · 表件通過 ✅':'AI 審查完成',[
+      {icon:'📋',label:'項次',value:itemLabel},
+      {icon:'📄',label:'PDF',value:pdfName},
+      {icon:'🤖',label:'模型',value:model},
+      {icon:'📝',label:'回應字數',value:`${(result||'').length.toLocaleString()} 字`},
+      {icon:'🎯',label:'結果',value:isPass?'表件通過':'有待修正項'},
+    ],`⏱️ 耗時 ${elapsed}s`);
   }catch(err){
     let msg=err.message;
     // v3.7.2: Friendly Chinese error messages for common failure types
@@ -1842,6 +1877,15 @@ async function executeReview(){
       msg=`**API 金鑰無效**\n\n**原始訊息：** ${msg}\n\n**請檢查：**\n- 金鑰是否正確複製貼上（開頭應為 \`AIza...\`，無多餘空白）\n- 金鑰是否已被刪除或停用（到 Google AI Studio 確認）\n- 點「🔍 測試 API 金鑰」按鈕即時驗證`;
     }
     showResult(`**審查失敗**\n\n${msg}`);
+    // 通知:失敗
+    const elapsed=((Date.now()-startedAt)/1000).toFixed(1);
+    const rawErr=(err&&err.message)?err.message:String(err);
+    notifyAdmin('failed','AI 審查失敗',[
+      {icon:'📋',label:'項次',value:itemLabel},
+      {icon:'📄',label:'PDF',value:pdfName},
+      {icon:'🤖',label:'模型',value:`${provider} / ${model}`},
+      {icon:'💬',label:'錯誤',value:rawErr.substring(0,180)},
+    ],`⏱️ 耗時 ${elapsed}s`);
   }finally{
     stopLoadingProgress();
     document.getElementById('loading').classList.remove('show');
