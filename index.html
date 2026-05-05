@@ -1445,7 +1445,11 @@ let selectedItem=null;
 // ===== LINE 通知 (管理員告警) =====
 // 透過 smes-e1dc3 Cloud Functions proxy 推 LINE Flex 卡片給 admin
 // best-effort:失敗不擋使用者流程
+// 與國中版 (https://cagoooo.github.io/JHScurriculum/) 共用同一支 notifyCurriculum 函式,
+// payload 帶 app:'ES' + 標題加 [國小] 前綴讓 admin 能區分國小/國中來源
 const NOTIFY_URL='https://asia-east1-smes-e1dc3.cloudfunctions.net/notifyCurriculum';
+const NOTIFY_APP_TAG='ES'; // 國小版識別碼 (Elementary School;國中版為 'JHS')
+const NOTIFY_TITLE_PREFIX='[國小] '; // LINE 卡片標題前綴,不需後端改動即可一眼區分
 // v3.10.0: session ID（每分頁一份，sessionStorage）讓 admin 可串連 started→success/failed
 function _getSessionId(){
   try{
@@ -1480,6 +1484,7 @@ function _collectMeta(){
   try{
     const{os,br,dev}=_parseUA();
     return{
+      app:NOTIFY_APP_TAG, // 國小版識別,讓 admin Cloud Function 可分流或加標籤
       sid:_getSessionId(),
       ver:APP_VERSION||'?',
       os,br,dev,
@@ -1490,7 +1495,7 @@ function _collectMeta(){
       page:location.pathname+location.search,
       referrer:(document.referrer||'').substring(0,120),
     };
-  }catch(_){return{sid:_getSessionId()}}
+  }catch(_){return{app:NOTIFY_APP_TAG,sid:_getSessionId()}}
 }
 function notifyAdmin(status,title,fields,footerNote){
   try{
@@ -1498,7 +1503,9 @@ function notifyAdmin(status,title,fields,footerNote){
       method:'POST',
       headers:{'Content-Type':'application/json; charset=utf-8'},
       body:JSON.stringify({
-        status,title,
+        status,
+        title:(NOTIFY_TITLE_PREFIX||'')+title, // 自動加 [國小] 前綴
+        app:NOTIFY_APP_TAG, // 頂層也帶一份,後端兩處都看得到
         fields:fields||[],
         footerNote:footerNote||'',
         meta:_collectMeta(),
