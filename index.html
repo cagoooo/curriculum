@@ -2155,11 +2155,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v4.0.0';
+const APP_VERSION='v4.0.1';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>🎉 工具已更新至 ${APP_VERSION}！全新編輯排版式視覺：左側松綠進度導覽 + 暖米紙底 + 襯線標題 + R3 狀態色條結果卡，桌機字級放大更易讀</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>🛡️ 工具已更新至 ${APP_VERSION}！強化 API 配額爆掉時的指引,並更正額度數字:gemini-2.5-<b>pro 每日免費 50 次</b>、<b>flash 每日 250 次</b>(5 倍),quota 爆掉時請到「⚙️ API 設定」切回 flash 即可救援。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
@@ -2411,7 +2411,7 @@ async function testApiKey(){
       // 嘗試提供更友善的錯誤說明
       let hint='';
       if(/API_KEY_INVALID|invalid.*key|api key not valid/i.test(errMsg)) hint='金鑰格式錯誤或已失效，請重新申請。';
-      else if(/QUOTA_EXCEEDED|quota/i.test(errMsg)) hint='免費額度已用完，請明日再試或升級方案。';
+      else if(/QUOTA_EXCEEDED|quota/i.test(errMsg)) hint='免費額度已用完。建議將「模型」下拉選單改為 gemini-2.5-flash（每日 250 次，是 pro 的 5 倍），或等明日 0:00 額度重置。';
       else if(/PERMISSION_DENIED|permission/i.test(errMsg)) hint='金鑰權限不足，請確認已啟用 Gemini API。';
       else if(/403/.test(errMsg)) hint='存取被拒，請確認金鑰正確且未過期。';
       resultEl.style.cssText='margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.85rem;display:flex;align-items:flex-start;gap:8px;background:#fde8e8;color:#7f1d1d;border:1px solid #fca5a5';
@@ -2563,7 +2563,7 @@ async function executeReview(){
     }else if(/high.?demand|overload|spike|experiencing|temporarily|try.?again/i.test(msg)){
       msg=`**伺服器壅塞中**（Google 側暫時過載，已重試 3 次仍失敗）\n\n**原始訊息：** ${msg}\n\n**建議做法（擇一）：**\n- 🕐 **稍後再試**：壅塞通常 1–3 分鐘就會緩解，等一下再按「送出 AI 審查」\n- 🔄 **切換較穩定的模型**：到「⚙️ API 設定」把模型從 \`gemini-2.5-pro\` 改成 \`gemini-2.5-flash\`（flash 比較穩、也較快，品質對課程計畫審查幾乎沒差）\n- 📋 **改用複製提示詞**：點「複製提示詞」→ 貼到 Gemini 網頁版執行（網頁版較少壅塞）\n- 🌙 **避開尖峰時段**：晚上 9 點到半夜 2 點是國際尖峰，白天使用較順暢`;
     }else if(/429|rate.?limit|too.?many|quota/i.test(msg)){
-      msg=`**API 用量超限**（已重試 3 次仍失敗）\n\n**原始訊息：** ${msg}\n\n**可能原因：**\n- 您的免費額度本分鐘/本日用完了（Gemini 免費額度：2.5-pro 每分鐘 5 次、2.5-flash 每分鐘 15 次）\n- 多個裝置共用同一把金鑰\n\n**建議做法：**\n- ⏱️ **等 1 分鐘**後再試（分鐘限額會重置）\n- 🔄 **改用 flash 模型**（限額是 pro 的 3 倍）\n- 📋 **改用複製提示詞**功能搭配 Gemini 網頁版（不耗 API 額度）`;
+      msg=`**API 用量超限**（已重試 3 次仍失敗）\n\n**原始訊息：** ${msg}\n\n**📊 Gemini 免費層額度（每日 RPD）：**\n- gemini-2.5-**pro：每日只有 50 次**（最容易爆，本次大機率是這個）\n- gemini-2.5-**flash：每日 250 次**（是 pro 的 5 倍）\n\n**🔄 最有效解法：到「⚙️ API 設定」把模型切回 \`gemini-2.5-flash\`**\n（flash 對國小課程計畫審查品質幾乎沒差，但額度多 5 倍、速度也較快）\n\n**其他做法：**\n- ⏱️ 等到隔日 0:00 額度重置（pro 每日 50 次很容易用完）\n- 📋 改用「複製提示詞」搭配 Gemini 網頁版（不耗 API 額度）\n- 🌙 多裝置共用同一把金鑰時，配額會加總計算`;
     }else if(/api.?key|invalid|unauthorized|permission/i.test(msg)){
       msg=`**API 金鑰無效**\n\n**原始訊息：** ${msg}\n\n**請檢查：**\n- 金鑰是否正確複製貼上（開頭應為 \`AIza...\`，無多餘空白）\n- 金鑰是否已被刪除或停用（到 Google AI Studio 確認）\n- 點「🔍 測試 API 金鑰」按鈕即時驗證`;
     }
@@ -3459,7 +3459,7 @@ async function runBatchQueue(apiKey){
       if(/high.?demand|overload|spike|experiencing|temporarily|try.?again/i.test(shortMsg)){
         shortMsg='⚡ 伺服器壅塞（Google 側暫時過載，已重試 3 次）— 建議稍後對此項次使用「⚡ 重審失敗」按鈕，或改用 gemini-2.5-flash';
       }else if(/429|rate.?limit|too.?many|quota/i.test(shortMsg)){
-        shortMsg='⏱️ API 用量超限 — 建議等 1 分鐘後按「⚡ 重審失敗」，或改用 gemini-2.5-flash（限額為 pro 的 3 倍）';
+        shortMsg='⏱️ API 用量超限（每日免費：pro 50 次、flash 250 次）— 建議到「⚙️ API 設定」把模型切回 <b>gemini-2.5-flash</b>（額度 5 倍），再按「⚡ 重審失敗」';
       }
       batchResults[item.id]={status:'error',text:shortMsg};
       if(stEl)stEl.textContent='⚠️';
