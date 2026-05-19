@@ -2643,14 +2643,22 @@ async function genGenerate(){
     showToast('⚠️ 請至少勾選一個年級');
     return;
   }
-  const apiKey=(()=>{try{return localStorage.getItem('tyc_api_key')||document.getElementById('apiKey')?.value;}catch(e){return null;}})();
+  // 跟既有審查模式（executeReview）同步讀法：input 現值優先 → 兩種 localStorage key 都 fallback
+  // saveSettings() 實際儲存的 key 名是 tyc_apikey（沒底線），不是 tyc_api_key
+  const apiKey=(()=>{try{
+    const inp=document.getElementById('apiKey')?.value?.trim();
+    if(inp)return inp;
+    return localStorage.getItem('tyc_apikey')
+        || localStorage.getItem('tyc_api_key')
+        || '';
+  }catch(e){return '';}})();
   if(!apiKey){
     showToast('⚠️ 請先到 ⚙️ API 設定填入 Gemini 金鑰，或按「複製提示詞」貼到 ChatGPT/Gemini 網頁版');
     document.getElementById('settingsPanel')?.setAttribute('open','');
     return;
   }
-  const provider=document.getElementById('apiProvider')?.value||'gemini';
-  const model=document.getElementById('apiModel')?.value||MODELS[provider][0];
+  const provider=document.getElementById('apiProvider')?.value||localStorage.getItem('tyc_provider')||'gemini';
+  const model=document.getElementById('apiModel')?.value||localStorage.getItem('tyc_model')||MODELS[provider][0];
   const {system,user}=genBuildPrompt(v);
 
   const btn=document.getElementById('genGenerateBtn');
