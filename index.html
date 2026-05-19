@@ -539,6 +539,133 @@ footer{background:linear-gradient(140deg,#062e28 0%,#0a4a3e 55%,#0d5e52 100%);co
     -webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   @page{margin:2cm;size:A4}
 }
+/* ── Mode Switcher (sidebar segmented control) ── */
+.mode-switcher{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
+.mode-switcher .ms-btn{
+  display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:9px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  color:#a8cdc3;font-family:inherit;font-size:14px;font-weight:700;letter-spacing:.01em;
+  cursor:pointer;transition:all .15s;text-align:left;width:100%;
+}
+.mode-switcher .ms-btn:hover{background:rgba(255,255,255,.09);color:#dcebe6;border-color:rgba(255,255,255,.18)}
+.mode-switcher .ms-btn.active{
+  background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.28);
+  box-shadow:inset 3px 0 0 var(--accent),0 1px 4px rgba(0,0,0,.18);
+}
+.mode-switcher .ms-btn .ms-icon{font-size:18px;line-height:1}
+.mode-switcher .ms-btn .ms-text{flex:1}
+@media(max-width:920px){
+  .mode-switcher{flex-direction:row;gap:6px}
+  .mode-switcher .ms-btn{flex:1;justify-content:center;padding:8px 10px;font-size:13px}
+  .mode-switcher .ms-btn .ms-text{flex:0 1 auto}
+}
+
+/* Mode-driven visibility — body.mode-* gates which flow shows */
+body.mode-generator [data-mf="review"]{display:none!important}
+body:not(.mode-generator) #generatorFlow{display:none!important}
+
+/* ── Generator cards ── */
+.gen-intro-card{
+  background:linear-gradient(180deg,#fff 0%,var(--pine-bg) 100%);
+  border:1px solid var(--pine-soft);
+}
+.gen-intro-card .card-title .step{
+  background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important;
+  letter-spacing:.04em;padding:5px 12px;
+}
+.gen-intro-card .card-title .step::before{content:""!important}
+.gen-intro-text{color:var(--ink-soft);font-size:.97rem;line-height:1.75;margin:0 0 16px}
+.gen-intro-text b{color:var(--pine-dark)}
+.gen-rules-strip{display:flex;flex-wrap:wrap;gap:7px}
+.gen-rule-chip{
+  font-family:var(--sans);font-weight:700;font-size:.78rem;color:var(--pine-dark);
+  background:#fff;border:1px solid var(--pine-soft);border-radius:30px;padding:5px 13px;
+  letter-spacing:.01em;
+}
+.gen-card{position:relative}
+.gen-card .card-title .step{background:var(--accent-soft)!important;color:var(--accent)!important;border-color:var(--accent-soft)!important}
+.gen-card .card-title .step::before{content:""!important}
+
+/* Generator form fields share the .card form styles but with denser spacing */
+.gen-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.gen-grid > .gen-field{display:flex;flex-direction:column;gap:4px}
+.gen-field label{margin-bottom:2px}
+.gen-field .gen-hint{font-size:.78rem;color:var(--ink-mute);margin-top:2px;letter-spacing:.01em}
+.gen-section-label{
+  font-family:var(--sans);font-weight:700;font-size:.82rem;letter-spacing:.06em;
+  color:var(--ink-mute);text-transform:uppercase;margin:18px 0 10px;
+  display:flex;align-items:center;gap:8px;
+}
+.gen-section-label::before{content:"";display:inline-block;width:14px;height:1px;background:var(--ink-mute);opacity:.5}
+.gen-check-row{display:flex;flex-wrap:wrap;gap:8px}
+.gen-chip{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:30px;
+  background:#fff;border:1.5px solid var(--hairline);color:var(--ink-soft);
+  font-family:var(--sans);font-weight:700;font-size:.85rem;cursor:pointer;transition:all .15s;user-select:none;
+}
+.gen-chip input{margin:0;accent-color:var(--pine);cursor:pointer}
+.gen-chip:hover{border-color:var(--pine-soft);background:var(--pine-bg);color:var(--pine-dark)}
+.gen-chip.checked{background:var(--pine);border-color:var(--pine);color:#fff}
+.gen-chip.checked input{accent-color:#fff}
+.gen-route-tabs{display:flex;gap:8px;margin-bottom:14px;background:var(--paper-2);border-radius:12px;padding:5px;border:1px solid var(--hairline-2)}
+.gen-route-tab{
+  flex:1;padding:11px 14px;border-radius:9px;border:none;background:transparent;
+  font-family:var(--sans);font-weight:700;font-size:.92rem;color:var(--ink-mute);cursor:pointer;transition:all .15s;
+}
+.gen-route-tab:hover{color:var(--pine-dark)}
+.gen-route-tab.active{background:#fff;color:var(--pine-dark);box-shadow:0 1px 4px rgba(20,61,54,.1)}
+.gen-textarea{
+  width:100%;padding:11px 14px;border:1px solid var(--hairline);border-radius:9px;
+  font-family:var(--sans);font-size:.92rem;line-height:1.6;color:var(--ink);
+  background:#fff;resize:vertical;min-height:80px;transition:all .15s;
+}
+.gen-textarea:focus{border-color:var(--pine);box-shadow:0 0 0 3px rgba(44,107,96,.14);outline:none}
+.gen-actions{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  margin-top:18px;padding-top:18px;border-top:1px solid var(--hairline-2);
+}
+.gen-actions .spacer{flex:1}
+.gen-status{font-size:.85rem;color:var(--ink-mute);font-weight:600}
+.gen-status.ok{color:var(--pass)}
+.gen-status.err{color:var(--fail)}
+
+/* Generator preview area */
+.gen-preview-wrap{
+  background:var(--paper-2);border:1px solid var(--hairline-2);border-radius:12px;
+  padding:18px;margin-top:14px;
+}
+.gen-preview-head{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--hairline-2);
+}
+.gen-preview-title{font-family:var(--serif);font-weight:600;font-size:1.15rem;color:var(--pine-dark);letter-spacing:-.01em}
+.gen-preview-body{
+  background:#fff;border:1px solid var(--hairline-2);border-radius:10px;padding:18px 22px;
+  font-family:var(--serif);font-size:.96rem;line-height:1.85;color:var(--ink);
+  max-height:560px;overflow-y:auto;min-height:120px;
+}
+.gen-preview-body[contenteditable=true]:focus{outline:2px solid var(--pine-soft);outline-offset:2px}
+.gen-preview-body h3{
+  font-family:var(--serif);font-size:1.05rem;color:var(--pine-dark);font-weight:600;
+  margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--pine-bg);
+}
+.gen-preview-body h3:first-child{margin-top:0}
+.gen-preview-body h4{font-size:.92rem;color:var(--accent);font-weight:700;margin:10px 0 4px}
+.gen-preview-body table{
+  width:100%;border-collapse:collapse;margin:8px 0 14px;font-family:var(--sans);font-size:.86rem;
+}
+.gen-preview-body th,.gen-preview-body td{
+  border:1px solid var(--hairline);padding:6px 9px;text-align:left;vertical-align:top;
+}
+.gen-preview-body th{background:var(--pine-bg);color:var(--pine-dark);font-weight:700}
+.gen-preview-body ul,.gen-preview-body ol{padding-left:1.8em;margin:6px 0}
+.gen-loader{display:flex;align-items:center;justify-content:center;gap:12px;padding:40px;color:var(--pine-dark);font-weight:700}
+.gen-loader .gen-spin{
+  width:24px;height:24px;border:3px solid var(--pine-bg);border-top-color:var(--pine);
+  border-radius:50%;animation:gen-spin 1s linear infinite;
+}
+@keyframes gen-spin{to{transform:rotate(360deg)}}
+
 /* ── L: PWA Install Banner ─────── */
 .pwa-banner{display:flex;align-items:center;gap:10px;padding:8px 16px;
   background:rgba(255,255,255,.14);border-radius:10px;border:1px solid rgba(255,255,255,.25);
@@ -1164,7 +1291,18 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
 <aside class="app-sidebar">
   <div>
     <div class="sb-brand-eyebrow">桃園市 · 115 學年度</div>
-    <div class="sb-brand">課程計畫<em>AI 審查工具</em></div>
+    <div class="sb-brand">課程計畫<em id="sbBrandSub">AI 審查工具</em></div>
+  </div>
+  <hr class="sb-divider">
+  <!-- Mode switcher -->
+  <div class="sb-label">工作模式</div>
+  <div class="mode-switcher" role="tablist" aria-label="工作模式切換">
+    <button type="button" class="ms-btn active" data-mode="review" onclick="setMode('review')" role="tab" aria-selected="true">
+      <span class="ms-icon">🔍</span><span class="ms-text">審查現成 PDF</span>
+    </button>
+    <button type="button" class="ms-btn" data-mode="generator" onclick="setMode('generator')" role="tab" aria-selected="false">
+      <span class="ms-icon">✨</span><span class="ms-text">產生合規計畫</span>
+    </button>
   </div>
   <hr class="sb-divider">
   <div class="sb-label">進度</div>
@@ -1174,6 +1312,11 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
     <li data-step="select"><span class="num">03</span><div><span class="t">選擇項次</span><span class="d">單項 / 批次審查</span></div></li>
     <li data-step="review"><span class="num">04</span><div><span class="t">送出審查</span><span class="d">AI 自動回饋</span></div></li>
     <li data-step="result"><span class="num">05</span><div><span class="t">閱讀結果</span><span class="d">結構化卡片</span></div></li>
+  </ol>
+  <ol class="sb-steps" id="sbStepsGen" hidden>
+    <li data-step="g-basic" class="active"><span class="num">01</span><div><span class="t">基本資料</span><span class="d">學校・年級・領域</span></div></li>
+    <li data-step="g-thought"><span class="num">02</span><div><span class="t">教學構想</span><span class="d">教科書・議題・節日</span></div></li>
+    <li data-step="g-result"><span class="num">03</span><div><span class="t">AI 生成計畫</span><span class="d">內建合規規則</span></div></li>
   </ol>
   <div class="sb-foot">
     <span class="v">v4.0 · 阿凱老師</span>
@@ -1219,6 +1362,210 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
   <button onclick="setFontSize('lg')" title="大字">A&#8314;</button>
 </div>
 <div class="container">
+
+  <!-- ════════════════════════════════════════════════════════════
+       GENERATOR FLOW · 合規版產生器
+       ════════════════════════════════════════════════════════════ -->
+  <div id="generatorFlow">
+    <!-- Generator intro card -->
+    <div class="card gen-intro-card">
+      <div class="card-title"><span class="step">合規版產生器</span>填表 → AI → 一份可直接送審的計畫</div>
+      <p class="gen-intro-text">
+        依桃園市教育局 <b>115 學年度</b> 審查標準（5-1-1 / 5-2）內建 5 道合規規則：領域名稱統一寫法、議題融入無【】、週數對應、七大要素齊備。AI 生成完即可直接切到「審查現成 PDF」模式驗證一次，確認通過再下載。
+      </p>
+      <div class="gen-rules-strip">
+        <span class="gen-rule-chip">✓ 領域名稱統一</span>
+        <span class="gen-rule-chip">✓ 議題融入無【】</span>
+        <span class="gen-rule-chip">✓ 週數對應</span>
+        <span class="gen-rule-chip">✓ 七大要素齊備</span>
+        <span class="gen-rule-chip">✓ 單元名稱不抄教材</span>
+      </div>
+    </div>
+
+    <!-- Step G-1: Basic info -->
+    <div class="card gen-card" data-gen-step="g-basic">
+      <div class="card-title"><span class="step">G1</span>基本資料</div>
+      <div class="gen-section-label">學校與學年</div>
+      <div class="gen-grid">
+        <div class="gen-field">
+          <label for="genSchool">學校全名</label>
+          <input type="text" id="genSchool" placeholder="例：桃園市龍潭區石門國民小學">
+        </div>
+        <div class="gen-field">
+          <label for="genYear">學年度</label>
+          <select id="genYear">
+            <option value="114">114 學年度</option>
+            <option value="115" selected>115 學年度</option>
+            <option value="116">116 學年度</option>
+          </select>
+        </div>
+        <div class="gen-field">
+          <label for="genDesigner">設計者</label>
+          <input type="text" id="genDesigner" placeholder="例：三年級備課團隊 / 王老師">
+        </div>
+      </div>
+
+      <div class="gen-section-label">年級（可複選）</div>
+      <div class="gen-check-row" id="genGradeRow">
+        <label class="gen-chip"><input type="checkbox" value="1"> 一年級</label>
+        <label class="gen-chip"><input type="checkbox" value="2"> 二年級</label>
+        <label class="gen-chip checked"><input type="checkbox" value="3" checked> 三年級</label>
+        <label class="gen-chip"><input type="checkbox" value="4"> 四年級</label>
+        <label class="gen-chip"><input type="checkbox" value="5"> 五年級</label>
+        <label class="gen-chip"><input type="checkbox" value="6"> 六年級</label>
+      </div>
+
+      <div class="gen-section-label">領域 / 科目（請選擇一項，名稱已採桃園市統一寫法）</div>
+      <div class="gen-grid">
+        <div class="gen-field">
+          <select id="genDomain">
+            <option value="語文領域-國語文">語文領域-國語文</option>
+            <option value="語文領域-本土語文">語文領域-本土語文</option>
+            <option value="語文領域-英語文">語文領域-英語文</option>
+            <option value="數學領域">數學領域</option>
+            <option value="社會領域">社會領域</option>
+            <option value="自然科學領域">自然科學領域</option>
+            <option value="藝術領域">藝術領域</option>
+            <option value="健康與體育">健康與體育</option>
+            <option value="綜合活動">綜合活動</option>
+            <option value="生活課程">生活課程</option>
+          </select>
+          <span class="gen-hint">⚠️ 標題不需要加【】，會自動以粗體呈現</span>
+        </div>
+        <div class="gen-field">
+          <label for="genTextbook">教科書版本</label>
+          <select id="genTextbook">
+            <option value="康軒">康軒</option>
+            <option value="翰林">翰林</option>
+            <option value="南一">南一</option>
+            <option value="自編">自編 / 校本</option>
+            <option value="不指定">不指定（讓 AI 自訂單元）</option>
+          </select>
+        </div>
+        <div class="gen-field">
+          <label for="genPeriods">每週節數</label>
+          <input type="text" id="genPeriods" value="5" placeholder="例：5">
+        </div>
+      </div>
+
+      <div class="gen-section-label">學期週數（依桃園市規則自動帶入，可手調）</div>
+      <div class="gen-grid">
+        <div class="gen-field">
+          <label for="genWeeksSem1">上學期週數</label>
+          <input type="text" id="genWeeksSem1" value="20">
+          <span class="gen-hint">1-5 年級＝20 週，6 年級＝20 週</span>
+        </div>
+        <div class="gen-field">
+          <label for="genWeeksSem2">下學期週數</label>
+          <input type="text" id="genWeeksSem2" value="20">
+          <span class="gen-hint">1-5 年級＝20 週，6 年級＝17 或 18 週</span>
+        </div>
+      </div>
+
+      <div class="gen-section-label">核心素養（可複選）</div>
+      <div class="gen-check-row" id="genCoreRow">
+        <label class="gen-chip checked"><input type="checkbox" value="A1.身心素質與自我精進" checked> A1 身心素質</label>
+        <label class="gen-chip"><input type="checkbox" value="A2.系統思考與問題解決"> A2 系統思考</label>
+        <label class="gen-chip"><input type="checkbox" value="A3.規劃執行與創新應變"> A3 規劃執行</label>
+        <label class="gen-chip checked"><input type="checkbox" value="B1.符號運用與溝通表達" checked> B1 符號運用</label>
+        <label class="gen-chip"><input type="checkbox" value="B2.科技資訊與媒體素養"> B2 科技資訊</label>
+        <label class="gen-chip"><input type="checkbox" value="B3.藝術涵養與美感素養"> B3 藝術涵養</label>
+        <label class="gen-chip"><input type="checkbox" value="C1.道德實踐與公民意識"> C1 道德實踐</label>
+        <label class="gen-chip checked"><input type="checkbox" value="C2.人際關係與團隊合作" checked> C2 人際關係</label>
+        <label class="gen-chip"><input type="checkbox" value="C3.多元文化與國際理解"> C3 多元文化</label>
+      </div>
+
+      <div class="gen-section-label">評量方式（可複選）</div>
+      <div class="gen-check-row" id="genAssessRow">
+        <label class="gen-chip checked"><input type="checkbox" value="紙筆評量" checked> 紙筆評量</label>
+        <label class="gen-chip checked"><input type="checkbox" value="觀察評量" checked> 觀察評量</label>
+        <label class="gen-chip checked"><input type="checkbox" value="實作評量" checked> 實作評量</label>
+        <label class="gen-chip"><input type="checkbox" value="口語評量"> 口語評量</label>
+        <label class="gen-chip"><input type="checkbox" value="檔案評量"> 檔案評量</label>
+        <label class="gen-chip"><input type="checkbox" value="動態評量"> 動態評量</label>
+        <label class="gen-chip"><input type="checkbox" value="多元評量"> 多元評量</label>
+      </div>
+    </div>
+
+    <!-- Step G-2: Pedagogical thoughts -->
+    <div class="card gen-card" data-gen-step="g-thought">
+      <div class="card-title"><span class="step">G2</span>教學構想</div>
+
+      <div class="gen-route-tabs" role="tablist">
+        <button type="button" class="gen-route-tab active" data-route="quick" onclick="genSetRoute('quick')" role="tab">🚀 快速路線（套教科書）</button>
+        <button type="button" class="gen-route-tab" data-route="advanced" onclick="genSetRoute('advanced')" role="tab">🛠️ 進階路線（自填構想）</button>
+      </div>
+
+      <div class="gen-section-label">議題融入（可複選，標題會自動採無【】寫法）</div>
+      <div class="gen-check-row" id="genIssueRow">
+        <label class="gen-chip"><input type="checkbox" value="性別平等教育"> 性別平等</label>
+        <label class="gen-chip"><input type="checkbox" value="人權教育"> 人權</label>
+        <label class="gen-chip"><input type="checkbox" value="環境教育"> 環境</label>
+        <label class="gen-chip"><input type="checkbox" value="海洋教育"> 海洋</label>
+        <label class="gen-chip"><input type="checkbox" value="品德教育"> 品德</label>
+        <label class="gen-chip"><input type="checkbox" value="生命教育"> 生命</label>
+        <label class="gen-chip"><input type="checkbox" value="法治教育"> 法治</label>
+        <label class="gen-chip"><input type="checkbox" value="科技教育"> 科技</label>
+        <label class="gen-chip"><input type="checkbox" value="資訊教育"> 資訊</label>
+        <label class="gen-chip"><input type="checkbox" value="能源教育"> 能源</label>
+        <label class="gen-chip"><input type="checkbox" value="安全教育"> 安全</label>
+        <label class="gen-chip"><input type="checkbox" value="防災教育"> 防災</label>
+        <label class="gen-chip"><input type="checkbox" value="家庭教育"> 家庭</label>
+        <label class="gen-chip"><input type="checkbox" value="生涯規劃教育"> 生涯規劃</label>
+        <label class="gen-chip"><input type="checkbox" value="多元文化教育"> 多元文化</label>
+        <label class="gen-chip"><input type="checkbox" value="閱讀素養教育"> 閱讀素養</label>
+        <label class="gen-chip"><input type="checkbox" value="戶外教育"> 戶外</label>
+        <label class="gen-chip"><input type="checkbox" value="國際教育"> 國際</label>
+        <label class="gen-chip"><input type="checkbox" value="原住民族教育"> 原住民族</label>
+      </div>
+
+      <div class="gen-section-label">重點節日與校內活動（選填，AI 會配到對應週次）</div>
+      <textarea id="genCalendar" class="gen-textarea" rows="3" placeholder="例：9/28 教師節、10/10 國慶日、11/1 校慶運動會、12/25 耶誕節、1/15 期末成果展、2/28 和平紀念日、4/4 兒童節、5/8 母親節..."></textarea>
+
+      <div class="gen-section-label">學習重點 / 額外構想（選填）</div>
+      <textarea id="genExtra" class="gen-textarea" rows="3" placeholder="例：希望融入閱讀策略 (預測、提問、摘要)、結合校本特色「鱻魚特色學園」海洋食農主題、強調素養導向的真實情境任務..."></textarea>
+    </div>
+
+    <!-- Step G-3: AI generate + preview -->
+    <div class="card gen-card" data-gen-step="g-result">
+      <div class="card-title"><span class="step">G3</span>AI 生成 + 預覽匯出</div>
+
+      <div class="gen-rules-strip" style="margin-bottom:14px">
+        <span class="gen-rule-chip">AI 會自動套用：</span>
+        <span class="gen-rule-chip">領域名稱統一寫法</span>
+        <span class="gen-rule-chip">議題融入無【】</span>
+        <span class="gen-rule-chip">每週都有內容</span>
+        <span class="gen-rule-chip">七大要素齊備</span>
+      </div>
+
+      <div class="gen-actions" style="margin-top:0;padding-top:0;border-top:none">
+        <button class="btn btn-primary" id="genGenerateBtn" type="button" onclick="genGenerate()">✨ 一鍵生成合規計畫</button>
+        <button class="btn btn-secondary" type="button" onclick="genCopyPrompt()">📋 複製提示詞（無金鑰可貼到 ChatGPT/Gemini）</button>
+        <span class="spacer"></span>
+        <span class="gen-status" id="genStatus"></span>
+      </div>
+
+      <!-- Loader -->
+      <div id="genLoader" class="gen-loader" hidden>
+        <div class="gen-spin"></div>
+        <span>AI 正在依桃園市 115 學年度規則撰寫中… 約 30-60 秒</span>
+      </div>
+
+      <!-- Preview -->
+      <div class="gen-preview-wrap" id="genPreviewWrap" hidden>
+        <div class="gen-preview-head">
+          <span class="gen-preview-title">📄 課程計畫預覽（可直接編輯）</span>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <button class="btn btn-sm btn-secondary" type="button" onclick="genDownloadWord()">📥 下載 Word</button>
+            <button class="btn btn-sm btn-secondary" type="button" onclick="genCopyToClipboard()">📋 複製內容</button>
+            <button class="btn btn-sm btn-primary" type="button" onclick="genSendToReview()">🔍 送進審查模式驗證</button>
+          </div>
+        </div>
+        <div class="gen-preview-body" id="genPreview" contenteditable="true" spellcheck="false"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- C: Last review bar -->
   <div id="lastReviewBar" class="last-review-bar hidden"></div>
 
@@ -2075,6 +2422,377 @@ const ITEM_DESC={
 let extractedText='';
 let selectedItem=null;
 
+// ════════════════════════════════════════════════════════════
+// GENERATOR MODULE · 合規版產生器
+// 共用 callGemini / callOpenAI / showToast / MODELS / settings
+// ════════════════════════════════════════════════════════════
+(function(){
+  // Wire up chip toggle (visual checked state mirrors input)
+  function bindChipRow(rowId){
+    const row=document.getElementById(rowId);
+    if(!row)return;
+    row.querySelectorAll('.gen-chip').forEach(chip=>{
+      const inp=chip.querySelector('input');
+      if(!inp)return;
+      const sync=()=>chip.classList.toggle('checked',inp.checked);
+      inp.addEventListener('change',sync);
+      sync();
+    });
+  }
+
+  // Tag every direct child of .container (except #generatorFlow) as review-only
+  function tagReviewFlow(){
+    const c=document.querySelector('.container');
+    if(!c)return;
+    [...c.children].forEach(el=>{
+      if(el.id==='generatorFlow')return;
+      if(!el.hasAttribute('data-mf'))el.setAttribute('data-mf','review');
+    });
+  }
+
+  // Default semester week presets when grade changes
+  function refreshWeekDefaults(){
+    const has6=[...document.querySelectorAll('#genGradeRow input:checked')].some(i=>i.value==='6');
+    const has1to5=[...document.querySelectorAll('#genGradeRow input:checked')].some(i=>i.value!=='6');
+    const sem2=document.getElementById('genWeeksSem2');
+    if(!sem2)return;
+    // If only grade 6 selected → 17-18; otherwise keep 20
+    if(has6 && !has1to5){ if(!sem2.dataset.userTouched) sem2.value='18'; }
+    else { if(!sem2.dataset.userTouched) sem2.value='20'; }
+  }
+
+  function init(){
+    bindChipRow('genGradeRow');
+    bindChipRow('genCoreRow');
+    bindChipRow('genAssessRow');
+    bindChipRow('genIssueRow');
+    tagReviewFlow();
+    // Watch grade for week default refresh
+    document.querySelectorAll('#genGradeRow input').forEach(i=>i.addEventListener('change',refreshWeekDefaults));
+    const sem2=document.getElementById('genWeeksSem2');
+    if(sem2)sem2.addEventListener('input',()=>{sem2.dataset.userTouched='1'});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+
+// ── Public: switch mode ──────────────────────────────────────
+function setMode(mode){
+  const isGen=(mode==='generator');
+  document.body.classList.toggle('mode-generator',isGen);
+  // Sidebar buttons
+  document.querySelectorAll('.mode-switcher .ms-btn').forEach(b=>{
+    const on=(b.dataset.mode===mode);
+    b.classList.toggle('active',on);
+    b.setAttribute('aria-selected',on?'true':'false');
+  });
+  // Sidebar step lists
+  const sbReview=document.getElementById('sbSteps');
+  const sbGen=document.getElementById('sbStepsGen');
+  if(sbReview)sbReview.hidden=isGen;
+  if(sbGen)sbGen.hidden=!isGen;
+  // Brand sub-title
+  const brandSub=document.getElementById('sbBrandSub');
+  if(brandSub)brandSub.textContent=isGen?'合規計畫產生器':'AI 審查工具';
+  // Smooth scroll to top
+  window.scrollTo({top:0,behavior:'smooth'});
+  // Toast hint
+  if(isGen)showToast('✨ 進入產生模式，依桃園市規則填表後 AI 即可生成');
+  else showToast('🔍 回到審查模式');
+}
+
+// ── Generator: route tab toggle ──────────────────────────────
+function genSetRoute(route){
+  document.querySelectorAll('.gen-route-tabs .gen-route-tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.route===route);
+  });
+  // Hint via extra textarea placeholder
+  const extra=document.getElementById('genExtra');
+  if(extra){
+    extra.placeholder=route==='quick'
+      ? '快速路線：通常空白即可，AI 會直接依教科書版本與年級套用常見單元。如有特別要求再填。'
+      : '進階路線：請寫出希望融入的學習策略、校本特色、跨領域連結、素養任務情境⋯⋯越具體越好。';
+  }
+}
+
+// ── Generator: collect form values ───────────────────────────
+function genCollectValues(){
+  const $=id=>document.getElementById(id);
+  const checked=rowId=>[...document.querySelectorAll(`#${rowId} input:checked`)].map(i=>i.value);
+  return {
+    school: $('genSchool').value.trim() || '◯◯國民小學',
+    year: $('genYear').value,
+    designer: $('genDesigner').value.trim() || '課程設計團隊',
+    grades: checked('genGradeRow'),
+    domain: $('genDomain').value,
+    textbook: $('genTextbook').value,
+    periods: $('genPeriods').value.trim() || '1',
+    weeksSem1: $('genWeeksSem1').value.trim() || '20',
+    weeksSem2: $('genWeeksSem2').value.trim() || '20',
+    core: checked('genCoreRow'),
+    assess: checked('genAssessRow'),
+    issues: checked('genIssueRow'),
+    route: document.querySelector('.gen-route-tabs .gen-route-tab.active')?.dataset.route || 'quick',
+    calendar: $('genCalendar').value.trim(),
+    extra: $('genExtra').value.trim()
+  };
+}
+
+// ── Generator: build the system + user prompt (桃園市 115 合規規則內建) ──
+function genBuildPrompt(v){
+  const grades=v.grades.length?v.grades.join('、')+' 年級':'未指定年級';
+  const issuesLine=v.issues.length?v.issues.join('、'):'（教師自行依教學需要融入，至少 2 項）';
+  const coreLine=v.core.length?v.core.join('、'):'（請依領域特性自行選擇 2-3 項）';
+  const assessLine=v.assess.length?v.assess.join('、'):'紙筆評量、觀察評量、實作評量';
+  const calendarLine=v.calendar?`【重點節日與校內活動】\n${v.calendar}\n（請將上述節日 / 活動配置到對應週次的單元主題中）\n`:'';
+  const extraLine=v.extra?`【教師額外構想】\n${v.extra}\n`:'';
+  const textbookLine=v.textbook==='不指定'
+    ? '不指定教科書版本，請自行設計符合 108 課綱與年級程度的單元主題。'
+    : `教科書版本：${v.textbook}（請依該版本實際單元順序設計，但**單元名稱不可直接抄教材標題**，需改寫為素養導向、活潑的雙段式名稱：「主題 / 具體內容」）`;
+
+  const system=`你是一位資深的國民小學課程計畫撰寫專家，熟悉 108 課綱與「桃園市教育局 115 學年度課程計畫審查標準」。請依使用者提供的基本資料與構想，撰寫一份**完整、可直接送交審查通過**的課程計畫。
+
+【桃園市 115 學年度合規鐵則 — 必須完全遵守】
+
+1. **領域名稱統一寫法**（標題以粗體呈現，**絕對不能加【】**）：
+   - 語文領域-國語文、語文領域-本土語文、語文領域-英語文
+   - 數學領域、社會領域、自然科學領域、藝術領域
+   - 健康與體育、綜合活動、生活課程
+   不可寫成「國語科」「自然科」「藝術與人文」等舊稱。
+
+2. **議題融入標題同規則**：寫「家庭教育」「環境教育」「性別平等教育」，**不可寫成【家庭教育】【環境教育】**。
+
+3. **七大要素必須齊備**：
+   ① 課程目標 / 核心素養 / 能力指標
+   ② 教學單元 / 主題名稱（雙段式：「活潑主題 / 具體內容」，**不可直接抄教科書單元名稱**）
+   ③ 教學重點
+   ④ 教學進度（對應週次）
+   ⑤ 學習節數
+   ⑥ 評量方式
+   ⑦ 適合學生能力、興趣與動機的說明，提供練習、體驗、思考、探索、整合的充分機會
+
+4. **進度表週數對應**：
+   - 1-5 年級：上下學期各 20 週
+   - 6 年級：上學期 20 週、下學期 17 或 18 週
+   - **每一週都必須有具體課程內容**，不可有空白週
+
+5. **單元名稱反退件雷區**：不可直接抄教科書單元名（如「我會跟朋友相處」直接照搬會被退件），必須改寫為素養導向雙段式（如「我是社交小達人 / 練習邀請同學一起遊戲」）。
+
+【輸出格式 — 嚴格依此 Markdown 結構，不要包在 \`\`\` 區塊內】
+
+## 一、課程基本資料
+| 學校 | 學年度 | 領域 / 科目 | 年級 | 每週節數 | 設計者 |
+|---|---|---|---|---|---|
+| (填入) | (填入) | (填入) | (填入) | (填入) | (填入) |
+
+## 二、核心素養
+（條列，以 A1、B1、C2 等代碼開頭）
+
+## 三、議題融入
+（條列，每項一行，**不加【】**）
+
+## 四、本學年學習重點
+### 學習表現
+（條列）
+### 學習內容
+（條列）
+
+## 五、第一學期教學進度表
+| 週次 | 起迄日期 | 單元名稱 / 內容 | 教學重點 | 學習節數 | 評量方式 |
+|---|---|---|---|---|---|
+| 1 | ... | ... | ... | ... | ... |
+（**完整列出 ${v.weeksSem1} 週，每週都不能空白**）
+
+## 六、第二學期教學進度表
+| 週次 | 起迄日期 | 單元名稱 / 內容 | 教學重點 | 學習節數 | 評量方式 |
+|---|---|---|---|---|---|
+| 1 | ... | ... | ... | ... | ... |
+（**完整列出 ${v.weeksSem2} 週，每週都不能空白**）
+
+## 七、評量方式說明
+（簡述各項評量方式如何在本領域使用）
+
+## 八、課程適合學生能力與興趣之說明
+（一段文字，說明本課程如何符合該年級學生能力、興趣、動機，並提供哪些練習、體驗、思考、探索、整合的機會）`;
+
+  const user=`請依以下資料撰寫課程計畫：
+
+【學校】${v.school}
+【學年度】${v.year} 學年度
+【設計者】${v.designer}
+【年級】${grades}
+【領域 / 科目】${v.domain}
+【每週節數】${v.periods} 節
+【週數】上學期 ${v.weeksSem1} 週、下學期 ${v.weeksSem2} 週
+【${textbookLine}】
+
+【核心素養】${coreLine}
+【議題融入】${issuesLine}
+【評量方式】${assessLine}
+
+${calendarLine}${extraLine}
+請開始撰寫完整課程計畫，週次表必須完整列出每一週、每週都要有具體內容，不可省略或寫「同上」「依進度」等含糊文字。`;
+
+  return {system,user};
+}
+
+// ── Generator: kick off AI generation ────────────────────────
+async function genGenerate(){
+  const v=genCollectValues();
+  if(!v.grades.length){
+    showToast('⚠️ 請至少勾選一個年級');
+    return;
+  }
+  const apiKey=(()=>{try{return localStorage.getItem('tyc_api_key')||document.getElementById('apiKey')?.value;}catch(e){return null;}})();
+  if(!apiKey){
+    showToast('⚠️ 請先到 ⚙️ API 設定填入 Gemini 金鑰，或按「複製提示詞」貼到 ChatGPT/Gemini 網頁版');
+    document.getElementById('settingsPanel')?.setAttribute('open','');
+    return;
+  }
+  const provider=document.getElementById('apiProvider')?.value||'gemini';
+  const model=document.getElementById('apiModel')?.value||MODELS[provider][0];
+  const {system,user}=genBuildPrompt(v);
+
+  const btn=document.getElementById('genGenerateBtn');
+  const loader=document.getElementById('genLoader');
+  const wrap=document.getElementById('genPreviewWrap');
+  const status=document.getElementById('genStatus');
+  btn.disabled=true;
+  loader.hidden=false;
+  wrap.hidden=true;
+  status.textContent='AI 生成中…';status.className='gen-status';
+
+  try{
+    const fn=(provider==='openai')?callOpenAI:callGemini;
+    const text=await fn(apiKey,model,system,user);
+    genRenderPreview(text);
+    status.textContent='✓ 生成完成，可直接編輯預覽內容';
+    status.className='gen-status ok';
+    showToast('✨ AI 已生成合規計畫，捲動下方預覽可直接編輯');
+  }catch(e){
+    status.textContent='✗ 生成失敗：'+(e.message||'未知錯誤');
+    status.className='gen-status err';
+    showToast('❌ 生成失敗：'+(e.message||'請查看狀態列訊息'));
+  }finally{
+    btn.disabled=false;
+    loader.hidden=true;
+  }
+}
+
+// ── Generator: render Markdown → preview HTML ────────────────
+function genRenderPreview(md){
+  // Strip code fences if AI wrapped output
+  md=md.replace(/^```(?:markdown)?\s*\n?/i,'').replace(/\n?```\s*$/,'').trim();
+  // Minimal Markdown → HTML (headings, bold, tables, lists)
+  const lines=md.split('\n');
+  let html='';let inTable=false;let inList=null;let tableBuf=[];
+  function flushTable(){
+    if(!tableBuf.length){inTable=false;return;}
+    const rows=tableBuf.filter(r=>!/^\|\s*[-:|\s]+\|?\s*$/.test(r))
+      .map(r=>r.replace(/^\||\|$/g,'').split('|').map(c=>c.trim()));
+    if(rows.length){
+      html+='<table>';
+      html+='<thead><tr>'+rows[0].map(c=>`<th>${escapeHtml(c)}</th>`).join('')+'</tr></thead>';
+      if(rows.length>1){
+        html+='<tbody>'+rows.slice(1).map(r=>'<tr>'+r.map(c=>`<td>${escapeHtml(c)}</td>`).join('')+'</tr>').join('')+'</tbody>';
+      }
+      html+='</table>';
+    }
+    tableBuf=[];inTable=false;
+  }
+  function flushList(){if(inList){html+=`</${inList}>`;inList=null}}
+  function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')}
+  for(const raw of lines){
+    const line=raw.trimEnd();
+    if(/^\|.*\|/.test(line)){if(!inTable){flushList();inTable=true}tableBuf.push(line);continue;}
+    else if(inTable){flushTable();}
+    if(/^##\s+/.test(line)){flushList();html+='<h3>'+escapeHtml(line.replace(/^##\s+/,''))+'</h3>';}
+    else if(/^###\s+/.test(line)){flushList();html+='<h4>'+escapeHtml(line.replace(/^###\s+/,''))+'</h4>';}
+    else if(/^\s*[-*]\s+/.test(line)){if(inList!=='ul'){flushList();html+='<ul>';inList='ul';}html+='<li>'+escapeHtml(line.replace(/^\s*[-*]\s+/,''))+'</li>';}
+    else if(/^\s*\d+\.\s+/.test(line)){if(inList!=='ol'){flushList();html+='<ol>';inList='ol';}html+='<li>'+escapeHtml(line.replace(/^\s*\d+\.\s+/,''))+'</li>';}
+    else if(line.trim()===''){flushList();}
+    else{flushList();html+='<p>'+escapeHtml(line)+'</p>';}
+  }
+  flushTable();flushList();
+  const preview=document.getElementById('genPreview');
+  preview.innerHTML=html;
+  document.getElementById('genPreviewWrap').hidden=false;
+  // Cache raw markdown for downstream tools
+  preview.dataset.rawMd=md;
+}
+
+// ── Generator: copy prompt for no-key users ──────────────────
+function genCopyPrompt(){
+  const v=genCollectValues();
+  const {system,user}=genBuildPrompt(v);
+  const text=`### 系統指令\n${system}\n\n### 使用者指令\n${user}`;
+  navigator.clipboard.writeText(text).then(()=>{
+    showToast('📋 完整提示詞已複製，可直接貼到 ChatGPT / Gemini 網頁版');
+  }).catch(()=>showToast('❌ 複製失敗，請手動選取'));
+}
+
+// ── Generator: copy generated content ────────────────────────
+function genCopyToClipboard(){
+  const preview=document.getElementById('genPreview');
+  if(!preview)return;
+  const text=preview.innerText;
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 課程計畫內容已複製'))
+    .catch(()=>showToast('❌ 複製失敗'));
+}
+
+// ── Generator: download as Word ──────────────────────────────
+function genDownloadWord(){
+  const v=genCollectValues();
+  const preview=document.getElementById('genPreview');
+  if(!preview||!preview.innerHTML.trim()){showToast('⚠️ 尚未生成內容');return;}
+  const title=`${v.year}學年度_${v.school}_${v.grades.join('-')}年級_${v.domain}_課程計畫`;
+  const css=`
+    body{font-family:'微軟正黑體','標楷體',Calibri,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm}
+    h1{font-size:18pt;color:#143d36;border-bottom:2pt solid #2c6b60;padding-bottom:6pt}
+    h3{font-size:14pt;color:#143d36;margin-top:18pt;border-bottom:1pt solid #cfe1dc;padding-bottom:4pt}
+    h4{font-size:12pt;color:#b9543b;margin-top:10pt}
+    table{border-collapse:collapse;width:100%;margin:8pt 0;font-size:10.5pt}
+    th,td{border:1pt solid #999;padding:5pt 7pt;vertical-align:top}
+    th{background:#e8f0ec;color:#143d36}
+    p{margin:6pt 0}
+    .footer-note{margin-top:24pt;font-size:9pt;color:#7a7a72;border-top:1pt solid #ccc;padding-top:8pt}
+  `;
+  const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset="UTF-8"><title>${title}</title><style>${css}</style></head><body><h1>${title}</h1>${preview.innerHTML}<div class="footer-note">本計畫由「桃園市 115 學年度課程計畫 AI 工具」之「合規版產生器」生成（v4.1），已內建桃園市審查標準。建議仍經教務 / 課發會審閱後送出。<br>工具連結：https://cagoooo.github.io/curriculum/</div></body></html>`;
+  const blob=new Blob(['﻿'+html],{type:'application/msword;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`${title}.doc`;
+  a.click();
+  showToast('✅ Word 已下載');
+}
+
+// ── Generator: send generated text → review mode ─────────────
+function genSendToReview(){
+  const preview=document.getElementById('genPreview');
+  if(!preview||!preview.innerText.trim()){showToast('⚠️ 尚未生成內容');return;}
+  // Use generated content as extracted text, switch to review mode
+  extractedText=preview.innerText;
+  // Trigger UI side-effects of having a "PDF"
+  const fileInfo=document.getElementById('fileInfo');
+  const fileName=document.getElementById('fileName');
+  const fileStats=document.getElementById('fileStats');
+  const textPreview=document.getElementById('textPreview');
+  if(fileInfo){fileInfo.classList.add('show');}
+  if(fileName)fileName.textContent='（產生器生成內容）AI 合規計畫.txt';
+  if(fileStats)fileStats.textContent=`共 ${extractedText.length} 字 · 來自產生器，未經 PDF 擷取`;
+  if(textPreview)textPreview.textContent=extractedText.substring(0,600)+(extractedText.length>600?'…':'');
+  // Enable review button if function exists
+  const btnReview=document.getElementById('btnReview');
+  const btnCopy=document.getElementById('btnCopy');
+  if(btnReview)btnReview.disabled=false;
+  if(btnCopy)btnCopy.disabled=false;
+  setMode('review');
+  setTimeout(()=>{
+    document.querySelector('.card-step2')?.scrollIntoView({behavior:'smooth',block:'start'});
+    showToast('🔍 已切到審查模式。建議先選「5-1-1」或「5-2」項次跑一次驗證');
+  },400);
+}
+
 // ===== LINE 通知 (管理員告警) =====
 // 透過 smes-e1dc3 Cloud Functions proxy 推 LINE Flex 卡片給 admin
 // best-effort:失敗不擋使用者流程
@@ -2155,11 +2873,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v4.0.1';
+const APP_VERSION='v4.1.0';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>🛡️ 工具已更新至 ${APP_VERSION}！強化 API 配額爆掉時的指引,並更正額度數字:gemini-2.5-<b>pro 每日免費 50 次</b>、<b>flash 每日 250 次</b>(5 倍),quota 爆掉時請到「⚙️ API 設定」切回 flash 即可救援。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！新增「<b>合規版產生器</b>」模式：填表 → AI 自動套用桃園市 115 學年度合規規則 → 直接產出可送審計畫。請點左側欄「✨ 產生合規計畫」試用。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
