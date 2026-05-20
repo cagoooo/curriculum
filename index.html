@@ -660,6 +660,7 @@ body:not(.mode-generator) #generatorFlow{display:none!important}
 .gen-preview-body th{background:var(--pine-bg);color:var(--pine-dark);font-weight:700}
 .gen-preview-body ul,.gen-preview-body ol{padding-left:1.8em;margin:6px 0}
 .gen-loader{display:flex;align-items:center;justify-content:center;gap:12px;padding:40px;color:var(--pine-dark);font-weight:700}
+.gen-loader[hidden]{display:none}
 .gen-loader .gen-spin{
   width:24px;height:24px;border:3px solid var(--pine-bg);border-top-color:var(--pine);
   border-radius:50%;animation:gen-spin 1s linear infinite;
@@ -2917,7 +2918,7 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v4.2.0';
+const APP_VERSION='v4.2.1';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
