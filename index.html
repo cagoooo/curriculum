@@ -2661,6 +2661,22 @@ async function genGenerate(){
   const model=document.getElementById('apiModel')?.value||localStorage.getItem('tyc_model')||MODELS[provider][0];
   const {system,user}=genBuildPrompt(v);
 
+  // 通知用：把表單關鍵欄位濃縮成 LINE 卡片可讀字串
+  const gradesLabel=v.grades.length?v.grades.join('、')+' 年級':'(未選)';
+  const issuesLabel=v.issues.length?v.issues.join('、'):'(未指定)';
+  const routeLabel=v.route==='advanced'?'進階路線':'快速路線';
+  const startedAt=Date.now();
+
+  // 通知:開始生成
+  notifyAdmin('started','使用者送出 AI 產生計畫',[
+    {icon:'🏫',label:'學校',value:v.school},
+    {icon:'🎓',label:'年級',value:gradesLabel},
+    {icon:'📚',label:'領域',value:v.domain},
+    {icon:'📖',label:'版本',value:v.textbook},
+    {icon:'🧭',label:'路線',value:routeLabel},
+    {icon:'🤖',label:'模型',value:`${provider} / ${model}`},
+  ]);
+
   const btn=document.getElementById('genGenerateBtn');
   const loader=document.getElementById('genLoader');
   const wrap=document.getElementById('genPreviewWrap');
@@ -2677,10 +2693,30 @@ async function genGenerate(){
     status.textContent='✓ 生成完成，可直接編輯預覽內容';
     status.className='gen-status ok';
     showToast('✨ AI 已生成合規計畫，捲動下方預覽可直接編輯');
+    // 通知:成功
+    const elapsed=((Date.now()-startedAt)/1000).toFixed(1);
+    notifyAdmin('success','AI 產生計畫完成',[
+      {icon:'🏫',label:'學校',value:v.school},
+      {icon:'🎓',label:'年級',value:gradesLabel},
+      {icon:'📚',label:'領域',value:v.domain},
+      {icon:'🏷️',label:'議題',value:issuesLabel},
+      {icon:'🤖',label:'模型',value:model},
+      {icon:'📝',label:'字數',value:`${(text||'').length.toLocaleString()} 字`},
+    ],`⏱️ 耗時 ${elapsed}s`);
   }catch(e){
     status.textContent='✗ 生成失敗：'+(e.message||'未知錯誤');
     status.className='gen-status err';
     showToast('❌ 生成失敗：'+(e.message||'請查看狀態列訊息'));
+    // 通知:失敗
+    const elapsed=((Date.now()-startedAt)/1000).toFixed(1);
+    const rawErr=(e&&e.message)?e.message:String(e);
+    notifyAdmin('failed','AI 產生計畫失敗',[
+      {icon:'🏫',label:'學校',value:v.school},
+      {icon:'🎓',label:'年級',value:gradesLabel},
+      {icon:'📚',label:'領域',value:v.domain},
+      {icon:'🤖',label:'模型',value:`${provider} / ${model}`},
+      {icon:'💬',label:'錯誤',value:rawErr.substring(0,180)},
+    ],`⏱️ 耗時 ${elapsed}s`);
   }finally{
     btn.disabled=false;
     loader.hidden=true;
@@ -2881,11 +2917,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v4.1.0';
+const APP_VERSION='v4.2.0';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！新增「<b>合規版產生器</b>」模式：填表 → AI 自動套用桃園市 115 學年度合規規則 → 直接產出可送審計畫。請點左側欄「✨ 產生合規計畫」試用。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！「<b>產生合規計畫</b>」模式現在也支援 LINE 即時通知（送出 / 成功 / 失敗 三狀態 Flex 卡片），與審查模式同步。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
