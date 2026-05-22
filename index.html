@@ -2668,15 +2668,7 @@ async function genGenerate(){
   const routeLabel=v.route==='advanced'?'進階路線':'快速路線';
   const startedAt=Date.now();
 
-  // 通知:開始生成
-  notifyAdmin('started','使用者送出 AI 產生計畫',[
-    {icon:'🏫',label:'學校',value:v.school},
-    {icon:'🎓',label:'年級',value:gradesLabel},
-    {icon:'📚',label:'領域',value:v.domain},
-    {icon:'📖',label:'版本',value:v.textbook},
-    {icon:'🧭',label:'路線',value:routeLabel},
-    {icon:'🤖',label:'模型',value:`${provider} / ${model}`},
-  ]);
+  // v4.2.2: 不發「送出」通知,只在完成 / 失敗時發,避免吃光 LINE 官方訊息額度
 
   const btn=document.getElementById('genGenerateBtn');
   const loader=document.getElementById('genLoader');
@@ -2918,11 +2910,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v4.2.1';
+const APP_VERSION='v4.2.2';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！「<b>產生合規計畫</b>」模式現在也支援 LINE 即時通知（送出 / 成功 / 失敗 三狀態 Flex 卡片），與審查模式同步。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！LINE 即時通知改為「<b>只發完成 / 失敗</b>」兩狀態（拿掉送出通知），避免吃光 LINE 官方訊息額度。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
@@ -3289,13 +3281,7 @@ async function executeReview(){
   const pdfName=document.getElementById('fileName').textContent||'(未知)';
   const itemLabel=selectedItem?`${selectedItem.id} ${selectedItem.name}`:'(未選)';
   const startedAt=Date.now();
-  // 通知:開始審查
-  notifyAdmin('started','使用者送出 AI 審查',[
-    {icon:'📄',label:'PDF',value:pdfName},
-    {icon:'📋',label:'項次',value:itemLabel},
-    {icon:'🤖',label:'模型',value:`${provider} / ${model}`},
-    {icon:'📝',label:'PDF 字數',value:`${extractedText.length.toLocaleString()} 字`},
-  ]);
+  // v4.2.2: 不發「送出」通知,只在完成 / 失敗時發,避免吃光 LINE 官方訊息額度
   document.getElementById('loading').classList.add('show');
   startLoadingProgress();
   document.getElementById('btnReview').disabled=true;
