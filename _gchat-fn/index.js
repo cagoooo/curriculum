@@ -7,8 +7,6 @@
 
 const { onRequest } = require('firebase-functions/v2/https');
 const { defineSecret } = require('firebase-functions/params');
-const https = require('https');
-const { URL } = require('url');
 
 const GCHAT_WEBHOOK = defineSecret('GCHAT_WEBHOOK');
 
@@ -69,25 +67,15 @@ function buildCard(status, title, fields, footerNote, meta) {
 }
 
 /**
- * POST to Google Chat webhook（用 Node.js 內建 https，不需額外套件）。
+ * POST to Google Chat webhook（用 nodejs18+ 內建 fetch，自動 UTF-8，中文不亂碼）。
  */
-function postToChat(webhookUrl, payload) {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify(payload);
-    const u = new URL(webhookUrl);
-    const req = https.request(
-      { hostname: u.hostname, path: u.pathname + u.search, method: 'POST',
-        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': Buffer.byteLength(body) } },
-      res => {
-        let data = '';
-        res.on('data', c => data += c);
-        res.on('end', () => resolve({ status: res.statusCode, body: data }));
-      }
-    );
-    req.on('error', reject);
-    req.write(body);
-    req.end();
+async function postToChat(webhookUrl, payload) {
+  const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
+  return { status: response.status };
 }
 
 exports.notifyCurriculumChat = onRequest(
