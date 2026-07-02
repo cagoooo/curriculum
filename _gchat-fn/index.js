@@ -50,7 +50,22 @@ function buildCard(status, title, fields, footerNote, meta) {
   if (metaLine) {
     widgets.push({ textParagraph: { text: `<font color="#9AA0A6"><small>${metaLine}</small></font>` } });
   }
+
+  // ── 手機推播摘要文字（解決「傳送了一個附件檔案給你」問題）──
+  // Google Chat 以最外層 text 欄位作為手機通知欄摘要內容。
+  // 若只有 cardsV2 而沒有 text，手機端一律顯示「傳送了一個附件檔案給你」。
+  const previewParts = [`${s.icon} ${title}`];
+  if (fields && fields.length > 0) {
+    // 取前兩個 field 的 value/text 拼成摘要
+    fields.slice(0, 2).forEach(f => {
+      const val = String(f.text ?? f.value ?? '').trim();
+      if (val) previewParts.push(val);
+    });
+  }
+  const pushText = previewParts.join(' · ').slice(0, 100); // 控制在 100 字元以內
+
   return {
+    text: pushText, // ← 手機推播摘要（與 cardsV2 同層）
     cardsV2: [{
       cardId: `c-${Date.now()}`,
       card: {
