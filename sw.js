@@ -1,13 +1,15 @@
-// Service Worker for 課程計畫AI審查工具 v4.2.2
-const SW_VERSION = 'v4.2.2';
-const CACHE_NAME = 'curriculum-v4.2.2';
+// Service Worker for 課程計畫AI審查工具 v4.2.3
+const SW_VERSION = 'v4.2.3';
+const CACHE_NAME = 'curriculum-v4.2.3';
 const CACHE_URLS = [
   '/curriculum/',
   '/curriculum/index.html',
   '/curriculum/favicon.png',
   '/curriculum/favicon.ico',
   '/curriculum/og-image.png',
-  '/curriculum/manifest.json'
+  '/curriculum/manifest.json',
+  '/curriculum/成果記錄.html',
+  '/curriculum/(教學組提醒)115課程計畫撰寫注意事項說明.pdf'
 ];
 
 // Install: pre-cache static assets

@@ -792,7 +792,7 @@ header p{
 .header-chip:hover{background:var(--pine-bg);border-color:var(--pine-soft);color:var(--pine-dark)}
 
 /* Canva guide button */
-.canva-guide-wrap{margin-top:14px;display:flex;justify-content:flex-start}
+.canva-guide-wrap{margin-top:14px;display:flex;justify-content:flex-start;gap:8px;flex-wrap:wrap}
 .canva-guide-btn{
   display:inline-flex;align-items:center;gap:8px;padding:8px 18px;
   background:var(--pine-dark);border:1px solid var(--pine-dark);border-radius:28px;
@@ -1320,7 +1320,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
     <li data-step="g-result"><span class="num">03</span><div><span class="t">AI 生成計畫</span><span class="d">內建合規規則</span></div></li>
   </ol>
   <div class="sb-foot">
-    <span class="v">v4.0 · 阿凱老師</span>
+    <span class="v">v4.2.3 · 阿凱老師</span>
     API 金鑰僅儲存於本機<br>不會上傳任何伺服器
   </div>
 </aside>
@@ -1345,6 +1345,11 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
       <a class="canva-guide-btn" href="https://canva.link/115curriculum" target="_blank" rel="noopener">
         <span class="cg-icon">🎨</span>
         <span>初次使用？點我看完整使用教學簡報</span>
+        <span class="cg-arrow">↗</span>
+      </a>
+      <a class="canva-guide-btn" href="成果記錄.html">
+        <span class="cg-icon">🗂️</span>
+        <span>查看成果記錄與全部檔案</span>
         <span class="cg-arrow">↗</span>
       </a>
     </div>
@@ -1872,7 +1877,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v4.0</div>
+      <div class="footer-ver">v4.2.3</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -1886,6 +1891,9 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
       </a>
       <a class="footer-link" href="https://cagoooo.github.io/curriculum/" target="_blank" rel="noopener">
         <span class="footer-link-icon fi-blue">&#127760;</span>線上使用工具
+      </a>
+      <a class="footer-link" href="成果記錄.html">
+        <span class="footer-link-icon fi-blue">&#128203;</span>成果記錄與全部檔案
       </a>
       <a class="footer-link" href="https://github.com/cagoooo/curriculum" target="_blank" rel="noopener">
         <span class="footer-link-icon fi-gray">&#11088;</span>GitHub 原始碼
@@ -2911,11 +2919,11 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v4.2.2';
+const APP_VERSION='v4.2.3';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！新增 <b>Google Chat 即時通知</b>（無上限雙管道），LINE 額度用完後仍可持續收到審查結果通知。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！新增 <b>成果記錄頁</b>，可集中瀏覽工具、文件、原始碼與部署資產。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
