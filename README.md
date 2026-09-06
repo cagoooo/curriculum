@@ -2,6 +2,8 @@
 
 > 依據桃園市教育局115學年度審查標準，上傳課程計畫 PDF 即可透過 AI 自動審查 | 阿凱老師製作
 
+> 📌 **目前版本：v4.2.3**（依據 程式內版本常數）
+
 🔗 **線上使用：** [https://cagoooo.github.io/curriculum/](https://cagoooo.github.io/curriculum/)
 
 🗂️ **成果記錄：** [開啟成果記錄頁](https://cagoooo.github.io/curriculum/%E6%88%90%E6%9E%9C%E8%A8%98%E9%8C%84.html)（工具、文件、原始碼與部署資產總覽）
