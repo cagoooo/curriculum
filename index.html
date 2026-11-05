@@ -1320,7 +1320,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
     <li data-step="g-result"><span class="num">03</span><div><span class="t">AI 生成計畫</span><span class="d">內建合規規則</span></div></li>
   </ol>
   <div class="sb-foot">
-    <span class="v">v4.2.3 · 阿凱老師</span>
+    <span class="v">v4.2.4 · 阿凱老師</span>
     API 金鑰僅儲存於本機<br>不會上傳任何伺服器
   </div>
 </aside>
@@ -1769,7 +1769,8 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
     <span style="font-size:1.3rem;flex-shrink:0">&#9888;&#65039;</span>
     <div>
       <strong>AI 審查僅供輔助參考</strong><br>
-      AI 偶爾會有疏漏或誤判，若您確定內容正確，可以人工判斷為主。特殊教育班、藝術才能班、體育班等特殊班級之審查 Prompt 較為基礎，仍建議搭配人工審查。修正後可重新上傳檔案再次審查，直到通過為止。
+      AI 偶爾會有疏漏或誤判，若您確定內容正確，可以人工判斷為主。特殊教育班、藝術才能班、體育班等特殊班級之審查 Prompt 較為基礎，仍建議搭配人工審查。修正後可重新上傳檔案再次審查，直到通過為止。<br>
+      <strong>資料與隱私：</strong>PDF 擷取出的文字會送到您選擇的 AI 服務（Google Gemini／OpenAI）審查，<strong>請勿上傳含學生個資的文件</strong>。審查完成或失敗時，系統會把項次、PDF 檔名、結果等使用狀況通知開發者以便排除錯誤，<a href="#privacyNotice" style="color:inherit;text-decoration:underline">詳見頁尾說明</a>。
     </div>
   </div>
 
@@ -1877,7 +1878,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v4.2.3</div>
+      <div class="footer-ver">v4.2.4</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -1894,6 +1895,9 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
       </a>
       <a class="footer-link" href="成果記錄.html">
         <span class="footer-link-icon fi-blue">&#128203;</span>成果記錄與全部檔案
+      </a>
+      <a class="footer-link" href="https://github.com/cagoooo/curriculum/blob/main/LICENSE.md" target="_blank" rel="noopener">
+        <span class="footer-link-icon fi-gray">&#128220;</span>授權聲明
       </a>
       <a class="footer-link" href="https://github.com/cagoooo/curriculum" target="_blank" rel="noopener">
         <span class="footer-link-icon fi-gray">&#11088;</span>GitHub 原始碼
@@ -1913,11 +1917,15 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
         <span class="stack-badge sb-blue">PDF.js v4</span>
         <span class="stack-badge sb-green">GitHub Pages</span>
         <span class="stack-badge sb-amber">純前端</span>
-        <span class="stack-badge sb-teal">零後端</span>
+        <span class="stack-badge sb-teal">無資料庫</span>
       </div>
       <div class="footer-privacy">
         <span>&#128274;</span>
         <span>API 金鑰僅儲存於您的瀏覽器本機（localStorage），不會上傳至任何伺服器。</span>
+      </div>
+      <div class="footer-privacy" id="privacyNotice" style="margin-top:8px">
+        <span>&#128276;</span>
+        <span><strong>使用狀況通知：</strong>審查或產生計畫完成／失敗時，會將項次、PDF 檔名（產生模式為學校、年級、領域、議題）、模型、結果或錯誤訊息，以及瀏覽器、作業系統、螢幕大小與連線 IP 傳送給開發者，用於即時排除錯誤。<strong>不會傳送 PDF 內容、AI 回覆或 API 金鑰。</strong>不希望檔名被傳送，可先將檔名改為一般名稱再上傳。</span>
       </div>
     </div>
   </div>
@@ -2919,7 +2927,7 @@ const MODELS={
 };
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v4.2.3';
+const APP_VERSION='v4.2.4';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';

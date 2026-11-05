@@ -1,6 +1,6 @@
-// Service Worker for 課程計畫AI審查工具 v4.2.3
-const SW_VERSION = 'v4.2.3';
-const CACHE_NAME = 'curriculum-v4.2.3';
+// Service Worker for 課程計畫AI審查工具 v4.2.4
+const SW_VERSION = 'v4.2.4';
+const CACHE_NAME = 'curriculum-v4.2.4';
 const CACHE_URLS = [
   '/curriculum/',
   '/curriculum/index.html',
