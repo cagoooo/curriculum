@@ -96,6 +96,13 @@ select:focus,input:focus{outline:none;border-color:var(--primary);box-shadow:0 0
 .drop-zone .icon{font-size:3.2rem;margin-bottom:12px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.1))}
 .drop-zone .dz-title{font-size:1rem;font-weight:800;margin-bottom:4px;color:var(--text)}
 .drop-zone .dz-sub{font-size:.82rem;color:#94a3b8}
+.sample-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px 14px;border:1px dashed #d6c9a8;border-radius:10px;background:#fffaf0;font-size:.88rem;color:var(--text)}
+.sample-row-text{flex:1 1 260px;line-height:1.6}
+.sample-row-btn{background:#fff;color:#7c4a12;border:1.5px solid #d6a55c;font-weight:700;white-space:nowrap}
+.sample-row-btn:hover{background:#fdf0dc}
+.telemetry-opt{display:flex;align-items:flex-start;gap:8px;margin-top:12px;padding:10px 12px;border-radius:8px;background:#f6f8f7;border:1px solid #dfe7e3;font-size:.84rem;line-height:1.6;color:var(--text);cursor:pointer}
+.telemetry-opt input{width:16px;height:16px;margin-top:3px;flex-shrink:0;accent-color:var(--primary);cursor:pointer}
+.telemetry-opt a{color:var(--primary);font-weight:700}
 .file-info{margin-top:12px;padding:14px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:10px;font-size:.9rem;color:#1e3a8a;display:none}
 .file-info.show{display:block}
 .preview-box{margin-top:8px;max-height:140px;overflow-y:auto;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:.82rem;white-space:pre-wrap;word-break:break-all;color:var(--text-light)}
@@ -1320,7 +1327,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
     <li data-step="g-result"><span class="num">03</span><div><span class="t">AI 生成計畫</span><span class="d">內建合規規則</span></div></li>
   </ol>
   <div class="sb-foot">
-    <span class="v">v4.2.4 · 阿凱老師</span>
+    <span class="v">v4.3.0 · 阿凱老師</span>
     API 金鑰僅儲存於本機<br>不會上傳任何伺服器
   </div>
 </aside>
@@ -1345,6 +1352,16 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
       <a class="canva-guide-btn" href="https://canva.link/115curriculum" target="_blank" rel="noopener">
         <span class="cg-icon">🎨</span>
         <span>初次使用？點我看完整使用教學簡報</span>
+        <span class="cg-arrow">↗</span>
+      </a>
+      <button type="button" class="canva-guide-btn" onclick="loadSamplePlan()" style="font:inherit;cursor:pointer">
+        <span class="cg-icon">⚡</span>
+        <span>3 分鐘快速體驗：一鍵載入範例計畫</span>
+        <span class="cg-arrow">→</span>
+      </button>
+      <a class="canva-guide-btn" href="docs.html">
+        <span class="cg-icon">📘</span>
+        <span>技術文件：架構、隱私、人機分工、FAQ</span>
         <span class="cg-arrow">↗</span>
       </a>
       <a class="canva-guide-btn" href="成果記錄.html">
@@ -1616,6 +1633,10 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
         <button class="btn btn-secondary btn-sm" id="btnTestKey" onclick="testApiKey()">&#128269; 測試 API 金鑰</button>
         <span style="font-size:.8rem;color:var(--text-light);align-self:center">金鑰僅儲存在您的瀏覽器本機中</span>
       </div>
+      <label class="telemetry-opt" title="關閉後，本瀏覽器不再傳送任何使用狀況通知">
+        <input type="checkbox" id="telemetryToggle" checked onchange="setTelemetry(this.checked)">
+        <span>&#128276; 傳送使用狀況通知給開發者，協助排除錯誤（項次、檔名、模型、結果、瀏覽器與 IP；<b>不含 PDF 內容、AI 回覆與金鑰</b>）。<a href="docs.html#privacy">詳細說明</a></span>
+      </label>
       <div id="apiTestResult" class="hidden" style="margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.85rem;display:flex;align-items:center;gap:8px"></div>
       <div id="openaiWarning" class="hidden" style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:6px;font-size:.85rem;color:#856404">
         OpenAI API 可能因 CORS 限制無法從本地檔案直接呼叫。建議使用 Google Gemini，或使用「複製提示詞」功能。
@@ -1670,6 +1691,10 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
       <span class="icon">&#128196;</span>
       <div class="dz-title">點擊選擇或拖拉 PDF 檔案至此處</div>
       <div class="dz-sub">支援文字型 PDF &nbsp;·&nbsp; 掃描圖檔可能無法正確擷取</div>
+    </div>
+    <div class="sample-row">
+      <span class="sample-row-text">手邊沒有 PDF？先用<b>虛構的範例計畫</b>體驗（刻意留了幾個常見寫法錯誤）</span>
+      <button type="button" class="btn btn-sm sample-row-btn" onclick="loadSamplePlan()">📄 載入範例課程計畫</button>
     </div>
     <div class="file-info" id="fileInfo">
       <div class="fi-main">
@@ -1770,7 +1795,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
     <div>
       <strong>AI 審查僅供輔助參考</strong><br>
       AI 偶爾會有疏漏或誤判，若您確定內容正確，可以人工判斷為主。特殊教育班、藝術才能班、體育班等特殊班級之審查 Prompt 較為基礎，仍建議搭配人工審查。修正後可重新上傳檔案再次審查，直到通過為止。<br>
-      <strong>資料與隱私：</strong>PDF 擷取出的文字會送到您選擇的 AI 服務（Google Gemini／OpenAI）審查，<strong>請勿上傳含學生個資的文件</strong>。審查完成或失敗時，系統會把項次、PDF 檔名、結果等使用狀況通知開發者以便排除錯誤，<a href="#privacyNotice" style="color:inherit;text-decoration:underline">詳見頁尾說明</a>。
+      <strong>資料與隱私：</strong>PDF 擷取出的文字會送到您選擇的 AI 服務（Google Gemini／OpenAI）審查，<strong>請勿上傳含學生個資的文件</strong>。審查完成或失敗時，系統會把項次、PDF 檔名、結果等使用狀況通知開發者以便排除錯誤（可在「API 設定」關閉），<a href="docs.html#privacy" style="color:inherit;text-decoration:underline">資料流說明</a>。
     </div>
   </div>
 
@@ -1878,7 +1903,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v4.2.4</div>
+      <div class="footer-ver">v4.3.0</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -1892,6 +1917,9 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
       </a>
       <a class="footer-link" href="https://cagoooo.github.io/curriculum/" target="_blank" rel="noopener">
         <span class="footer-link-icon fi-blue">&#127760;</span>線上使用工具
+      </a>
+      <a class="footer-link" href="docs.html">
+        <span class="footer-link-icon fi-green">&#128216;</span>技術文件（架構・隱私・FAQ）
       </a>
       <a class="footer-link" href="成果記錄.html">
         <span class="footer-link-icon fi-blue">&#128203;</span>成果記錄與全部檔案
@@ -1925,7 +1953,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
       </div>
       <div class="footer-privacy" id="privacyNotice" style="margin-top:8px">
         <span>&#128276;</span>
-        <span><strong>使用狀況通知：</strong>審查或產生計畫完成／失敗時，會將項次、PDF 檔名（產生模式為學校、年級、領域、議題）、模型、結果或錯誤訊息，以及瀏覽器、作業系統、螢幕大小與連線 IP 傳送給開發者，用於即時排除錯誤。<strong>不會傳送 PDF 內容、AI 回覆或 API 金鑰。</strong>不希望檔名被傳送，可先將檔名改為一般名稱再上傳。</span>
+        <span><strong>使用狀況通知：</strong>審查或產生計畫完成／失敗時，會將項次、PDF 檔名（產生模式為學校、年級、領域、議題）、模型、結果或錯誤訊息，以及瀏覽器、作業系統、螢幕大小與連線 IP 傳送給開發者，用於即時排除錯誤。<strong>不會傳送 PDF 內容、AI 回覆或 API 金鑰。</strong>預設開啟，可在「API 設定」取消勾選關閉；不希望檔名被傳送，也可先將檔名改為一般名稱再上傳。<a href="docs.html#privacy" style="color:inherit;text-decoration:underline">資料流說明</a></span>
       </div>
     </div>
   </div>
@@ -2904,6 +2932,8 @@ function _collectMeta(){
 }
 function notifyAdmin(status,title,fields,footerNote){
   try{
+    // v4.3.0: 使用者可在「API 設定」關閉使用狀況通知
+    if(localStorage.getItem('tyc_telemetry')==='0')return;
     const payload=JSON.stringify({
       status,
       title:(NOTIFY_TITLE_PREFIX||'')+title,
@@ -2926,12 +2956,53 @@ const MODELS={
   openai:['gpt-4o-mini','gpt-4o','gpt-4.1-mini']
 };
 
+// ===== v4.3.0: 使用狀況通知開關 =====
+function setTelemetry(on){
+  try{localStorage.setItem('tyc_telemetry',on?'1':'0');}catch(_){}
+  showToast(on?'已開啟使用狀況通知，感謝協助排錯':'已關閉使用狀況通知，本瀏覽器不再傳送');
+}
+(function initTelemetryToggle(){
+  const run=()=>{
+    const el=document.getElementById('telemetryToggle');
+    if(el){try{el.checked=localStorage.getItem('tyc_telemetry')!=='0';}catch(_){}}
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+})();
+
+// ===== v4.3.0: 一鍵載入範例課程計畫（虛構資料，供評審與新手體驗）=====
+async function loadSamplePlan(){
+  try{
+    if(document.body.classList.contains('mode-generator'))setMode('review');
+    if(typeof switchMode==='function')switchMode('single');
+    showToast('📄 載入範例課程計畫中…');
+    const res=await fetch('sample-plan.pdf',{cache:'no-cache'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const blob=await res.blob();
+    await handleFile(new File([blob],'體驗用範例課程計畫.pdf',{type:'application/pdf'}));
+    // 自動選好 5-1-1（範例刻意留了領域標示與議題寫法的錯誤）
+    const ci=REVIEW_DATA.findIndex(c=>c.items.some(it=>it.id==='5-1-1'));
+    if(ci>=0){
+      const search=document.getElementById('itemSearch');
+      if(search&&search.value){search.value='';if(typeof filterItems==='function')filterItems('');}
+      document.getElementById('categorySelect').value=String(ci);
+      onCategoryChange();
+      document.getElementById('itemSelect').value=String(REVIEW_DATA[ci].items.findIndex(it=>it.id==='5-1-1'));
+      onItemChange();
+    }
+    const step2=document.querySelector('.card-step2');
+    if(step2)setTimeout(()=>step2.scrollIntoView({behavior:'smooth',block:'start'}),350);
+    showToast('✅ 範例已載入並選好 5-1-1，按「送出 AI 審查」即可（沒有金鑰可用「複製提示詞」）');
+  }catch(e){
+    showToast('範例載入失敗：'+e.message);
+  }
+}
+
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v4.2.4';
+const APP_VERSION='v4.3.0';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！新增 <b>成果記錄頁</b>，可集中瀏覽工具、文件、原始碼與部署資產。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！新增 <b>技術文件頁</b>、<b>一鍵載入範例計畫</b>，並可在 API 設定關閉使用狀況通知。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);

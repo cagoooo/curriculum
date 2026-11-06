@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>技術文件｜桃園市 115 學年度課程計畫 AI 審查工具</title>
+  <meta name="description" content="課程計畫 AI 審查工具的系統架構、資料流、資安隱私、AI 與人的分工、已知限制、常見問題與自行部署說明。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cagoooo.github.io/curriculum/docs.html">
+  <meta property="og:title" content="技術文件｜課程計畫 AI 審查工具">
+  <meta property="og:description" content="架構、資料流、隱私、人機分工、限制、FAQ 與自行部署，一頁看懂。">
+  <meta property="og:image" content="https://cagoooo.github.io/curriculum/og-image.png">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    :root {
+      --pine-950: #082b27;
+      --pine-900: #0d4b42;
+      --pine-700: #1b786a;
+      --pine-500: #42a996;
+      --mint-100: #e7f5f1;
+      --mint-50: #f4fbf9;
+      --paper: #fbfaf6;
+      --ink: #1f302d;
+      --muted: #5b6b67;
+      --hairline: #d8e5e0;
+      --coral: #b9543b;
+      --coral-soft: #f8e8e2;
+      --amber-soft: #fdf3dc;
+      --amber-ink: #7a4e0e;
+      --shadow-sm: 0 7px 20px rgba(13, 75, 66, .08);
+      --radius: 16px;
+      --fs-sm: .95rem;
+      --fs-base: 1.05rem;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(66, 169, 150, .10), transparent 29rem),
+        linear-gradient(180deg, var(--mint-50) 0, var(--paper) 36rem, #fff 100%);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      font-size: var(--fs-base);
+      line-height: 1.75;
+    }
+    a { color: var(--pine-700); }
+    .skip-link { position: fixed; top: 10px; left: 10px; z-index: 20; padding: 8px 14px; color: #fff; background: var(--pine-950); border-radius: 8px; transform: translateY(-140%); }
+    .skip-link:focus { transform: translateY(0); }
+
+    .shell { max-width: 1320px; margin: 0 auto; padding: 0 28px 40px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 0; flex-wrap: wrap; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--pine-950); font-weight: 900; text-decoration: none; }
+    .brand-mark { display: inline-grid; width: 38px; height: 38px; place-items: center; color: #fff; background: var(--pine-900); border-radius: 12px; font-size: 1.2rem; }
+    .topbar-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    .topbar-nav a { padding: 7px 14px; color: var(--pine-900); border: 1px solid var(--hairline); border-radius: 999px; background: rgba(255,255,255,.7); font-size: .9rem; font-weight: 700; text-decoration: none; }
+    .topbar-nav a:hover { color: #fff; background: var(--pine-900); border-color: var(--pine-900); }
+
+    .hero { padding: 34px 0 26px; }
+    .eyebrow { margin: 0 0 10px; color: var(--coral); font-size: .8rem; font-weight: 900; letter-spacing: .18em; }
+    h1, h2, h3 { color: var(--pine-950); margin: 0; }
+    h1 { font-family: Georgia, "Noto Serif TC", "PMingLiU", serif; font-size: clamp(2rem, 4.4vw, 3.3rem); line-height: 1.18; letter-spacing: -.03em; }
+    .lead { max-width: 900px; margin: 16px 0 0; color: var(--muted); font-size: 1.1rem; }
+    .ver-note { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 13px; border-radius: 999px; background: #fff; border: 1px solid var(--hairline); font-size: .9rem; font-weight: 700; color: var(--pine-900); }
+    .pill.coral { background: var(--coral-soft); border-color: #efc9bc; color: var(--coral); }
+
+    .layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 28px; align-items: start; }
+    .toc { position: sticky; top: 18px; padding: 16px 14px; background: #fff; border: 1px solid var(--hairline); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+    .toc strong { display: block; margin: 0 6px 8px; color: var(--pine-950); font-size: .9rem; }
+    .toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+    .toc li { counter-increment: toc; }
+    .toc a { display: block; padding: 6px 8px; border-radius: 8px; color: var(--ink); font-size: .93rem; text-decoration: none; }
+    .toc a::before { content: counter(toc, decimal-leading-zero) " "; color: var(--pine-500); font-weight: 800; font-size: .8rem; }
+    .toc a:hover { background: var(--mint-100); color: var(--pine-900); }
+
+    section.doc { margin: 0 0 22px; padding: 26px 28px; background: #fff; border: 1px solid var(--hairline); border-radius: var(--radius); box-shadow: var(--shadow-sm); scroll-margin-top: 16px; }
+    section.doc h2 { font-family: Georgia, "Noto Serif TC", serif; font-size: 1.55rem; margin-bottom: 12px; }
+    section.doc h3 { font-size: 1.1rem; margin: 18px 0 8px; }
+    section.doc p { margin: 8px 0; }
+    .muted { color: var(--muted); font-size: var(--fs-sm); }
+
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 14px 0 6px; padding: 0; list-style: none; }
+    .steps li { padding: 16px; border-radius: 14px; background: var(--mint-50); border: 1px solid var(--hairline); }
+    .steps b { display: block; color: var(--pine-900); font-size: 1.05rem; margin-bottom: 4px; }
+    .steps .n { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-bottom: 8px; border-radius: 50%; background: var(--pine-900); color: #fff; font-weight: 900; }
+    .cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 18px; border-radius: 999px; background: var(--pine-900); color: #fff; font-weight: 800; text-decoration: none; }
+    .cta:hover { background: var(--pine-950); }
+
+    .table-wrap { overflow-x: auto; margin: 10px 0; border: 1px solid var(--hairline); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); min-width: 620px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--hairline); text-align: left; vertical-align: top; }
+    th { background: var(--mint-50); color: var(--pine-950); font-weight: 800; white-space: nowrap; }
+    tr:last-child td { border-bottom: 0; }
+    .yes { color: #16794f; font-weight: 800; }
+    .no { color: var(--coral); font-weight: 800; }
+
+    .flow { margin: 12px 0; padding: 14px; background: var(--paper); border: 1px solid var(--hairline); border-radius: 14px; overflow-x: auto; }
+    .flow svg { display: block; width: 100%; min-width: 760px; height: auto; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; font-size: .9rem; color: var(--muted); }
+    .legend span::before { content: ""; display: inline-block; width: 22px; height: 0; margin-right: 6px; vertical-align: middle; border-top: 3px solid var(--pine-700); }
+    .legend .dash::before { border-top: 3px dashed var(--coral); }
+
+    .callout { margin: 12px 0; padding: 12px 16px; border-radius: 12px; background: var(--amber-soft); color: var(--amber-ink); border: 1px solid #f0d9a6; font-size: var(--fs-sm); }
+    .callout.green { background: var(--mint-100); color: var(--pine-900); border-color: #bfe2d8; }
+    ul.clean { margin: 8px 0; padding-left: 1.3em; }
+    ul.clean li { margin: 5px 0; }
+    details.faq { border: 1px solid var(--hairline); border-radius: 12px; margin: 8px 0; background: var(--paper); }
+    details.faq summary { cursor: pointer; padding: 12px 16px; font-weight: 800; color: var(--pine-950); }
+    details.faq div { padding: 0 16px 12px; }
+    code { padding: 1px 6px; border-radius: 6px; background: #eef4f2; font-size: .9em; }
+    pre { overflow-x: auto; padding: 12px 14px; border-radius: 10px; background: #0f2b27; color: #e7f5f1; font-size: .88rem; line-height: 1.6; }
+
+    /* 頁尾 */
+    .site-footer { margin-top: 30px; background: linear-gradient(180deg, #f1ebdf, #ebe3d3); border-top: 1px solid #ddd2bd; position: relative; }
+    .site-footer::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: linear-gradient(90deg, var(--pine-900), var(--pine-500), var(--coral)); }
+    .footer-inner { max-width: 1320px; margin: 0 auto; padding: 34px 28px 22px; display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 30px; }
+    .footer-brand { display: flex; gap: 14px; align-items: flex-start; }
+    .footer-brand .icon { flex-shrink: 0; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--pine-900); color: #fff; font-size: 1.5rem; box-shadow: 0 6px 14px rgba(13,75,66,.25); }
+    .footer-brand strong { display: block; color: var(--pine-950); font-size: 1.05rem; }
+    .footer-brand span { color: var(--muted); font-size: var(--fs-sm); }
+    .footer-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    .footer-points li { display: flex; gap: 10px; align-items: flex-start; }
+    .fp-icon { flex-shrink: 0; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.75); border: 1px solid #ddd2bd; }
+    .footer-points strong { display: block; color: var(--pine-950); font-size: var(--fs-sm); }
+    .footer-points small { color: var(--muted); font-size: .9rem; }
+    .footer-links { display: flex; flex-direction: column; gap: 8px; }
+    .footer-links a { color: var(--pine-900); font-weight: 700; font-size: var(--fs-sm); text-decoration: none; }
+    .footer-links a:hover { text-decoration: underline; }
+    .footer-bottom { max-width: 1320px; margin: 0 auto; padding: 14px 28px 26px; border-top: 1px solid #ddd2bd; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .site-credit { margin: 0; font-size: var(--fs-sm); color: #4c5a56; }
+    .site-credit__heart { display: inline-block; margin: 0 2px; filter: saturate(1.1); }
+    .site-credit__author { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; padding-bottom: 1px; font-weight: 800; }
+    .site-credit__author:hover { color: var(--coral); border-bottom-color: var(--coral); }
+    .version-tag { margin: 0; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.7); border: 1px solid #d6cbb5; font-size: .88rem; font-weight: 800; color: var(--pine-900); }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: minmax(0, 1fr); }
+      .toc { position: static; }
+      .toc ol { display: flex; flex-wrap: wrap; gap: 4px; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .footer-brand { grid-column: 1 / -1; }
+    }
+    @media (max-width: 680px) {
+      .shell { padding: 0 16px 30px; }
+      section.doc { padding: 20px 16px; }
+      .steps { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; padding: 28px 16px 18px; }
+      .footer-links { flex-direction: row; flex-wrap: wrap; }
+      .footer-links a { padding: 7px 13px; border-radius: 999px; background: rgba(255,255,255,.75); border: 1px solid #d6cbb5; }
+      .footer-bottom { flex-direction: column; text-align: center; padding: 14px 16px 22px; }
+      .footer-school { display: block; }
+      .footer-dot { display: none; }
+    }
+    @media print {
+      .toc, .topbar-nav, .site-footer { display: none; }
+      section.doc { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要內容</a>
+<div class="shell">
+  <header class="topbar">
+    <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">📋</span>課程計畫 AI 審查工具</a>
+    <nav class="topbar-nav" aria-label="頁面導覽">
+      <a href="./">回到工具</a>
+      <a href="成果記錄.html">成果記錄</a>
+      <a href="https://github.com/cagoooo/curriculum" target="_blank" rel="noopener">GitHub 原始碼</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <p class="eyebrow">TECHNICAL DOCUMENT · 技術文件</p>
+    <h1>一頁看懂：資料怎麼走、AI 做什麼、人做什麼</h1>
+    <p class="lead">本工具協助學校在送審前，依桃園市教育局 115 學年度審查標準自我檢查國民小學課程計畫。這份文件寫給三種讀者：想快速體驗的評審與老師、在意資料安全的行政人員，以及想自行部署或改造的資訊老師。</p>
+    <div class="ver-note">
+      <span class="pill">📌 目前版本 v4.3.0</span>
+      <span class="pill coral">🏅 入選版本 v4.1（115 年度 AI 好幫手徵選）</span>
+      <span class="pill">📅 文件更新 2026-11-06</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="toc" aria-label="文件目錄">
+      <strong>目錄</strong>
+      <ol>
+        <li><a href="#quick">3 分鐘快速體驗</a></li>
+        <li><a href="#version">版本說明</a></li>
+        <li><a href="#arch">系統架構</a></li>
+        <li><a href="#flow">資料流圖</a></li>
+        <li><a href="#privacy">資安與隱私</a></li>
+        <li><a href="#human">AI 與人的分工</a></li>
+        <li><a href="#limits">已知限制</a></li>
+        <li><a href="#faq">常見問題</a></li>
+        <li><a href="#deploy">自行部署與改造</a></li>
+        <li><a href="#license">授權與聯絡</a></li>
+      </ol>
+    </nav>
+
+    <main id="main">
+      <section class="doc" id="quick">
+        <h2>3 分鐘快速體驗</h2>
+        <p>不需要準備任何檔案。工具內建一份<b>虛構學校的範例課程計畫</b>，裡面刻意留了三個常見寫法錯誤，可以直接看到 AI 如何指出「待修正」。</p>
+        <ol class="steps">
+          <li><span class="n">1</span><b>載入範例</b>到工具首頁，按「⚡ 3 分鐘快速體驗」或上傳區下方的「📄 載入範例課程計畫」。</li>
+          <li><span class="n">2</span><b>自動選好項次</b>系統會自動選好「5-1-1 普通班各年級各領域/科目課程計畫」，並顯示審查標準。</li>
+          <li><span class="n">3</span><b>送出審查</b>有 Gemini 金鑰就按「送出 AI 審查」；沒有金鑰可按「複製提示詞」，貼到 Gemini 或 ChatGPT 網頁版。</li>
+        </ol>
+        <a class="cta" href="./">開啟工具開始體驗 →</a>
+        <p class="muted">範例刻意留下的錯誤：①領域標示寫成「【國語文】」（應為「語文領域-國語文」且不加【】）②融入議題寫成「【環境教育】、【家庭教育】」（不應加【】）③第 5 週缺少評量方式。</p>
+      </section>
+
+      <section class="doc" id="version">
+        <h2>版本說明</h2>
+        <p>徵選報名時提交的是 <b>v4.1</b>；入選後持續修正，目前上架版本為 <b>v4.3.0</b>。主要差異：</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>版本</th><th>重點</th></tr></thead>
+          <tbody>
+            <tr><td>v4.1.0</td><td>新增「產生合規計畫」模式：填表後由 AI 依 5 道桃園市 115 學年度規則產生草稿，可一鍵送回審查模式驗證（產→審閉環）。</td></tr>
+            <tr><td>v4.2.0</td><td>產生模式也納入使用狀況通知（送出／成功／失敗）。</td></tr>
+            <tr><td>v4.2.3</td><td>新增成果記錄頁，集中整理工具、撰寫提醒 PDF、原始碼與部署資產。</td></tr>
+            <tr><td>v4.2.4</td><td>審查畫面與頁尾加入資料與隱私說明；新增 LICENSE.md 授權聲明。</td></tr>
+            <tr><td><b>v4.3.0</b></td><td>新增本技術文件頁、一鍵載入範例計畫（含自動選項次），以及「使用狀況通知」開關（可在 API 設定關閉）。</td></tr>
+          </tbody>
+        </table></div>
+        <p class="muted">完整版本紀錄（v1.0 起）請見 <a href="https://github.com/cagoooo/curriculum#版本紀錄" target="_blank" rel="noopener">README 版本紀錄</a>。</p>
+      </section>
+
+      <section class="doc" id="arch">
+        <h2>系統架構</h2>
+        <p>整個工具是<b>一個網頁檔案</b>，放在 GitHub Pages 上，不需要安裝、沒有資料庫、沒有我們自己的伺服器保存使用者資料。就像一本放在公共書架上的「審查手冊＋計算機」：每位老師打開後，都在自己的電腦上運算。</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>元件</th><th>做什麼</th><th>在哪裡執行</th></tr></thead>
+          <tbody>
+            <tr><td>網頁本體 <code>index.html</code></td><td>操作介面、40 多個審查項次與審查標準（內嵌）、結果卡片、匯出功能</td><td>使用者的瀏覽器</td></tr>
+            <tr><td>PDF.js（CDN 載入）</td><td>把 PDF 轉成純文字</td><td>使用者的瀏覽器</td></tr>
+            <tr><td>Google Gemini API（或 OpenAI）</td><td>依審查標準比對文字，回覆「表件通過」或列出待修正處</td><td>Google／OpenAI 雲端（使用者自己的金鑰）</td></tr>
+            <tr><td>瀏覽器本機儲存</td><td>保存金鑰、設定、最近一次審查結果、批次進度</td><td>使用者的瀏覽器（localStorage／sessionStorage）</td></tr>
+            <tr><td>Service Worker ＋ manifest</td><td>PWA：可安裝到桌面、離線開啟介面、新版本提示</td><td>使用者的瀏覽器</td></tr>
+            <tr><td>使用狀況通知（可關閉）</td><td>審查開始／成功／失敗時通知開發者，以便即時排錯</td><td>Firebase Cloud Functions → Google Chat／LINE</td></tr>
+          </tbody>
+        </table></div>
+        <p class="muted">可選模型：Gemini <code>gemini-2.5-flash</code>（預設）、<code>gemini-2.5-pro</code>、<code>gemini-2.0-flash</code>；OpenAI <code>gpt-4o-mini</code>、<code>gpt-4o</code>、<code>gpt-4.1-mini</code>。遇到忙碌或額度錯誤（429／503 等）會自動等待後重試，最多 3 次。</p>
+      </section>
+
+      <section class="doc" id="flow">
+        <h2>資料流圖</h2>
+        <p>實線是審查必經的路線；虛線是可關閉的使用狀況通知。<b>PDF 原檔從頭到尾都不會離開使用者的電腦</b>，送出去的只有擷取後的文字。</p>
+        <div class="flow" role="img" aria-label="資料流圖：PDF 在瀏覽器中由 PDF.js 轉成文字，與審查標準組成提示詞後送到 Gemini 或 OpenAI，回覆結果回到瀏覽器顯示與匯出；另有一條可關閉的虛線，把項次、檔名、模型、結果與瀏覽器資訊送到 Cloud Functions 再轉到 Google Chat 與 LINE。">
+          <svg viewBox="0 0 980 430" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC, Microsoft JhengHei, sans-serif">
+            <defs>
+              <marker id="arP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1b786a"/></marker>
+              <marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b9543b"/></marker>
+            </defs>
+            <!-- 瀏覽器框 -->
+            <rect x="12" y="12" width="560" height="300" rx="16" fill="#e7f5f1" stroke="#42a996" stroke-width="2"/>
+            <text x="30" y="42" font-size="17" font-weight="800" fill="#082b27">使用者的瀏覽器（資料留在這裡）</text>
+            <rect x="34" y="66" width="140" height="70" rx="12" fill="#fff" stroke="#9ccfc3"/>
+            <text x="104" y="96" font-size="15" font-weight="800" fill="#0d4b42" text-anchor="middle">課程計畫 PDF</text>
+            <text x="104" y="118" font-size="12.5" fill="#5b6b67" text-anchor="middle">原檔不外傳</text>
+            <rect x="222" y="66" width="140" height="70" rx="12" fill="#fff" stroke="#9ccfc3"/>
+            <text x="292" y="96" font-size="15" font-weight="800" fill="#0d4b42" text-anchor="middle">PDF.js</text>
+            <text x="292" y="118" font-size="12.5" fill="#5b6b67" text-anchor="middle">轉成純文字</text>
+            <rect x="410" y="66" width="140" height="70" rx="12" fill="#fff" stroke="#9ccfc3"/>
+            <text x="480" y="96" font-size="15" font-weight="800" fill="#0d4b42" text-anchor="middle">組成提示詞</text>
+            <text x="480" y="118" font-size="12.5" fill="#5b6b67" text-anchor="middle">文字＋審查標準</text>
+            <rect x="222" y="190" width="328" height="94" rx="12" fill="#fff" stroke="#9ccfc3"/>
+            <text x="386" y="220" font-size="15" font-weight="800" fill="#0d4b42" text-anchor="middle">審查結果卡片 ＋ 人工確認</text>
+            <text x="386" y="244" font-size="12.5" fill="#5b6b67" text-anchor="middle">通過／待修正／依據建議</text>
+            <text x="386" y="266" font-size="12.5" fill="#5b6b67" text-anchor="middle">匯出 HTML・Word・CSV・摘要圖卡</text>
+            <rect x="34" y="190" width="140" height="94" rx="12" fill="#fff" stroke="#9ccfc3"/>
+            <text x="104" y="222" font-size="14" font-weight="800" fill="#0d4b42" text-anchor="middle">本機儲存</text>
+            <text x="104" y="245" font-size="12.5" fill="#5b6b67" text-anchor="middle">金鑰・設定</text>
+            <text x="104" y="266" font-size="12.5" fill="#5b6b67" text-anchor="middle">最近結果</text>
+            <line x1="174" y1="101" x2="218" y2="101" stroke="#1b786a" stroke-width="3" marker-end="url(#arP)"/>
+            <line x1="362" y1="101" x2="406" y2="101" stroke="#1b786a" stroke-width="3" marker-end="url(#arP)"/>
+            <line x1="222" y1="237" x2="178" y2="237" stroke="#1b786a" stroke-width="2" stroke-dasharray="2 4" marker-end="url(#arP)"/>
+            <!-- AI 雲端 -->
+            <rect x="680" y="52" width="280" height="100" rx="16" fill="#fff" stroke="#1b786a" stroke-width="2"/>
+            <text x="820" y="88" font-size="16" font-weight="800" fill="#082b27" text-anchor="middle">Google Gemini／OpenAI</text>
+            <text x="820" y="112" font-size="12.5" fill="#5b6b67" text-anchor="middle">使用者自己的金鑰</text>
+            <text x="820" y="132" font-size="12.5" fill="#5b6b67" text-anchor="middle">收到：擷取文字＋審查標準</text>
+            <line x1="550" y1="92" x2="676" y2="92" stroke="#1b786a" stroke-width="3" marker-end="url(#arP)"/>
+            <text x="613" y="82" font-size="12" fill="#1b786a" text-anchor="middle">送出提示詞</text>
+            <path d="M 720 152 C 720 215, 640 237, 554 237" fill="none" stroke="#1b786a" stroke-width="3" marker-end="url(#arP)"/>
+            <text x="622" y="274" font-size="12" fill="#1b786a" text-anchor="middle">回覆審查意見</text>
+            <!-- 通知 -->
+            <rect x="680" y="300" width="280" height="112" rx="16" fill="#f8e8e2" stroke="#b9543b" stroke-width="2" stroke-dasharray="7 5"/>
+            <text x="820" y="330" font-size="15" font-weight="800" fill="#8a3a26" text-anchor="middle">使用狀況通知（可關閉）</text>
+            <text x="820" y="352" font-size="12" fill="#6b3a2c" text-anchor="middle">Cloud Functions → Google Chat／LINE</text>
+            <text x="820" y="373" font-size="12" fill="#6b3a2c" text-anchor="middle">送：項次・檔名・模型・結果・錯誤</text>
+            <text x="820" y="393" font-size="12" fill="#6b3a2c" text-anchor="middle">瀏覽器・系統・螢幕・IP</text>
+            <path d="M 470 284 C 470 356, 560 356, 676 356" fill="none" stroke="#b9543b" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arC)"/>
+            <text x="30" y="350" font-size="13.5" font-weight="800" fill="#082b27">絕不外傳：</text>
+            <text x="30" y="374" font-size="13" fill="#3b4b47">PDF 原檔、AI 回覆全文、API 金鑰</text>
+            <text x="30" y="396" font-size="13" fill="#3b4b47">（通知只含左列欄位，不含課程計畫內容）</text>
+          </svg>
+        </div>
+        <div class="legend"><span>審查必經路線</span><span class="dash">可關閉的使用狀況通知</span></div>
+      </section>
+
+      <section class="doc" id="privacy">
+        <h2>資安與隱私</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>資料</th><th>存在哪裡</th><th>會送到哪裡</th><th>使用者可以怎麼控制</th></tr></thead>
+          <tbody>
+            <tr><td>PDF 原檔</td><td>只在瀏覽器記憶體</td><td class="yes">不外傳</td><td>—</td></tr>
+            <tr><td>PDF 擷取文字</td><td>瀏覽器記憶體</td><td>使用者選擇的 AI 服務（Gemini／OpenAI）</td><td>上傳前刪去學生個資；或改用「複製提示詞」自行貼到網頁版</td></tr>
+            <tr><td>API 金鑰</td><td>瀏覽器 localStorage</td><td>只送到對應的 AI 服務做驗證</td><td>清除瀏覽器資料即可刪除；建議在 Google AI Studio 為金鑰設定用量上限</td></tr>
+            <tr><td>審查結果</td><td>瀏覽器 localStorage（最近一次）</td><td class="yes">不外傳</td><td>由使用者自行匯出、分享</td></tr>
+            <tr><td>使用狀況通知</td><td>—</td><td>開發者的 Google Chat／LINE（經 Firebase Cloud Functions）</td><td><b>API 設定 →取消勾選「傳送使用狀況通知」</b>即停止；或把檔名改成一般名稱再上傳</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout"><b>請勿上傳含學生個資的文件。</b>課程計畫原則上不需要學生姓名、座號或照片；若附件含有，請先刪除再審查。</div>
+        <h3>使用狀況通知的細節</h3>
+        <ul class="clean">
+          <li><b>為什麼要有：</b>全市老師在不同時間使用，出錯時開發者能立刻知道哪個項次、哪種模型失敗，盡快修正。</li>
+          <li><b>傳送內容：</b>審查項次、PDF 檔名（產生模式為學校、年級、領域、議題）、模型、結果或錯誤訊息、瀏覽器、作業系統、螢幕大小、工具版本，以及連線 IP（由伺服器端讀取）。</li>
+          <li><b>不傳送：</b>PDF 內容、AI 回覆全文、API 金鑰。</li>
+          <li><b>預設：</b>開啟。v4.3.0 起可在「API 設定」取消勾選，設定記在該瀏覽器，關閉後不再傳送。</li>
+          <li><b>通知服務的祕密設定：</b>Google Chat Webhook 網址存在 Google Cloud Secret Manager，不寫在原始碼裡。</li>
+        </ul>
+      </section>
+
+      <section class="doc" id="human">
+        <h2>AI 與人的分工</h2>
+        <p>AI 像一位「很會對照規定的助教」，能快速把 40 多項標準逐條比對；但<b>通過與否最後由人決定</b>。正式審查結果以教育局審查委員審定為準。</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>步驟</th><th>AI 做什麼</th><th>人做什麼</th><th>誰做最後決定</th></tr></thead>
+          <tbody>
+            <tr><td>1. 撰寫計畫</td><td>（產生模式）依規則產出草稿</td><td>教師依學校實際狀況修改、補充</td><td>撰寫教師</td></tr>
+            <tr><td>2. 選擇項次與標準</td><td>—</td><td>承辦人選項次；門數等條件與規定不同時，直接修改審查提示詞</td><td>承辦人</td></tr>
+            <tr><td>3. 比對審查</td><td>逐條比對，列出待修正處與依據；全部符合則回覆「表件通過」</td><td>—</td><td>—（僅建議）</td></tr>
+            <tr><td>4. 複核結果</td><td>（可選）對待修正項目產生修正稿建議</td><td>逐項閱讀依據，判斷 AI 是否誤判；確認無誤可按「✅ 人工確認通過」</td><td><b>承辦人</b></td></tr>
+            <tr><td>5. 修正與重審</td><td>重新比對修正後的 PDF</td><td>撰寫教師修正；承辦人重審待修正項</td><td>承辦人</td></tr>
+            <tr><td>6. 正式送審</td><td>—</td><td>學校依程序送教育局</td><td><b>教育局審查委員</b></td></tr>
+          </tbody>
+        </table></div>
+        <h3>一定要人工審查的情況</h3>
+        <ul class="clean">
+          <li><b>特殊教育班、藝術才能班、體育班</b>（5-1-2～5-1-4 等）：目前沒有完整專屬標準，選到時畫面會跳出提醒。</li>
+          <li>AI 回覆與標準明顯矛盾、或「依據」引用了文件中不存在的內容。</li>
+          <li>同一項次重審兩次結果不一致（AI 回答有隨機性）。</li>
+        </ul>
+      </section>
+
+      <section class="doc" id="limits">
+        <h2>已知限制</h2>
+        <ul class="clean">
+          <li><b>只支援文字型 PDF。</b>掃描成圖片的 PDF 擷取不到文字（擷取少於 50 字時會提示）。</li>
+          <li><b>表格可能跑版。</b>PDF.js 依位置讀字，複雜表格的欄位順序可能被打亂，AI 偶爾會因此誤判「缺少某欄」。</li>
+          <li><b>AI 可能誤判或漏判。</b>同一份文件重審，結果可能略有不同，請以人工複核為準。</li>
+          <li><b>標準只適用 115 學年度。</b>審查標準依桃園市教育局 115 學年度文件內嵌；學年度更新後需要同步修改。</li>
+          <li><b>文件太長可能不完整。</b>超過 5 萬字會提示，建議只上傳相關章節或改用 <code>gemini-2.5-pro</code>。</li>
+          <li><b>需要 AI 金鑰。</b>沒有金鑰時只能用「複製提示詞」到網頁版；免費額度用完會出現 429 錯誤。</li>
+          <li><b>模型會更新或停用。</b>Google 與 OpenAI 會陸續汰換舊模型；若某模型出現「找不到模型」，請改選其他模型。</li>
+          <li><b>尚未完成量化驗證。</b>目前沒有「AI 判定與人工審查一致率」與「節省時間」的正式量測數據，規劃中。</li>
+        </ul>
+      </section>
+
+      <section class="doc" id="faq">
+        <h2>常見問題</h2>
+        <details class="faq"><summary>上傳後顯示「文字過少，可能為掃描圖檔」怎麼辦？</summary><div>代表 PDF 是圖片。請回到 Word／Google 文件原檔，用「另存為 PDF」或「下載 PDF」重新產生文字型 PDF，不要用掃描或拍照。</div></details>
+        <details class="faq"><summary>出現 429、quota、額度用完？</summary><div>免費額度在短時間內用完。工具會自動等待重試最多 3 次；仍失敗時請等幾分鐘、改用 <code>gemini-2.5-flash</code>，或隔天再試。批次審查一次跑很多項，最容易遇到。</div></details>
+        <details class="faq"><summary>金鑰錯誤或測試失敗？</summary><div>到「API 設定」按「🔍 測試 API 金鑰」。確認複製時沒有多空白、金鑰屬於 Google AI Studio（不是 Google Cloud 其他服務），必要時重新建立一把。</div></details>
+        <details class="faq"><summary>沒有金鑰也能用嗎？</summary><div>可以。選好項次後按「複製提示詞」，貼到 Gemini 或 ChatGPT 網頁版，並把擷取的文字一起貼上。</div></details>
+        <details class="faq"><summary>同一份文件，兩次結果不一樣？</summary><div>AI 回答有隨機性。請以「依據」欄位對照原文判斷，必要時以人工確認為準。</div></details>
+        <details class="faq"><summary>我們學校的門數規定跟標準不一樣？</summary><div>選好項次後，直接修改「審查提示詞」裡的條件（例如 3 門改 2 門），再送出審查。</div></details>
+        <details class="faq"><summary>怎麼關閉使用狀況通知？</summary><div>展開「API 設定」，取消勾選「傳送使用狀況通知給開發者」。設定記在目前的瀏覽器，換電腦需要再設定一次。</div></details>
+        <details class="faq"><summary>可以離線使用嗎？</summary><div>介面可以安裝成 App 離線開啟，但 AI 審查需要連網呼叫 Gemini／OpenAI。</div></details>
+        <details class="faq"><summary>審查結果會不會被別人看到？</summary><div>不會。結果只存在您的瀏覽器，除非您自己匯出或分享。</div></details>
+      </section>
+
+      <section class="doc" id="deploy">
+        <h2>自行部署與改造</h2>
+        <h3>A. 直接使用（最簡單）</h3>
+        <p>打開 <a href="https://cagoooo.github.io/curriculum/">https://cagoooo.github.io/curriculum/</a> 即可，不需要安裝。</p>
+        <h3>B. 架一份自己學校的版本</h3>
+        <ol class="clean">
+          <li>在 GitHub 按 <b>Fork</b> 複製 <code>cagoooo/curriculum</code> 到自己的帳號。</li>
+          <li>到該 repo 的 <b>Settings → Pages</b>，Source 選 <code>main</code> 分支、根目錄，儲存後約 1～2 分鐘即可用 <code>https://&lt;帳號&gt;.github.io/curriculum/</code> 開啟。</li>
+          <li>若 repo 名稱不是 <code>curriculum</code>，請把 <code>sw.js</code> 與 <code>manifest.json</code> 裡的 <code>/curriculum/</code> 路徑改成新的名稱。</li>
+          <li><b>停用或改接使用狀況通知：</b>在 <code>index.html</code> 搜尋 <code>NOTIFY_URL</code>，把兩個網址換成自己的 Cloud Functions；若不需要通知，在 <code>notifyAdmin()</code> 函式第一行加上 <code>return;</code>。</li>
+        </ol>
+        <h3>C. 本機預覽</h3>
+<pre>git clone https://github.com/cagoooo/curriculum.git
+cd curriculum
+python -m http.server 8000
+# 瀏覽器開啟 http://localhost:8000</pre>
+        <h3>D. 部署自己的通知服務（選用）</h3>
+        <p><code>_gchat-fn/</code> 是 Google Chat 通知的 Cloud Functions 原始碼（Node.js 24）。需要自己的 Firebase 專案：</p>
+<pre>cd _gchat-fn
+npm install
+firebase functions:secrets:set GCHAT_WEBHOOK   # 貼上自己的 Google Chat Webhook
+firebase deploy --only functions</pre>
+        <h3>E. 修改審查標準</h3>
+        <p>審查項次與標準都在 <code>index.html</code> 的 <code>REVIEW_DATA</code> 陣列，每個項次有 <code>id</code>、<code>name</code>、<code>prompt</code>。白話說明在 <code>ITEM_DESC</code>。學年度標準更新時，改這兩處即可。</p>
+      </section>
+
+      <section class="doc" id="license">
+        <h2>授權與聯絡</h2>
+        <p>本作品入選桃園市「115 年度 AI 好幫手─智慧協作工具徵選與應用計畫」，依計畫規定無償、非專屬、永久授權桃園市政府教育局及其所屬學校使用，詳見 <a href="https://github.com/cagoooo/curriculum/blob/main/LICENSE.md" target="_blank" rel="noopener">LICENSE.md</a>。</p>
+        <p>審查標準依據桃園市教育局 115 學年度審查文件；AI 審查僅供輔助參考，正式結果以教育局審查委員審定為準。</p>
+        <p>問題回報與功能建議：<a href="https://github.com/cagoooo/curriculum/issues" target="_blank" rel="noopener">GitHub Issues</a>。</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="icon" aria-hidden="true">📋</span>
+      <div><strong>課程計畫 AI 審查工具</strong><span>依桃園市教育局 115 學年度審查標準，協助學校在送審前自我檢查國民小學課程計畫。</span></div>
+    </div>
+    <ul class="footer-points">
+      <li><span class="fp-icon" aria-hidden="true">🔒</span><div><strong>PDF 原檔不外傳</strong><small>只有擷取文字送到您選擇的 AI 服務</small></div></li>
+      <li><span class="fp-icon" aria-hidden="true">👩‍🏫</span><div><strong>AI 建議，人做決定</strong><small>承辦人複核，正式結果以審查委員為準</small></div></li>
+      <li><span class="fp-icon" aria-hidden="true">🔔</span><div><strong>通知可關閉</strong><small>API 設定取消勾選即停止使用狀況通知</small></div></li>
+    </ul>
+    <nav class="footer-links" aria-label="快速連結">
+      <a href="./">🔍 開啟審查工具</a>
+      <a href="成果記錄.html">🗂️ 成果記錄</a>
+      <a href="https://github.com/cagoooo/curriculum" target="_blank" rel="noopener">⭐ GitHub 原始碼</a>
+      <a href="https://github.com/cagoooo/curriculum/issues" target="_blank" rel="noopener">🐛 回報問題</a>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <p class="site-credit">Made with <span class="site-credit__heart" aria-label="愛心">❤️</span> by
+      <a href="https://www.smes.tyc.edu.tw/modules/school/index.php?department_id=2&zone_id=0&page_id=2&content_id=11&type=news&from_op=all_news#a5" target="_blank" rel="noopener noreferrer" class="site-credit__author">阿凱老師</a>
+      <span class="footer-school"><span class="footer-dot" aria-hidden="true">・</span>桃園市龍潭區石門國民小學</span></p>
+    <p class="version-tag">v4.3.0</p>
+  </div>
+</footer>
+</body>
+</html>

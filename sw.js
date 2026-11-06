@@ -1,6 +1,6 @@
-// Service Worker for 課程計畫AI審查工具 v4.2.4
-const SW_VERSION = 'v4.2.4';
-const CACHE_NAME = 'curriculum-v4.2.4';
+// Service Worker for 課程計畫AI審查工具 v4.3.0
+const SW_VERSION = 'v4.3.0';
+const CACHE_NAME = 'curriculum-v4.3.0';
 const CACHE_URLS = [
   '/curriculum/',
   '/curriculum/index.html',
@@ -9,6 +9,8 @@ const CACHE_URLS = [
   '/curriculum/og-image.png',
   '/curriculum/manifest.json',
   '/curriculum/成果記錄.html',
+  '/curriculum/docs.html',
+  '/curriculum/sample-plan.pdf',
   '/curriculum/(教學組提醒)115課程計畫撰寫注意事項說明.pdf'
 ];
 
