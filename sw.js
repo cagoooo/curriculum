@@ -1,6 +1,6 @@
-// Service Worker for 課程計畫AI審查工具 v4.3.0
-const SW_VERSION = 'v4.3.0';
-const CACHE_NAME = 'curriculum-v4.3.0';
+// Service Worker for 課程計畫AI審查工具 v4.3.1
+const SW_VERSION = 'v4.3.1';
+const CACHE_NAME = 'curriculum-v4.3.1';
 const CACHE_URLS = [
   '/curriculum/',
   '/curriculum/index.html',
@@ -15,10 +15,12 @@ const CACHE_URLS = [
 ];
 
 // Install: pre-cache static assets
+// v4.3.1: 以 cache:'reload' 繞過瀏覽器 HTTP 快取。GitHub Pages 的 HTML 會在瀏覽器留 10 分鐘，
+// 若直接 addAll，剛部署完安裝的新 SW 可能把「舊版 index.html」存進新快取，導致一直顯示舊版。
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(CACHE_URLS))
+      .then(cache => cache.addAll(CACHE_URLS.map(u => new Request(u, { cache: 'reload' }))))
       .then(() => self.skipWaiting())
   );
 });
@@ -42,22 +44,40 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch: cache-first for same-origin, network-only for external
+function putInCache(request, response) {
+  if (response && response.status === 200) {
+    const clone = response.clone();
+    caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+  }
+  return response;
+}
+
+// Fetch:
+// - 網頁（HTML 導覽）：有網路先抓最新版（network-first），離線才用快取，確保部署後立即看到新版
+// - 其他同源資源：cache-first
+// - 外部資源（CDN、AI API）：不攔截
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-  if (event.request.method !== 'GET') return;
+  const req = event.request;
+  const url = new URL(req.url);
+  if (req.method !== 'GET') return;
   if (url.origin !== self.location.origin) return;
 
+  const isPage = req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/');
+  if (isPage) {
+    event.respondWith(
+      fetch(req, { cache: 'no-cache' })
+        .then(res => putInCache(req, res))
+        .catch(() => caches.match(req, { ignoreSearch: true })
+          .then(cached => cached || caches.match('/curriculum/index.html')))
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then(cached => {
+    caches.match(req).then(cached => {
       if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => caches.match('/curriculum/index.html'));
+      return fetch(req).then(res => putInCache(req, res))
+        .catch(() => caches.match('/curriculum/index.html'));
     })
   );
 });
