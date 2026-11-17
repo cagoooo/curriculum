@@ -30,4 +30,4 @@
 
 ## 四、聯絡方式
 
-阿凱老師教師介紹頁：https://www.smes.tyc.edu.tw/modules/school/index.php?department_id=2&zone_id=0&page_id=2&content_id=11&type=news&from_op=all_news#a5
+阿凱老師教師介紹頁：https://cagoooo.github.io/Akai/
