@@ -1,5 +1,7 @@
 // Service Worker for 課程計畫AI審查工具 v4.3.2
 const SW_VERSION = 'v4.3.2';
+// 同一網域（cagoooo.github.io）的所有工具共用快取空間，只能清除自己這個前綴的快取
+const CACHE_PREFIX = 'curriculum-v';
 const CACHE_NAME = 'curriculum-v4.3.2';
 const CACHE_URLS = [
   '/curriculum/',
@@ -30,7 +32,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys.filter(k => k.startsWith(CACHE_PREFIX) && k !== CACHE_NAME).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
       .then(() => {
