@@ -38,11 +38,31 @@ function buildWidgets(fields, footerNote) {
   return widgets;
 }
 
+// 平台名稱：同一個 Chat 空間會收到多個系統的通知，摘要與標題都要寫出是哪個平台
+const PLATFORM_NAMES = {
+  ES: '國小課程計畫AI審查',
+  JHS: '國中課程計畫AI審查',
+};
+
+/**
+ * 依 meta.app（ES／JHS）決定平台名稱，並拿掉前端標題前綴「[國小] 」「[國中] 」避免重複。
+ */
+function resolvePlatform(title, meta) {
+  const raw = String(title);
+  const m = raw.match(/^\s*\[(國小|國中)\]\s*/);
+  const isJHS = (meta && meta.app === 'JHS') || (!(meta && meta.app) && m && m[1] === '國中');
+  return {
+    platform: isJHS ? PLATFORM_NAMES.JHS : PLATFORM_NAMES.ES,
+    cleanTitle: m ? raw.slice(m[0].length) : raw,
+  };
+}
+
 /**
  * 建立 cardsV2 payload。
  */
 function buildCard(status, title, fields, footerNote, meta) {
   const s = STATUS_MAP[status] || { color: '#9AA0A6', icon: '📋', label: status };
+  const { platform, cleanTitle } = resolvePlatform(title, meta);
   const metaLine = meta
     ? `${meta.br || ''} · ${meta.os || ''} · ${meta.dev || ''} · ${meta.sid || ''}`
     : '';
@@ -54,7 +74,7 @@ function buildCard(status, title, fields, footerNote, meta) {
   // ── 手機推播摘要文字（解決「傳送了一個附件檔案給你」問題）──
   // Google Chat 以最外層 text 欄位作為手機通知欄摘要內容。
   // 若只有 cardsV2 而沒有 text，手機端一律顯示「傳送了一個附件檔案給你」。
-  const previewParts = [`${s.icon} ${title}`];
+  const previewParts = [`${s.icon} 【${platform}】${cleanTitle}`];
   if (fields && fields.length > 0) {
     // 取前兩個 field 的 value/text 拼成摘要
     fields.slice(0, 2).forEach(f => {
@@ -70,7 +90,7 @@ function buildCard(status, title, fields, footerNote, meta) {
       cardId: `c-${Date.now()}`,
       card: {
         header: {
-          title: `${s.icon} ${title}`,
+          title: `${s.icon} ${cleanTitle}｜${platform}`,
           subtitle: `${s.label} · ${new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}`,
           imageUrl: 'https://www.smes.tyc.edu.tw/images/logo.png',
           imageType: 'CIRCLE',
