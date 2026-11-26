@@ -1,8 +1,8 @@
 // Service Worker for 課程計畫AI審查工具 v4.3.2
-const SW_VERSION = 'v4.3.2';
+const SW_VERSION = 'v4.4.0';
 // 同一網域（cagoooo.github.io）的所有工具共用快取空間，只能清除自己這個前綴的快取
 const CACHE_PREFIX = 'curriculum-v';
-const CACHE_NAME = 'curriculum-v4.3.2';
+const CACHE_NAME = 'curriculum-v4.4.0';
 const CACHE_URLS = [
   '/curriculum/',
   '/curriculum/index.html',

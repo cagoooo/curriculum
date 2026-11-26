@@ -1327,7 +1327,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
     <li data-step="g-result"><span class="num">03</span><div><span class="t">AI 生成計畫</span><span class="d">內建合規規則</span></div></li>
   </ol>
   <div class="sb-foot">
-    <span class="v">v4.3.2 · 阿凱老師</span>
+    <span class="v">v4.4.0 · 阿凱老師</span>
     API 金鑰僅儲存於本機<br>不會上傳任何伺服器
   </div>
 </aside>
@@ -1721,7 +1721,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
     <!-- D: PDF length warning -->
     <div id="pdfLengthWarning" class="hidden" style="margin-top:8px;padding:9px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:.83rem;color:#664d03;display:flex;align-items:flex-start;gap:8px">
       <span style="flex-shrink:0">&#9888;&#65039;</span>
-      <span>本 PDF 字數較多（超過 5 萬字），可能超出 AI 的 Token 上限導致審查結果不完整。建議僅上傳<strong>相關章節</strong>，或改用支援更多 Token 的模型（如 <strong>gemini-2.5-pro</strong>）。</span>
+      <span>本 PDF 字數較多（超過 5 萬字），可能超出 AI 的 Token 上限導致審查結果不完整。建議僅上傳<strong>相關章節</strong>，或分段審查。</span>
     </div>
   </div>
 
@@ -1903,7 +1903,7 @@ footer{background:var(--pine-dark)!important;color:#cfe1dc!important;margin-top:
         <span class="footer-logo-icon">&#128203;</span>
         課程計畫 AI 審查工具
       </div>
-      <div class="footer-ver">v4.3.2</div>
+      <div class="footer-ver">v4.4.0</div>
       <p class="footer-desc">依據桃園市教育局 115 學年度審查標準，協助學校教師快速自我審查課程計畫，提升送審品質。</p>
     </div>
     <!-- 快速連結欄 -->
@@ -2951,8 +2951,14 @@ function notifyAdmin(status,title,fields,footerNote){
 }
 
 // ===== Models =====
+// v4.4.0：gemini-2.5-flash／2.5-pro 於 2026-12-01 停用、2.0-flash 已下架（2026-11-26 ListModels 與官方停用頁查證）。
+// 以範例計畫 5-1-1 實測：3.8-flash 兩次都抓到 3 個錯誤；3.5-flash-lite 也抓到、速度快約一倍、費用約 1/4，但偶有前後矛盾。
+const MODEL_LABELS={
+  'gemini-3.8-flash':'gemini-3.8-flash（預設・審查最準確）',
+  'gemini-3.5-flash-lite':'gemini-3.5-flash-lite（較快、省額度，適合批次）'
+};
 const MODELS={
-  gemini:['gemini-2.5-flash','gemini-2.5-pro','gemini-2.0-flash'],
+  gemini:['gemini-3.8-flash','gemini-3.5-flash-lite'],
   openai:['gpt-4o-mini','gpt-4o','gpt-4.1-mini']
 };
 
@@ -2998,11 +3004,11 @@ async function loadSamplePlan(){
 }
 
 // ===== HH: Version Update Toast =====
-const APP_VERSION='v4.3.2';
+const APP_VERSION='v4.4.0';
 function showVersionToast(){
   const t=document.createElement('div');
   t.id='verToast';t.className='ver-toast';
-  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！新增 <b>技術文件頁</b>、<b>一鍵載入範例計畫</b>，並可在 API 設定關閉使用狀況通知。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
+  t.innerHTML=`<span>✨ 工具已更新至 ${APP_VERSION}！AI 模型升級為 <b>gemini-3.8-flash</b>，審查更準確（舊的 2.5 系列將於 12/1 停用，已自動幫你換好）。</span><button class="ver-toast-btn" onclick="dismissVersionToast()">✓ 知道了</button>`;
   document.body.appendChild(t);
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
   setTimeout(dismissVersionToast,10000);
@@ -3158,7 +3164,8 @@ function loadSettings(){
   document.getElementById('apiProvider').value=provider;
   document.getElementById('apiKey').value=key;
   onProviderChange();
-  if(model)document.getElementById('apiModel').value=model;
+  if(model&&(MODELS[provider]||[]).includes(model))document.getElementById('apiModel').value=model;
+  else if(model){localStorage.setItem('tyc_model',document.getElementById('apiModel').value);}
   if(!key)document.getElementById('settingsPanel').open=true;
 }
 
@@ -3179,7 +3186,7 @@ function onProviderChange(){
   const p=document.getElementById('apiProvider').value;
   const sel=document.getElementById('apiModel');
   sel.innerHTML='';
-  (MODELS[p]||[]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)});
+  (MODELS[p]||[]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=MODEL_LABELS[m]||m;sel.appendChild(o)});
   document.getElementById('openaiWarning').classList.toggle('hidden',p!=='openai');
   // Update API key link
   const info=API_INFO[p]||API_INFO.gemini;
@@ -3254,7 +3261,7 @@ async function testApiKey(){
       // 嘗試提供更友善的錯誤說明
       let hint='';
       if(/API_KEY_INVALID|invalid.*key|api key not valid/i.test(errMsg)) hint='金鑰格式錯誤或已失效，請重新申請。';
-      else if(/QUOTA_EXCEEDED|quota/i.test(errMsg)) hint='免費額度已用完。建議將「模型」下拉選單改為 gemini-2.5-flash（每日 250 次，是 pro 的 5 倍），或等明日 0:00 額度重置。';
+      else if(/QUOTA_EXCEEDED|quota/i.test(errMsg)) hint='免費額度已用完。可將「模型」下拉選單改為 gemini-3.5-flash-lite（較省額度），或等額度重置後再試。';
       else if(/PERMISSION_DENIED|permission/i.test(errMsg)) hint='金鑰權限不足，請確認已啟用 Gemini API。';
       else if(/403/.test(errMsg)) hint='存取被拒，請確認金鑰正確且未過期。';
       resultEl.style.cssText='margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.85rem;display:flex;align-items:flex-start;gap:8px;background:#fde8e8;color:#7f1d1d;border:1px solid #fca5a5';
@@ -3318,7 +3325,10 @@ async function callGemini(apiKey,model,system,user){
   }
   const data=await res.json();
   if(!data.candidates||!data.candidates[0])throw new Error('AI 未回傳結果');
-  return data.candidates[0].content.parts[0].text;
+  const cand=data.candidates[0];
+  const text=(cand.content?.parts||[]).filter(p=>!p.thought).map(p=>p.text||'').join('');
+  if(!text)throw new Error(cand.finishReason==='MAX_TOKENS'?'AI 回覆超過長度上限，請只上傳相關章節後重試':'AI 未回傳結果（'+(cand.finishReason||'未知原因')+'）');
+  return text;
 }
 
 async function callOpenAI(apiKey,model,system,user){
@@ -3398,9 +3408,9 @@ async function executeReview(){
       if(provider==='openai')msg='OpenAI API 不支援從本地檔案直接呼叫（CORS 限制）。請改用 Gemini API 或使用「複製提示詞」功能。';
       else msg='網路連線錯誤，請確認網路狀態及 API 金鑰是否正確。';
     }else if(/high.?demand|overload|spike|experiencing|temporarily|try.?again/i.test(msg)){
-      msg=`**伺服器壅塞中**（Google 側暫時過載，已重試 3 次仍失敗）\n\n**原始訊息：** ${msg}\n\n**建議做法（擇一）：**\n- 🕐 **稍後再試**：壅塞通常 1–3 分鐘就會緩解，等一下再按「送出 AI 審查」\n- 🔄 **切換較穩定的模型**：到「⚙️ API 設定」把模型從 \`gemini-2.5-pro\` 改成 \`gemini-2.5-flash\`（flash 比較穩、也較快，品質對課程計畫審查幾乎沒差）\n- 📋 **改用複製提示詞**：點「複製提示詞」→ 貼到 Gemini 網頁版執行（網頁版較少壅塞）\n- 🌙 **避開尖峰時段**：晚上 9 點到半夜 2 點是國際尖峰，白天使用較順暢`;
+      msg=`**伺服器壅塞中**（Google 側暫時過載，已重試 3 次仍失敗）\n\n**原始訊息：** ${msg}\n\n**建議做法（擇一）：**\n- 🕐 **稍後再試**：壅塞通常 1–3 分鐘就會緩解，等一下再按「送出 AI 審查」\n- 🔄 **切換較穩定的模型**：到「⚙️ API 設定」把模型改成 \`gemini-3.5-flash-lite\`（較快，對課程計畫審查品質影響不大）\n- 📋 **改用複製提示詞**：點「複製提示詞」→ 貼到 Gemini 網頁版執行（網頁版較少壅塞）\n- 🌙 **避開尖峰時段**：晚上 9 點到半夜 2 點是國際尖峰，白天使用較順暢`;
     }else if(/429|rate.?limit|too.?many|quota/i.test(msg)){
-      msg=`**API 用量超限**（已重試 3 次仍失敗）\n\n**原始訊息：** ${msg}\n\n**📊 Gemini 免費層額度（每日 RPD）：**\n- gemini-2.5-**pro：每日只有 50 次**（最容易爆，本次大機率是這個）\n- gemini-2.5-**flash：每日 250 次**（是 pro 的 5 倍）\n\n**🔄 最有效解法：到「⚙️ API 設定」把模型切回 \`gemini-2.5-flash\`**\n（flash 對國小課程計畫審查品質幾乎沒差，但額度多 5 倍、速度也較快）\n\n**其他做法：**\n- ⏱️ 等到隔日 0:00 額度重置（pro 每日 50 次很容易用完）\n- 📋 改用「複製提示詞」搭配 Gemini 網頁版（不耗 API 額度）\n- 🌙 多裝置共用同一把金鑰時，配額會加總計算`;
+      msg=`**API 用量超限**（已重試 3 次仍失敗）\n\n**原始訊息：** ${msg}\n\n**🔄 最有效解法：到「⚙️ API 設定」把模型改成 \`gemini-3.5-flash-lite\`**\n（較省額度、速度也較快，對課程計畫審查品質影響不大；各模型免費額度請見 Google AI Studio 的用量頁）\n\n**其他做法：**\n- ⏱️ 等額度重置後再試（通常隔天就會恢復）\n- 📋 改用「複製提示詞」搭配 Gemini 網頁版（不耗 API 額度）\n- 🌙 多裝置共用同一把金鑰時，配額會加總計算`;
     }else if(/api.?key|invalid|unauthorized|permission/i.test(msg)){
       msg=`**API 金鑰無效**\n\n**原始訊息：** ${msg}\n\n**請檢查：**\n- 金鑰是否正確複製貼上（開頭應為 \`AIza...\`，無多餘空白）\n- 金鑰是否已被刪除或停用（到 Google AI Studio 確認）\n- 點「🔍 測試 API 金鑰」按鈕即時驗證`;
     }
@@ -4294,9 +4304,9 @@ async function runBatchQueue(apiKey){
       // v3.7.2: Friendly short error hint for batch mode
       let shortMsg=err.message;
       if(/high.?demand|overload|spike|experiencing|temporarily|try.?again/i.test(shortMsg)){
-        shortMsg='⚡ 伺服器壅塞（Google 側暫時過載，已重試 3 次）— 建議稍後對此項次使用「⚡ 重審失敗」按鈕，或改用 gemini-2.5-flash';
+        shortMsg='⚡ 伺服器壅塞（Google 側暫時過載，已重試 3 次）— 建議稍後對此項次使用「⚡ 重審失敗」按鈕，或改用 gemini-3.5-flash-lite';
       }else if(/429|rate.?limit|too.?many|quota/i.test(shortMsg)){
-        shortMsg='⏱️ API 用量超限（每日免費：pro 50 次、flash 250 次）— 建議到「⚙️ API 設定」把模型切回 <b>gemini-2.5-flash</b>（額度 5 倍），再按「⚡ 重審失敗」';
+        shortMsg='⏱️ API 用量超限 — 建議到「⚙️ API 設定」把模型改成 <b>gemini-3.5-flash-lite</b>（較省額度），再按「⚡ 重審失敗」';
       }
       batchResults[item.id]={status:'error',text:shortMsg};
       if(stEl)stEl.textContent='⚠️';

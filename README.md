@@ -2,7 +2,7 @@
 
 > 依據桃園市教育局115學年度審查標準，上傳課程計畫 PDF 即可透過 AI 自動審查 | 阿凱老師製作
 
-> 📌 **目前版本：v4.3.2**（依據程式內版本常數）｜徵選報名版本為 v4.1，入選後持續更新，差異見[技術文件・版本說明](https://cagoooo.github.io/curriculum/docs.html#version)
+> 📌 **目前版本：v4.4.0**（依據程式內版本常數）｜徵選報名版本為 v4.1，入選後持續更新，差異見[技術文件・版本說明](https://cagoooo.github.io/curriculum/docs.html#version)
 
 🔗 **線上使用：** [https://cagoooo.github.io/curriculum/](https://cagoooo.github.io/curriculum/)
 
@@ -109,7 +109,7 @@ cd curriculum
 
 - **純前端**單一 HTML 檔，沒有資料庫；審查由瀏覽器直接呼叫 AI 服務
 - PDF 文字擷取：[PDF.js](https://mozilla.github.io/pdf.js/) (CDN)
-- AI：Google Gemini API（支援 `gemini-2.5-flash`、`gemini-2.5-pro`、`gemini-2.0-flash`）
+- AI：Google Gemini API（預設 `gemini-3.8-flash`，另可選 `gemini-3.5-flash-lite`）
 - 使用狀況通知：Firebase Cloud Functions（`_gchat-fn/` 為 Google Chat 通知原始碼，Webhook 存於 Secret Manager）
 - 部署：GitHub Pages
 
@@ -125,7 +125,8 @@ cd curriculum
 
 | 版本 | 更新內容 |
 |------|----------|
-| **v4.3.2** | 🔗 頁尾署名改連阿凱老師教育科技創新專區（升版讓離線快取更新） |
+| **v4.4.0** | 🤖 **AI 模型升級**：預設改為 `gemini-3.8-flash`（審查更準確），另可選 `gemini-3.5-flash-lite`（較快、省額度）；2.5 系列 12/1 停用前自動換新 |
+| v4.3.2 | 🔗 頁尾署名改連阿凱老師教育科技創新專區（升版讓離線快取更新） |
 | v4.3.1 | 🔄 **修正更新卡舊版**：Service Worker 安裝時改為繞過瀏覽器 HTTP 快取，網頁改為有網路先抓最新版（network-first），部署後不再卡在舊版 |
 | v4.3.0 | 📘 **技術文件頁**（`docs.html`：架構、資料流圖、資安隱私、AI 與人分工、已知限制、FAQ、自行部署）；⚡ **一鍵載入範例計畫**並自動選好 5-1-1；🔔 **使用狀況通知可關閉**（API 設定） |
 | v4.2.4 | 🔔 **資料與隱私說明**：審查畫面與頁尾新增使用狀況通知、AI 資料流說明（提醒勿上傳學生個資）；新增 LICENSE.md 授權聲明 |

@@ -176,7 +176,7 @@
     <h1>一頁看懂：資料怎麼走、AI 做什麼、人做什麼</h1>
     <p class="lead">本工具協助學校在送審前，依桃園市教育局 115 學年度審查標準自我檢查國民小學課程計畫。這份文件寫給三種讀者：想快速體驗的評審與老師、在意資料安全的行政人員，以及想自行部署或改造的資訊老師。</p>
     <div class="ver-note">
-      <span class="pill">📌 目前版本 v4.3.2</span>
+      <span class="pill">📌 目前版本 v4.4.0</span>
       <span class="pill coral">🏅 入選版本 v4.1（115 年度 AI 好幫手徵選）</span>
       <span class="pill">📅 文件更新 2026-11-06</span>
     </div>
@@ -214,7 +214,7 @@
 
       <section class="doc" id="version">
         <h2>版本說明</h2>
-        <p>徵選報名時提交的是 <b>v4.1</b>；入選後持續修正，目前上架版本為 <b>v4.3.2</b>。主要差異：</p>
+        <p>徵選報名時提交的是 <b>v4.1</b>；入選後持續修正，目前上架版本為 <b>v4.4.0</b>。主要差異：</p>
         <div class="table-wrap"><table>
           <thead><tr><th>版本</th><th>重點</th></tr></thead>
           <tbody>
@@ -224,7 +224,8 @@
             <tr><td>v4.2.4</td><td>審查畫面與頁尾加入資料與隱私說明；新增 LICENSE.md 授權聲明。</td></tr>
             <tr><td>v4.3.0</td><td>新增本技術文件頁、一鍵載入範例計畫（含自動選項次），以及「使用狀況通知」開關（可在 API 設定關閉）。</td></tr>
             <tr><td>v4.3.1</td><td>修正部署後部分瀏覽器仍顯示舊版的問題：網頁改為有網路時優先抓最新版，離線才用快取。</td></tr>
-            <tr><td><b>v4.3.2</b></td><td>頁尾署名改連阿凱老師教育科技創新專區（升版讓離線快取更新）。</td></tr>
+            <tr><td>v4.3.2</td><td>頁尾署名改連阿凱老師教育科技創新專區（升版讓離線快取更新）。</td></tr>
+            <tr><td><b>v4.4.0</b></td><td>AI 模型升級：預設改為 gemini-3.8-flash，另可選 gemini-3.5-flash-lite（較快、省額度）；舊的 2.5／2.0 系列停用前自動換新。</td></tr>
           </tbody>
         </table></div>
         <p class="muted">完整版本紀錄（v1.0 起）請見 <a href="https://github.com/cagoooo/curriculum#版本紀錄" target="_blank" rel="noopener">README 版本紀錄</a>。</p>
@@ -244,7 +245,7 @@
             <tr><td>使用狀況通知（可關閉）</td><td>審查開始／成功／失敗時通知開發者，以便即時排錯</td><td>Firebase Cloud Functions → Google Chat／LINE</td></tr>
           </tbody>
         </table></div>
-        <p class="muted">可選模型：Gemini <code>gemini-2.5-flash</code>（預設）、<code>gemini-2.5-pro</code>、<code>gemini-2.0-flash</code>；OpenAI <code>gpt-4o-mini</code>、<code>gpt-4o</code>、<code>gpt-4.1-mini</code>。遇到忙碌或額度錯誤（429／503 等）會自動等待後重試，最多 3 次。</p>
+        <p class="muted">可選模型：Gemini <code>gemini-3.8-flash</code>（預設）、<code>gemini-3.5-flash-lite</code>（較快、省額度）；OpenAI <code>gpt-4o-mini</code>、<code>gpt-4o</code>、<code>gpt-4.1-mini</code>。遇到忙碌或額度錯誤（429／503 等）會自動等待後重試，最多 3 次。</p>
       </section>
 
       <section class="doc" id="flow">
@@ -355,7 +356,7 @@
           <li><b>表格可能跑版。</b>PDF.js 依位置讀字，複雜表格的欄位順序可能被打亂，AI 偶爾會因此誤判「缺少某欄」。</li>
           <li><b>AI 可能誤判或漏判。</b>同一份文件重審，結果可能略有不同，請以人工複核為準。</li>
           <li><b>標準只適用 115 學年度。</b>審查標準依桃園市教育局 115 學年度文件內嵌；學年度更新後需要同步修改。</li>
-          <li><b>文件太長可能不完整。</b>超過 5 萬字會提示，建議只上傳相關章節或改用 <code>gemini-2.5-pro</code>。</li>
+          <li><b>文件太長可能不完整。</b>超過 5 萬字會提示，建議只上傳相關章節或分段審查。</li>
           <li><b>需要 AI 金鑰。</b>沒有金鑰時只能用「複製提示詞」到網頁版；免費額度用完會出現 429 錯誤。</li>
           <li><b>模型會更新或停用。</b>Google 與 OpenAI 會陸續汰換舊模型；若某模型出現「找不到模型」，請改選其他模型。</li>
           <li><b>尚未完成量化驗證。</b>目前沒有「AI 判定與人工審查一致率」與「節省時間」的正式量測數據，規劃中。</li>
@@ -365,7 +366,7 @@
       <section class="doc" id="faq">
         <h2>常見問題</h2>
         <details class="faq"><summary>上傳後顯示「文字過少，可能為掃描圖檔」怎麼辦？</summary><div>代表 PDF 是圖片。請回到 Word／Google 文件原檔，用「另存為 PDF」或「下載 PDF」重新產生文字型 PDF，不要用掃描或拍照。</div></details>
-        <details class="faq"><summary>出現 429、quota、額度用完？</summary><div>免費額度在短時間內用完。工具會自動等待重試最多 3 次；仍失敗時請等幾分鐘、改用 <code>gemini-2.5-flash</code>，或隔天再試。批次審查一次跑很多項，最容易遇到。</div></details>
+        <details class="faq"><summary>出現 429、quota、額度用完？</summary><div>免費額度在短時間內用完。工具會自動等待重試最多 3 次；仍失敗時請等幾分鐘、改用 <code>gemini-3.5-flash-lite</code>，或隔天再試。批次審查一次跑很多項，最容易遇到。</div></details>
         <details class="faq"><summary>金鑰錯誤或測試失敗？</summary><div>到「API 設定」按「🔍 測試 API 金鑰」。確認複製時沒有多空白、金鑰屬於 Google AI Studio（不是 Google Cloud 其他服務），必要時重新建立一把。</div></details>
         <details class="faq"><summary>沒有金鑰也能用嗎？</summary><div>可以。選好項次後按「複製提示詞」，貼到 Gemini 或 ChatGPT 網頁版，並把擷取的文字一起貼上。</div></details>
         <details class="faq"><summary>同一份文件，兩次結果不一樣？</summary><div>AI 回答有隨機性。請以「依據」欄位對照原文判斷，必要時以人工確認為準。</div></details>
@@ -433,7 +434,7 @@ firebase deploy --only functions</pre>
     <p class="site-credit">Made with <span class="site-credit__heart" aria-label="愛心">❤️</span> by
       <a href="https://cagoooo.github.io/Akai/" target="_blank" rel="noopener noreferrer" class="site-credit__author">阿凱老師</a>
       <span class="footer-school"><span class="footer-dot" aria-hidden="true">・</span>桃園市龍潭區石門國民小學</span></p>
-    <p class="version-tag">v4.3.2</p>
+    <p class="version-tag">v4.4.0</p>
   </div>
 </footer>
 </body>
